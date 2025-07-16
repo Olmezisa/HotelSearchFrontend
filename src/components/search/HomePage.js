@@ -1,12 +1,9 @@
 import React from 'react';
 import { SearchForm } from './SearchForm';
 
-/**
- * Kullanıcıyı karşılayan ana sayfa bileşeni.
- * Büyük bir arka plan resmi, arama formu ve popüler temaları içerir.
- */
+
 export const HomePage = ({ onSearch, nationalities, currencies }) => {
-  // Popüler temalar için örnek veriler
+  
   const themes = [
     {
       name: "Butik Oteller",

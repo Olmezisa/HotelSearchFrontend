@@ -1,4 +1,3 @@
-
 const API_BASE_URL = 'http://localhost:8080/api/v1';
 const API_ROOT_BASE_URL = 'http://localhost:8080';
 
@@ -13,30 +12,29 @@ export const api = {
   
   getCurrencies: () => fetch(`${API_BASE_URL}/lookups/currencies`).then(res => res.json()),
 
-  priceSearch: (searchParams) => fetch(`${API_BASE_URL}/search/prices`, {
+  getProductInfo: (productId, provider) => fetch(`${API_BASE_URL}/products/info`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(searchParams),
+    body: JSON.stringify({ product: productId, provider: String(provider) }),
   }).then(res => res.json()),
-
-  getProductInfo: (productId) => fetch(`${API_BASE_URL}/products/info`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ product: productId }),
-  }).then(res => res.json()),
+ 
   searchByLocation: (requestBody) => fetch(`${API_ROOT_BASE_URL}/api/price-search/by-location`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(requestBody),
   }).then(res => res.json()),
-
-  /**
-   * Otele göre fiyat araması yapar.
-   * @param {object} requestBody - PriceSearchByHotelRequest ile uyumlu nesne.
-   */
+  
   searchByHotel: (requestBody) => fetch(`${API_ROOT_BASE_URL}/api/price-search/by-hotel`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(requestBody),
   }).then(res => res.json()),
+  
+  getOffers: (params) => {
+    const queryParams = new URLSearchParams(params).toString();
+    const url = `${API_ROOT_BASE_URL}/api/gateway/get-offers?${queryParams}`;
+    return fetch(url, {
+      method: 'GET',
+    }).then(res => res.json());
+  },
 };
