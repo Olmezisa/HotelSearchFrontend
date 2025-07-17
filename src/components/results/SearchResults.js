@@ -1,4 +1,6 @@
+import React from 'react';
 import { MapPin, Star, ChevronRight } from 'lucide-react';
+import { Spinner } from '../common/Spinner';
 
 const StarRating = ({ rating }) => {
     const totalStars = 5;
@@ -11,11 +13,23 @@ const StarRating = ({ rating }) => {
     );
 };
 
-// onOfferFetch prop'u kaldırıldı
-export const SearchResults = ({ results, onHotelSelect, currency }) => {
-    if (!results) return null;
+export const SearchResults = ({ results, onHotelSelect, onOfferFetch, currency, loading }) => {
+    console.log('SearchResults: Prop results:', results, 'Prop loading:', loading);
 
-    if (results.length === 0) {
+    // 👇 Yükleme durumu devam ediyorsa Spinner ve "Yükleniyor..." metnini göster
+    if (loading) {
+      return (
+        <div className="flex flex-col items-center justify-center py-16 px-6 bg-white rounded-xl shadow-md">
+          <Spinner />
+          <p className="mt-4 text-xl font-semibold text-gray-700">Yükleniyor...</p>
+        </div>
+      );
+    }
+
+    // 👇 Yükleme bitti VE sonuçlar boşsa "Sonuç Bulunamadı" mesajını göster
+    // Eğer results hala null ise (yani API'den henüz yanıt gelmediyse veya boşsa)
+    // ve loading false ise, bu blok çalışır.
+    if (!results || results.length === 0) {
         return (
             <div className="text-center py-16 px-6 bg-white rounded-xl shadow-md">
                 <h2 className="text-2xl font-bold text-gray-700">Sonuç Bulunamadı</h2>
@@ -24,6 +38,7 @@ export const SearchResults = ({ results, onHotelSelect, currency }) => {
         );
     }
 
+    // 👇 Sonuçlar varsa, otelleri listele
     return (
         <div className="space-y-6">
             <h1 className="text-3xl font-bold text-gray-800 mb-4">Arama Sonuçları</h1>
@@ -69,7 +84,6 @@ export const SearchResults = ({ results, onHotelSelect, currency }) => {
                                 </div>
                             </div>
                         </div>
-                        {/* KALDIRILDI: Mevcut Teklifler ve Oda Detayları bölümü buradan tamamen kaldırıldı. */}
                     </div>
                 );
             })}
