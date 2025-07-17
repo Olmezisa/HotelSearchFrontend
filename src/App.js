@@ -43,6 +43,7 @@ export default function App() {
     setLoading(true);
     setError(null);
     try {
+      const SearchParams ={...searchParams,nationality,currency}
       setLastSearchParams(searchParams);
       const checkInDate = new Date(searchParams.checkIn);
       const checkOutDate = new Date(searchParams.checkOut);
