@@ -108,7 +108,7 @@ export const SearchForm = ({ onSearch, nationalities, currencies }) => {
     }
     onSearch({
       locationId: location.id,
-      locationType: location.type,
+      locationType: location.type=2,
       checkIn,
       checkOut,
       nationality,
