@@ -2,8 +2,8 @@ import React from 'react';
 import { SearchForm } from './SearchForm';
 
 
-export const HomePage = ({ onSearch, nationalities, currencies }) => {
-  
+export const HomePage = ({ onSearch, nationalities, currencies, nationality, setNationality, currency, setCurrency }) => {
+  // buraya homepage parametresine nationality, setNationality, currency, setCurrency eklendi.
   const themes = [
     {
       name: "Butik Oteller",
@@ -21,14 +21,15 @@ export const HomePage = ({ onSearch, nationalities, currencies }) => {
 
   return (
     <div>
+      {/*oda seç kısmında sorun çözüldü 'overflow-hidden' divin içindeki classname kısmından çıkarılınca dropdown kısmı dışarı taşıyor.*/}
       {/* === HERO BÖLÜMÜ === */}
       <div
-        className="relative bg-cover bg-center rounded-2xl overflow-hidden min-h-[500px] md:min-h-[600px] flex items-center justify-center p-4"
+        className="relative bg-cover bg-center rounded-2xl min-h-[500px] md:min-h-[600px] flex items-center justify-center p-4"
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?q=80&w=1920&auto=format&fit=crop')" }}
       >
         {/* Arka planı karartmak için overlay */}
         <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-        
+
         <div className="relative z-10 w-full max-w-5xl mx-auto text-center text-white">
           <h1 className="text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg">
             Seyahat Etmeye Hazır Mısın?
@@ -36,10 +37,19 @@ export const HomePage = ({ onSearch, nationalities, currencies }) => {
           <p className="text-lg md:text-xl mb-8 drop-shadow-md">
             Hayalini kurduğun tatil burada başlıyor! En düşük fiyatlarla otel rezervasyonunu yap.
           </p>
-          
+
           {/* Arama Formu artık burada çağrılıyor */}
           <div className="max-w-7xl mx-auto">
-             <SearchForm onSearch={onSearch} nationalities={nationalities} currencies={currencies} />
+            <SearchForm
+              onSearch={onSearch}
+              nationalities={nationalities}
+              currencies={currencies}
+              // App.js'ten gelen props'ları SearchForm'a iletiyoruz
+              nationality={nationality}
+              setNationality={setNationality}
+              currency={currency}
+              setCurrency={setCurrency}
+            />
           </div>
         </div>
       </div>
