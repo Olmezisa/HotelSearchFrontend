@@ -128,7 +128,7 @@ export const SearchForm = ({ onSearch, nationality, currency }) => {
     // nationality ve currency props olarak geldiği için doğrudan kullanıyoruz
     onSearch({
       locationId: location.id,
-      locationType: location.type,
+      locationType: location.type=2,
       checkIn,
       checkOut,
       nationality, // App.js'ten gelen nationality

@@ -63,15 +63,12 @@ export default function App() {
         currency: SearchParams.currency,
         culture: "en-US",
       };
+      const requestBody = {
+        ...baseRequest,
+        arrivalLocations: [{ id: searchParams.locationId, type: searchParams.locationType }]
+      };
 
-      let results;
-      if (SearchParams.locationType === 1) {
-        const locationRequestBody = { ...baseRequest, arrivalLocations: [{ id: SearchParams.locationId, type: SearchParams.locationType }] };
-        results = await api.searchByLocation(locationRequestBody);
-      } else {
-        const hotelRequestBody = { ...baseRequest, products: [SearchParams.locationId] };
-        results = await api.searchByHotel(hotelRequestBody);
-      }
+      const results = await api.searchByLocation(requestBody);
 
       setSearchResults(results.body?.hotels || []);
       setSearchId(results.body?.searchId || null);
