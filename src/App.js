@@ -224,7 +224,7 @@ export default function App() {
                 {currencies.map(c => (
                   //burda currency için id leri gösterdim.
                   <option key={c.code} value={c.code}>
-                    {c.id} ({c.code})
+                    {c.id} {c.code}
                   </option>
                 ))}
               </select>
