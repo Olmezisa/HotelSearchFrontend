@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Search, MapPin, Hotel, X, Plus, Minus, Calendar, Users, AlertCircle } from 'lucide-react'; // Globe ve DollarSign ikonlarını kaldırdık
 import { api } from '../../api/santsgApi';
-
+import { DateRange } from 'react-date-range';
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
+import { tr } from "date-fns/locale";
 // AutocompleteInput bileşeni, arama kutusu ve öneri listesini yönetir.
 const AutocompleteInput = ({ onLocationSelect, query, setQuery }) => {
   const [suggestions, setSuggestions] = useState([]);
@@ -91,11 +94,22 @@ export const SearchForm = ({ onSearch, nationality, currency }) => {
 
   // Yeni hata state'i
   const [formError, setFormError] = useState(null);
-
+  const [showCalendar, setShowCalendar] = useState(false);
+  const calendarRef = useRef(null);
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (roomsRef.current && !roomsRef.current.contains(event.target)) {
         setShowRoomsDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+        setShowCalendar(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -128,7 +142,7 @@ export const SearchForm = ({ onSearch, nationality, currency }) => {
     // nationality ve currency props olarak geldiği için doğrudan kullanıyoruz
     onSearch({
       locationId: location.id,
-      locationType: location.type=2,
+      locationType: location.type = 2,
       checkIn,
       checkOut,
       nationality, // App.js'ten gelen nationality
@@ -166,13 +180,35 @@ export const SearchForm = ({ onSearch, nationality, currency }) => {
             <MapPin className="h-5 w-5 text-white/70 mr-3" />
             <AutocompleteInput onLocationSelect={setLocation} query={query} setQuery={setQuery} />
           </div>
-          <div className="w-full bg-white/20 rounded-lg flex items-center px-4 py-3">
-            <Calendar className="h-5 w-5 text-white/70 mr-3" />
-            <input type="date" value={checkIn} onChange={e => setCheckIn(e.target.value)} className="bg-transparent focus:outline-none w-full custom-date-input" min={new Date().toISOString().split('T')[0]} />
-          </div>
-          <div className="w-full bg-white/20 rounded-lg flex items-center px-4 py-3">
-            <Calendar className="h-5 w-5 text-white/70 mr-3" />
-            <input type="date" value={checkOut} onChange={e => setCheckOut(e.target.value)} className="bg-transparent focus:outline-none w-full custom-date-input" min={checkIn} />
+          <div className="relative w-full bg-white/20 rounded-lg px-4 py-3" ref={calendarRef}>
+            <button type="button" onClick={() => setShowCalendar(!showCalendar)} className="flex items-center w-full">
+              <Calendar className="h-5 w-5 text-white/70 mr-3" />
+              <span>
+                {checkIn && checkOut
+                  ? `${new Date(checkIn).toLocaleDateString()} - ${new Date(checkOut).toLocaleDateString()}`
+                  : 'Tarih Seçin'}
+              </span>
+            </button>
+
+            {showCalendar && (
+              <div className="absolute z-30 mt-2">
+                <DateRange
+                  locale={tr}
+                  ranges={[{
+                    startDate: checkIn ? new Date(checkIn) : new Date(),
+                    endDate: checkOut ? new Date(checkOut) : new Date(),
+                    key: 'selection',
+                  }]}
+                  onChange={({ selection }) => {
+                    setCheckIn(selection.startDate.toISOString().split('T')[0]);
+                    setCheckOut(selection.endDate.toISOString().split('T')[0]);
+                  }}
+                  minDate={new Date()}
+                  rangeColors={['#2563eb']}
+                  direction="horizontal"
+                />
+              </div>
+            )}
           </div>
           <div className="relative w-full" ref={roomsRef}>
             <button type="button" onClick={() => setShowRoomsDropdown(!showRoomsDropdown)} className="w-full bg-white/20 rounded-lg flex items-center px-1 py-7 text-left">
