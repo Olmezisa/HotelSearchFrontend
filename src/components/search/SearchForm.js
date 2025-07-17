@@ -175,6 +175,8 @@ export const SearchForm = ({ onSearch, nationality, currency }) => {
       <form onSubmit={handleSubmit} className="space-y-2">
         {/* --- BİRİNCİ SIRA --- */}
         {/*burda searchbar içindeki kutucukların gap 4 olarak değiştirdim ve grid-cols kısmı 6 olarak yaptım hepsini tek bir sıra haline getirildi.*/}
+        <div className="w-full flex justify-center">
+  <div className="scale-[0.9] origin-top max-w-6xl w-full px-2">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 w-full">
           <div className="lg:col-span-2 w-full bg-white/20 rounded-lg flex items-center px-4 py-3">
             <MapPin className="h-5 w-5 text-white/70 mr-3" />
@@ -229,10 +231,10 @@ export const SearchForm = ({ onSearch, nationality, currency }) => {
               </div>
             )}
           </div>
-          <button type="submit" className="w-full lg:col-span-1 bg-white text-blue-600 font-bold py-1 px-6 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center text-lg shadow-lg">
-            <Search className="h-5 w-5" />
-          </button>
-        </div>
+          <button type="submit" className="w-full lg:col-span-1 bg-white text-blue-600 font-bold py-2 px-4 rounded-md hover:bg-gray-200 transition-colors flex items-center justify-center text-base shadow-md">
+              Otelleri Keşfet
+            </button>
+        </div></div> </div>
         {/*burda searchbar daki ikinci row olarak oluşturulan kısmı kaldırdım .Tek row olarak bıraktım.*/}
         {/* Hata Mesajı Gösterim Alanı */}
         {formError && (

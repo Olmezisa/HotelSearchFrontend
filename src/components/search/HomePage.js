@@ -17,6 +17,18 @@ export const HomePage = ({ onSearch, nationalities, currencies, nationality, set
       name: "Sahil Otelleri",
       image: "https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=800&auto=format&fit=crop"
     },
+    {
+      name: "Bungalov Otelleri",
+      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQG9vVhvZaHs7ct0IFwF62K8EMsHBh98kf-6Q&s"
+    },
+    {
+      name: "Kayak Otelleri",
+      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScunobpQHwE5wDwB36iZSweo30b5zbC01uPQ&s"
+    },
+    {
+      name: "Disneyland",
+      image: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/571810091.jpg?k=d5c668f695a04853b9b681f6310711cc8b817c5c074e1ec94cdad9e6c3a8420c&o=&hp=1"
+    },
   ];
 
   return (
