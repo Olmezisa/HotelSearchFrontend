@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Search, MapPin, Hotel, X, Plus, Minus, Calendar, Users, Globe, DollarSign } from 'lucide-react';
+import { Search, MapPin, Hotel, X, Plus, Minus, Calendar, Users, AlertCircle } from 'lucide-react'; // Globe ve DollarSign ikonlarını kaldırdık
 import { api } from '../../api/santsgApi';
 
 // AutocompleteInput bileşeni, arama kutusu ve öneri listesini yönetir.
@@ -45,7 +45,7 @@ const AutocompleteInput = ({ onLocationSelect, query, setQuery }) => {
     const name = suggestion.hotel ? suggestion.hotel.name : suggestion.city.name;
     const id = suggestion.hotel ? suggestion.hotel.id : suggestion.city.id;
     const type = suggestion.type;
-    
+
     setQuery(name);
     onLocationSelect({ id, type, name });
     setShowSuggestions(false);
@@ -77,18 +77,20 @@ const AutocompleteInput = ({ onLocationSelect, query, setQuery }) => {
   );
 };
 
-
-export const SearchForm = ({ onSearch, nationalities, currencies }) => {
+// SearchForm bileşeni props olarak nationality, setNationality, currency, setCurrency alacak
+export const SearchForm = ({ onSearch, nationality, currency }) => {
   const [location, setLocation] = useState(null);
   const [query, setQuery] = useState('');
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
-  const [nationality, setNationality] = useState('DE');
-  const [currency, setCurrency] = useState('EUR');
+  // nationality ve currency state'lerini kaldırdık, props'tan alıyoruz
   const [rooms, setRooms] = useState([{ adult: 2, childAges: [] }]);
-  
+
   const [showRoomsDropdown, setShowRoomsDropdown] = useState(false);
   const roomsRef = useRef(null);
+
+  // Yeni hata state'i
+  const [formError, setFormError] = useState(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -102,20 +104,48 @@ export const SearchForm = ({ onSearch, nationalities, currencies }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!location || !checkIn || !checkOut) {
-      alert("Lütfen tüm zorunlu alanları doldurun.");
+
+    // Hata mesajını sıfırla
+    setFormError(null);
+
+    // Kontrolleri yap
+    if (!location) {
+      setFormError("Lütfen bir şehir veya otel seçin.");
       return;
     }
+    if (!checkIn) {
+      setFormError("Lütfen giriş tarihini seçin.");
+      return;
+    }
+    if (!checkOut) {
+      setFormError("Lütfen çıkış tarihini seçin.");
+      return;
+    }
+    if (new Date(checkIn) >= new Date(checkOut)) {
+      setFormError("Çıkış tarihi, giriş tarihinden sonra olmalıdır.");
+      return;
+    }
+    // nationality ve currency props olarak geldiği için doğrudan kullanıyoruz
     onSearch({
       locationId: location.id,
       locationType: location.type=2,
       checkIn,
       checkOut,
-      nationality,
-      currency,
+      nationality, // App.js'ten gelen nationality
+      currency,    // App.js'ten gelen currency
       roomCriteria: rooms,
     });
   };
+
+  // formError değiştiğinde hata mesajını belirli bir süre sonra temizle
+  useEffect(() => {
+    if (formError) {
+      const timer = setTimeout(() => {
+        setFormError(null);
+      }, 3000); // 3 saniye sonra kaybolur
+      return () => clearTimeout(timer);
+    }
+  }, [formError]);
 
   const totalGuests = rooms.reduce((acc, room) => acc + room.adult + room.childAges.length, 0);
 
@@ -130,7 +160,8 @@ export const SearchForm = ({ onSearch, nationalities, currencies }) => {
     <div className="bg-white/20 backdrop-blur-md p-4 rounded-xl border border-white/30 text-white shadow-2xl">
       <form onSubmit={handleSubmit} className="space-y-2">
         {/* --- BİRİNCİ SIRA --- */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2 w-full">
+        {/*burda searchbar içindeki kutucukların gap 4 olarak değiştirdim ve grid-cols kısmı 6 olarak yaptım hepsini tek bir sıra haline getirildi.*/}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 w-full">
           <div className="lg:col-span-2 w-full bg-white/20 rounded-lg flex items-center px-4 py-3">
             <MapPin className="h-5 w-5 text-white/70 mr-3" />
             <AutocompleteInput onLocationSelect={setLocation} query={query} setQuery={setQuery} />
@@ -143,15 +174,8 @@ export const SearchForm = ({ onSearch, nationalities, currencies }) => {
             <Calendar className="h-5 w-5 text-white/70 mr-3" />
             <input type="date" value={checkOut} onChange={e => setCheckOut(e.target.value)} className="bg-transparent focus:outline-none w-full custom-date-input" min={checkIn} />
           </div>
-          <button type="submit" className="w-full lg:col-span-1 bg-white text-blue-600 font-bold py-3 px-6 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center text-lg shadow-lg">
-            <Search className="h-5 w-5" />
-          </button>
-        </div>
-
-        {/* --- İKİNCİ SIRA (YENİ EKLENEN) --- */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 w-full pt-1">
           <div className="relative w-full" ref={roomsRef}>
-            <button type="button" onClick={() => setShowRoomsDropdown(!showRoomsDropdown)} className="w-full bg-white/20 rounded-lg flex items-center px-4 py-3 text-left">
+            <button type="button" onClick={() => setShowRoomsDropdown(!showRoomsDropdown)} className="w-full bg-white/20 rounded-lg flex items-center px-1 py-7 text-left">
               <Users className="h-5 w-5 text-white/70 mr-3" />
               <span>{totalGuests} Misafir, {rooms.length} Oda</span>
             </button>
@@ -161,27 +185,35 @@ export const SearchForm = ({ onSearch, nationalities, currencies }) => {
                   <div key={index} className="border-b pb-3 last:border-b-0 last:pb-0">
                     <div className="flex justify-between items-center mb-2"><p className="font-semibold">Oda {index + 1}</p>{rooms.length > 1 && <button type="button" onClick={() => handleRemoveRoom(index)} className="p-1 rounded-full hover:bg-red-100 text-red-500"><X className="h-4 w-4" /></button>}</div>
                     <div className="flex justify-between items-center mb-2"><label>Yetişkin</label><div className="flex items-center"><button type="button" onClick={() => handleRoomChange(index, 'adult', room.adult - 1)} className="h-6 w-6 border rounded-full">-</button><span className="w-8 text-center">{room.adult}</span><button type="button" onClick={() => handleRoomChange(index, 'adult', room.adult + 1)} className="h-6 w-6 border rounded-full">+</button></div></div>
-                    <div className="flex justify-between items-center"><label>Çocuk</label><button type="button" onClick={() => handleAddChild(index)} className="bg-blue-100 text-blue-600 rounded-full p-1"><Plus className="h-4 w-4"/></button></div>
-                    {room.childAges.map((age, childIndex) => (<div key={childIndex} className="flex justify-between items-center mt-2 pl-4"><span className="text-sm">Çocuk {childIndex + 1} Yaşı</span><div className="flex items-center"><input type="number" min="0" max="17" value={age} onChange={(e) => handleChildAgeChange(index, childIndex, parseInt(e.target.value))} className="w-16 p-1 border rounded-md" /><button type="button" onClick={() => handleRemoveChild(index, childIndex)} className="ml-2 text-red-500 hover:text-red-700"><Minus className="h-4 w-4"/></button></div></div>))}
+                    <div className="flex justify-between items-center"><label>Çocuk</label><button type="button" onClick={() => handleAddChild(index)} className="bg-blue-100 text-blue-600 rounded-full p-1"><Plus className="h-4 w-4" /></button></div>
+                    {room.childAges.map((age, childIndex) => (<div key={childIndex} className="flex justify-between items-center mt-2 pl-4"><span className="text-sm">Çocuk {childIndex + 1} Yaşı</span><div className="flex items-center"><input type="number" min="0" max="17" value={age} onChange={(e) => handleChildAgeChange(index, childIndex, parseInt(e.target.value))} className="w-16 p-1 border rounded-md" /><button type="button" onClick={() => handleRemoveChild(index, childIndex)} className="ml-2 text-red-500 hover:text-red-700"><Minus className="h-4 w-4" /></button></div></div>))}
                   </div>
                 ))}
                 <button type="button" onClick={handleAddRoom} className="w-full text-blue-600 font-semibold py-2 rounded-lg hover:bg-blue-50 transition text-sm">+ Oda Ekle</button>
               </div>
             )}
           </div>
-          <div className="w-full bg-white/20 rounded-lg flex items-center px-4 py-3">
-            <Globe className="h-5 w-5 text-white/70 mr-3" />
-            <select value={nationality} onChange={e => setNationality(e.target.value)} className="w-full bg-transparent focus:outline-none custom-select">
-              {nationalities.map(n => <option key={n.id} value={n.id} className="text-black">{n.name}</option>)}
-            </select>
-          </div>
-          <div className="w-full bg-white/20 rounded-lg flex items-center px-4 py-3">
-            <DollarSign className="h-5 w-5 text-white/70 mr-3" />
-            <select value={currency} onChange={e => setCurrency(e.target.value)} className="w-full bg-transparent focus:outline-none custom-select">
-              {currencies.map(c => <option key={c.code} value={c.code} className="text-black">{c.name} ({c.code})</option>)}
-            </select>
-          </div>
+          <button type="submit" className="w-full lg:col-span-1 bg-white text-blue-600 font-bold py-1 px-6 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center text-lg shadow-lg">
+            <Search className="h-5 w-5" />
+          </button>
         </div>
+        {/*burda searchbar daki ikinci row olarak oluşturulan kısmı kaldırdım .Tek row olarak bıraktım.*/}
+        {/* Hata Mesajı Gösterim Alanı */}
+        {formError && (
+          <div
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg flex items-center mb-4 transition-opacity duration-300 ease-in-out opacity-100"
+            role="alert"
+          >
+            <AlertCircle className="h-5 w-5 mr-2" />
+            <p className="font-semibold">{formError}</p>
+            <button
+              onClick={() => setFormError(null)}
+              className="ml-auto text-red-700 hover:text-red-900 focus:outline-none"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
       </form>
     </div>
   );
