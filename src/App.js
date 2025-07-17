@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Hotel, ArrowLeft } from 'lucide-react';
+import { Hotel, ArrowLeft, Globe, DollarSign } from 'lucide-react'; // Globe ve DollarSign import edildi.
 import { api } from './api/santsgApi';
-
 
 import { HomePage } from './components/search/HomePage';
 import { SearchResults } from './components/results/SearchResults';
@@ -15,9 +14,13 @@ export default function App() {
   const [selectedHotel, setSelectedHotel] = useState(null);
   const [lastSearchParams, setLastSearchParams] = useState(null);
   const [view, setView] = useState('search');
-  const [loading, setLoading] = useState(false); // Başlangıçta false yapıldı
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchId, setSearchId] = useState(null);
+
+  // Nationality ve Currency durumlarını App.js'e taşındı.
+  const [nationality, setNationality] = useState('DE');
+  const [currency, setCurrency] = useState('EUR');
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -40,30 +43,33 @@ export default function App() {
     setLoading(true);
     try {
       setError(null);
-      setLastSearchParams(searchParams);
-      const checkInDate = new Date(searchParams.checkIn);
-      const checkOutDate = new Date(searchParams.checkOut);
+      // nationality ve currency değerlerini buraya koyuldu.
+      const SearchParams = { ...searchParams, nationality, currency };
+      setLastSearchParams(SearchParams);
+
+      const checkInDate = new Date(SearchParams.checkIn);
+      const checkOutDate = new Date(SearchParams.checkOut);
       const nights = Math.round((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
-      
+
       const baseRequest = {
         checkAllotment: true,
         checkStopSale: true,
         getOnlyBestOffers: true,
         productType: 2,
-        roomCriteria: searchParams.roomCriteria,
-        nationality: searchParams.nationality,
-        checkIn: searchParams.checkIn,
+        roomCriteria: SearchParams.roomCriteria,
+        nationality: SearchParams.nationality,
+        checkIn: SearchParams.checkIn,
         night: nights,
-        currency: searchParams.currency,
+        currency: SearchParams.currency,
         culture: "en-US",
       };
 
       let results;
-      if (searchParams.locationType === 1) {
-        const locationRequestBody = { ...baseRequest, arrivalLocations: [{ id: searchParams.locationId, type: searchParams.locationType }] };
+      if (SearchParams.locationType === 1) {
+        const locationRequestBody = { ...baseRequest, arrivalLocations: [{ id: SearchParams.locationId, type: SearchParams.locationType }] };
         results = await api.searchByLocation(locationRequestBody);
       } else {
-        const hotelRequestBody = { ...baseRequest, products: [searchParams.locationId] };
+        const hotelRequestBody = { ...baseRequest, products: [SearchParams.locationId] };
         results = await api.searchByHotel(hotelRequestBody);
       }
 
@@ -78,40 +84,35 @@ export default function App() {
     }
   };
 
-  
+  const handleHotelSelect = async (productId, provider) => {
+    setLoading(true);
+    setError(null);
 
-const handleHotelSelect = async (productId, provider) => {
-  setLoading(true);
-  setError(null);
-  
-  try {
-    // api.getProductInfo doğrudan otel objesini döndürüyor.
-    const hotelData = await api.getProductInfo(productId, provider);
+    try {
+      const hotelData = await api.getProductInfo(productId, provider);
 
-    // Gelen verinin geçerli bir obje olup olmadığını kontrol et.
-    if (hotelData && Object.keys(hotelData).length > 0) {
-      setSelectedHotel(hotelData);
-      setView('detail');
-    } else {
-      // API'dan boş veya geçersiz bir yanıt gelirse hata ver.
-      console.error("Geçersiz veya boş otel detayı alındı.", hotelData);
-      setError("Seçilen otelin detayları yüklenemedi.");
+      if (hotelData && Object.keys(hotelData).length > 0) {
+        setSelectedHotel(hotelData);
+        setView('detail');
+      } else {
+        console.error("Geçersiz veya boş otel detayı alındı.", hotelData);
+        setError("Seçilen otelin detayları yüklenemedi.");
+      }
+
+    } catch (err) {
+      console.error("Otel detayı alınırken hata oluştu:", err);
+      setError("Otel detayları alınırken bir hata oluştu.");
+    } finally {
+      setLoading(false);
     }
+  };
 
-  } catch (err) {
-    console.error("Otel detayı alınırken hata oluştu:", err);
-    setError("Otel detayları alınırken bir hata oluştu.");
-  } finally {
-    setLoading(false);
-  }
-};
-  // Bu fonksiyon arama sonuçları listesindeki bir otelin teklif detayını getirir.
   const handleOfferFetch = async (productId, offerId) => {
     if (!searchId || !offerId) {
       setError("Arama ID'si veya Teklif ID'si bulunamadı. Lütfen yeni bir arama yapın.");
       return;
     }
-    
+
     setLoading(true);
     try {
       setError(null);
@@ -124,21 +125,18 @@ const handleHotelSelect = async (productId, provider) => {
         culture: "en-US",
         getRoomInfo: true,
       };
-      
+
       const offersResponse = await api.getOffers(requestParams);
-      
-      // Arama sonuçları listesindeki ilgili oteli bul ve güncelle.
-      setSearchResults(prevResults => 
+
+      setSearchResults(prevResults =>
         prevResults.map(hotel => {
           if (hotel.id === productId) {
-            // Yeni oda bilgilerini ve bir bayrağı otele ekle
             return { ...hotel, ...offersResponse.body, isOfferDetailVisible: true };
           }
-          // Diğer otellerin detaylarını gizle
           return { ...hotel, isOfferDetailVisible: false };
         })
       );
-      
+
     } catch (err) {
       setError("Teklif detayları alınamadı.");
       console.error(err);
@@ -160,27 +158,32 @@ const handleHotelSelect = async (productId, provider) => {
             </button>
             <SearchResults
               results={searchResults}
-              onHotelSelect={handleHotelSelect}   // Detay sayfasına gitmek için
-              onOfferFetch={handleOfferFetch}     // Teklif detaylarını getirmek için
+              onHotelSelect={handleHotelSelect}
+              onOfferFetch={handleOfferFetch}
               currency={lastSearchParams?.currency || 'EUR'}
             />
           </>
         );
       case 'detail':
         return selectedHotel && (
-            <HotelDetail 
-                hotel={selectedHotel} 
-                onBack={() => setView('results')} 
-            />
+          <HotelDetail
+            hotel={selectedHotel}
+            onBack={() => setView('results')}
+          />
         );
       case 'search':
       default:
         return (
-            <HomePage
-              onSearch={handlePriceSearch}
-              nationalities={nationalities}
-              currencies={currencies}
-            />
+          <HomePage
+            onSearch={handlePriceSearch}
+            nationalities={nationalities}
+            currencies={currencies}
+            // App.js'teki state'leri HomePage'e props olarak gönderiyoruz
+            nationality={nationality}
+            setNationality={setNationality}
+            currency={currency}
+            setCurrency={setCurrency}
+          />
         );
     }
   };
@@ -192,6 +195,43 @@ const handleHotelSelect = async (productId, provider) => {
           <div className="flex items-center space-x-2">
             <Hotel className="h-8 w-8 text-blue-600" />
             <span className="text-2xl font-bold text-gray-800">Voyago</span>
+          </div>
+          {/* Nationality ve Currency kısımlarını buraya taşındı.*/}
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center">
+              <Globe className="h-5 w-5 text-gray-500 mr-2" />
+              <select
+                value={nationality}
+                onChange={e => setNationality(e.target.value)}
+                // w-10 (veya ihtiyaca göre daha fazla) ile sadece ok görünür kalacak.
+                // appearance-none ile varsayılan tarayıcı stilini kaldırırız.
+                // sr-only yerine doğrudan metni gizleyip oka odaklanıyoruz.
+                // px-0 ve py-0 ile iç boşluğu sıfırlıyoruz.
+                className="w-10 appearance-none bg-transparent focus:outline-none text-gray-700 border-none p-0 py-0 cursor-pointer relative z-10"
+              >
+                {nationalities.map(n => (
+                  // burda kısa olması için id lerini gösterdim.
+                  <option key={n.id} value={n.id}>
+                    {n.id}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-center">
+              <DollarSign className="h-5 w-5 text-gray-500 mr-2" />
+              <select
+                value={currency}
+                onChange={e => setCurrency(e.target.value)}
+                className="w-10 appearance-none bg-transparent focus:outline-none text-gray-700 border-none p-0 py-0 cursor-pointer relative z-10"
+              >
+                {currencies.map(c => (
+                  //burda currency için id leri gösterdim.
+                  <option key={c.code} value={c.code}>
+                    {c.id} ({c.code})
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </nav>
       </header>
