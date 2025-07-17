@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, MapPin, BedDouble, Star, Tag, ShoppingCart, Wifi, Wind, Tv2, UtensilsCrossed, Droplets, ParkingCircle, Sparkles } from 'lucide-react';
+import { useParams } from 'react-router-dom'; // useParams'ı import ettik
+import { api } from '../../api/santsgApi'; // API bağlantısını import ettik
+import { Spinner } from '../common/Spinner'; // Spinner'ı import ettik
 
 // --- İkon Kütüphanesi ---
 const ICONS = {
@@ -36,15 +39,72 @@ const StarRating = ({ rating, starCount = 5 }) => (
 );
 
 // --- HotelDetail Bileşeni ---
-export const HotelDetail = ({ hotel, onBack, currency }) => {
+export const HotelDetail = ({ onBack }) => {
+    // URL'den productId, providerId, searchId, currency ve offerId'yi alıyoruz
+    const { productId, providerId, searchId, currency, offerId } = useParams();
+    const [hotel, setHotel] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [mainImage, setMainImage] = useState('');
     const [isImageLoading, setIsImageLoading] = useState(true);
     
     useEffect(() => {
-        const firstImage = hotel?.seasons?.[0]?.mediaFiles?.[0]?.urlFull || hotel?.thumbnailFull;
-        setMainImage(firstImage || null);
-        setIsImageLoading(false);
-    }, [hotel]);
+        const fetchHotelDetails = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                if (!productId || !providerId || !searchId || !currency || !offerId) {
+                    setError("Gerekli otel bilgileri (ID, Sağlayıcı, Arama ID'si, Para Birimi veya Teklif ID'si) URL'de bulunamadı.");
+                    setLoading(false);
+                    return;
+                }
+
+                // 1. getProductInfo API çağrısı
+                const staticInfoResponse = await api.getProductInfo(productId, providerId);
+
+                // 2. getOffers için gerekli parametreleri hazırla
+                const offersRequestParams = {
+                    searchId: searchId,
+                    offerId: offerId, // 👈 DÜZELTME BURADA: URL'den gelen offerId'yi ekledik
+                    productId: productId,
+                    productType: 2,
+                    currency: currency, // URL'den gelen currency
+                    culture: "en-US",
+                    getRoomInfo: true,
+                };
+
+                // 3. İki API isteğini aynı anda yap
+                const [hotelInfo, offersResponse] = await Promise.all([
+                    Promise.resolve(staticInfoResponse),
+                    api.getOffers(offersRequestParams) // getOffers çağrısı
+                ]);
+
+                if (!hotelInfo) {
+                    throw new Error("Otel statik bilgileri alınamadı.");
+                }
+
+                const offersToShow = offersResponse.body?.offers || [];
+                
+                const mergedHotelData = {
+                    ...hotelInfo,
+                    offers: offersToShow, // Teklifleri otel verisine ekliyoruz
+                };
+
+                setHotel(mergedHotelData);
+                const firstImage = mergedHotelData?.seasons?.[0]?.mediaFiles?.[0]?.urlFull || mergedHotelData?.thumbnailFull;
+                setMainImage(firstImage || null);
+
+            } catch (err) {
+                console.error("Otel detayı alınırken hata oluştu:", err);
+                setError("Otel detayları yüklenirken bir hata oluştu.");
+            } finally {
+                setLoading(false);
+                setIsImageLoading(false);
+            }
+        };
+
+        fetchHotelDetails();
+    }, [productId, providerId, searchId, currency, offerId]); // Tüm bağımlılıkları ekledik
 
     const handleImageSelect = (url) => {
         if (!url || mainImage === url) return;
@@ -55,15 +115,28 @@ export const HotelDetail = ({ hotel, onBack, currency }) => {
         img.onerror = () => setIsImageLoading(false);
     }
 
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center py-16 px-6 bg-white rounded-xl shadow-md min-h-[60vh]">
+                <Spinner />
+                <p className="mt-4 text-xl font-semibold text-gray-700">Otel Detayları Yükleniyor...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg" role="alert">{error}</div>;
+    }
+
     if (!hotel) {
-        return <div className="text-center p-10"><p>Otel verisi bekleniyor...</p></div>;
+        return <div className="text-center p-10"><p>Otel verisi bulunamadı veya yüklenemedi.</p></div>;
     }
 
     // Tüm verileri güvenli bir şekilde alıyoruz
     const allHotelImages = hotel?.seasons?.flatMap(s => s.mediaFiles || []) || [];
     const allFacilities = hotel?.seasons?.flatMap(s => s.facilityCategories?.flatMap(fc => fc.facilities || []) || []) || [];
     const textCategories = hotel?.seasons?.[0]?.textCategories || [];
-    const offers = hotel?.offers || [];
+    const offers = hotel?.offers || []; // Teklifler artık hotel objesinden geliyor
     const rooms = hotel?.rooms || [];
 
     return (
@@ -158,15 +231,15 @@ export const HotelDetail = ({ hotel, onBack, currency }) => {
                                             )}
                                             {room.facilities && room.facilities.length > 0 && (
                                                 <div>
-                                                   <h5 className="font-bold text-lg text-slate-700 mb-2">Oda Olanakları</h5>
-                                                   <div className="flex flex-wrap gap-x-4 gap-y-2">
+                                                    <h5 className="font-bold text-lg text-slate-700 mb-2">Oda Olanakları</h5>
+                                                    <div className="flex flex-wrap gap-x-4 gap-y-2">
                                                         {room.facilities.map(facility => (
                                                             <div key={facility.id} className="flex items-center text-sm text-slate-600">
                                                                 <FacilityIcon name={facility.name} />
                                                                 <span>{facility.name}</span>
                                                             </div>
                                                         ))}
-                                                   </div>
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
