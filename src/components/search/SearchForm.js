@@ -200,11 +200,11 @@ export const SearchForm = ({ onSearch, nationality, currency }) => {
                     key: 'selection',
                   }]}
                   onChange={({ selection }) => {
-                    setCheckIn(selection.startDate.toISOString().split('T')[0]);
-                    setCheckOut(selection.endDate.toISOString().split('T')[0]);
+                    setCheckIn(selection.startDate.toLocaleDateString('en-CA').split('T')[0]);
+                    setCheckOut(selection.endDate.toLocaleDateString('en-CA').split('T')[0]);
                   }}
                   minDate={new Date()}
-                  rangeColors={['#2563eb']}
+                  rangeColors={['#2883BB']}
                   direction="horizontal"
                 />
               </div>
