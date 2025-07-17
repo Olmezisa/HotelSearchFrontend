@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
-// UYARI: 'Home' ve 'ImageIcon' importları kullanılmadığı için kaldırıldı.
-import { ArrowLeft, MapPin, BedDouble, Star, Wifi, Wind, Tv2, UtensilsCrossed, Droplets, ParkingCircle, Sparkles, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, MapPin, BedDouble, Star, Tag, ShoppingCart, Wifi, Wind, Tv2, UtensilsCrossed, Droplets, ParkingCircle, Sparkles } from 'lucide-react';
 
-
+// --- İkon Kütüphanesi ---
 const ICONS = {
-    'default': <Sparkles className="h-6 w-6 mr-4 text-rose-500 flex-shrink-0" />,
-    'wifi': <Wifi className="h-6 w-6 mr-4 text-rose-500 flex-shrink-0" />,
-    'internet': <Wifi className="h-6 w-6 mr-4 text-rose-500 flex-shrink-0" />,
-    'air conditioning': <Wind className="h-6 w-6 mr-4 text-rose-500 flex-shrink-0" />,
-    'klima': <Wind className="h-6 w-6 mr-4 text-rose-500 flex-shrink-0" />,
-    'tv': <Tv2 className="h-6 w-6 mr-4 text-rose-500 flex-shrink-0" />,
-    'restaurant': <UtensilsCrossed className="h-6 w-6 mr-4 text-rose-500 flex-shrink-0" />,
-    'havuz': <Droplets className="h-6 w-6 mr-4 text-rose-500 flex-shrink-0" />,
-    'otopark': <ParkingCircle className="h-6 w-6 mr-4 text-rose-500 flex-shrink-0" />,
+    'default': <Sparkles className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
+    'wifi': <Wifi className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
+    'internet': <Wifi className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
+    'air conditioning': <Wind className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
+    'klima': <Wind className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
+    'tv': <Tv2 className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
+    'restaurant': <UtensilsCrossed className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
+    'havuz': <Droplets className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
+    'otopark': <ParkingCircle className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
 };
 
 const FacilityIcon = ({ name }) => {
@@ -22,13 +21,12 @@ const FacilityIcon = ({ name }) => {
     }
     return ICONS['default'];
 };
-// --- İKON KÜTÜPHANESİ SONU ---
 
-// Yıldızları göstermek için bileşen
+// --- StarRating Bileşeni ---
 const StarRating = ({ rating, starCount = 5 }) => (
     <div className="flex items-center">
         {[...Array(starCount)].map((_, i) => (
-            <Star // Bu ikon artık kullanılıyor
+            <Star 
                 key={`star-${i}`} 
                 className={`h-6 w-6 transition-all duration-300 ${i < rating ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`} 
                 style={{ filter: `drop-shadow(0 0 4px ${i < rating ? 'rgba(251, 191, 36, 0.5)' : 'transparent'})` }}
@@ -37,10 +35,9 @@ const StarRating = ({ rating, starCount = 5 }) => (
     </div>
 );
 
-// --- Tamamen Düzeltilmiş HotelDetail Bileşeni ---
-export const HotelDetail = ({ hotel, onBack }) => {
+// --- HotelDetail Bileşeni ---
+export const HotelDetail = ({ hotel, onBack, currency }) => {
     const [mainImage, setMainImage] = useState('');
-    // Düzeltme: Bu state artık kullanılıyor
     const [isImageLoading, setIsImageLoading] = useState(true);
     
     useEffect(() => {
@@ -49,7 +46,6 @@ export const HotelDetail = ({ hotel, onBack }) => {
         setIsImageLoading(false);
     }, [hotel]);
 
-    // Düzeltme: Bu fonksiyon artık kullanılıyor
     const handleImageSelect = (url) => {
         if (!url || mainImage === url) return;
         setIsImageLoading(true);
@@ -63,9 +59,11 @@ export const HotelDetail = ({ hotel, onBack }) => {
         return <div className="text-center p-10"><p>Otel verisi bekleniyor...</p></div>;
     }
 
+    // Tüm verileri güvenli bir şekilde alıyoruz
     const allHotelImages = hotel?.seasons?.flatMap(s => s.mediaFiles || []) || [];
     const allFacilities = hotel?.seasons?.flatMap(s => s.facilityCategories?.flatMap(fc => fc.facilities || []) || []) || [];
     const textCategories = hotel?.seasons?.[0]?.textCategories || [];
+    const offers = hotel?.offers || [];
     const rooms = hotel?.rooms || [];
 
     return (
@@ -76,7 +74,6 @@ export const HotelDetail = ({ hotel, onBack }) => {
                     Sonuçlara Geri Dön
                 </button>
 
-                {/* GERİ EKLENDİ: Ana Başlık, Resim ve Yıldızları Gösteren Bölüm */}
                 <div className="relative w-full h-[60vh] md:h-[75vh] rounded-3xl overflow-hidden flex items-end p-8 md:p-12 shadow-2xl border">
                     <div className={`absolute inset-0 transition-all duration-1000 ${isImageLoading ? 'opacity-0 scale-110' : 'opacity-100 scale-100'}`}>
                         <img src={mainImage || 'https://placehold.co/1200x800/e2e8f0/94a3b8?text=Resim+Bulunamadı'} alt="Ana Otel Resmi" className="w-full h-full object-cover" />
@@ -93,7 +90,6 @@ export const HotelDetail = ({ hotel, onBack }) => {
                     </div>
                 </div>
 
-                {/* GERİ EKLENDİ: Küçük Resim Galerisi */}
                 {allHotelImages.length > 0 && (
                     <div className="mt-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                         <div className="flex space-x-4 pb-4 overflow-x-auto">
@@ -115,20 +111,44 @@ export const HotelDetail = ({ hotel, onBack }) => {
                         {textCategories.map((cat, idx) => (
                             <section key={cat.name || idx} className="animate-fade-in-up" style={{ animationDelay: `${0.4 + idx * 0.2}s` }}>
                                 <h3 className="text-4xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-orange-500">{cat.name}</h3>
-                                <div className="text-lg text-slate-600 leading-relaxed prose" dangerouslySetInnerHTML={{ __html: cat.presentations?.[0]?.text || '' }}></div>
+                                <div className="text-lg text-slate-600 leading-relaxed prose max-w-none" dangerouslySetInnerHTML={{ __html: cat.presentations?.[0]?.text || '' }}></div>
                             </section>
                         ))}
-                        
-                        {rooms.length > 0 && (
+
+                        {offers.length > 0 && (
                             <section className="animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-                                <h3 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-indigo-500 flex items-center">
+                                <h3 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-cyan-500 flex items-center">
+                                    <Tag className="h-9 w-9 mr-4" /> Fiyat Teklifleri
+                                </h3>
+                                <div className="space-y-4">
+                                    {offers.map(offer => (
+                                        <div key={offer.offerId} className="p-6 bg-white/70 backdrop-blur-md rounded-2xl border border-gray-200/80 shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                            <div>
+                                                <h4 className="font-bold text-xl text-slate-800">{offer.rooms[0].roomName}</h4>
+                                                <p className="text-md text-slate-600 mt-1">{offer.rooms[0].boardName}</p>
+                                                <p className="text-2xl font-bold text-teal-600 mt-2">
+                                                    {offer.price.amount.toFixed(2)} {currency}
+                                                </p>
+                                            </div>
+                                            <button className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-gradient-to-r from-rose-500 to-orange-400 text-white shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-auto">
+                                                <ShoppingCart className="h-6 w-6 mr-2" />
+                                                Rezervasyon
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+
+                        {rooms.length > 0 && (
+                             <section className="animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
+                                <h3 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 flex items-center">
                                     <BedDouble className="h-9 w-9 mr-4"/> Oda Seçenekleri
                                 </h3>
                                 <div className="space-y-8">
                                     {rooms.map(room => (
-                                        <div key={room.code || room.id} className="p-6 bg-white/70 backdrop-blur-md rounded-2xl border border-gray-200/80 shadow-md transition-all duration-300">
+                                        <div key={room.id || room.code} className="p-6 bg-white/70 backdrop-blur-md rounded-2xl border border-gray-200/80 shadow-md">
                                             <h4 className="font-bold text-2xl text-slate-800 mb-4">{room.name}</h4>
-                                            
                                             {room.mediaFiles && room.mediaFiles.length > 0 && (
                                                 <div className="flex space-x-3 pb-4 mb-4 border-b overflow-x-auto">
                                                     {room.mediaFiles.map((img, idx) => (
@@ -136,11 +156,6 @@ export const HotelDetail = ({ hotel, onBack }) => {
                                                     ))}
                                                 </div>
                                             )}
-
-                                            {room.presentations && room.presentations.length > 0 && (
-                                                 <div className="text-md text-slate-600 leading-relaxed mb-4 prose" dangerouslySetInnerHTML={{ __html: room.presentations[0].text || '' }}></div>
-                                            )}
-
                                             {room.facilities && room.facilities.length > 0 && (
                                                 <div>
                                                    <h5 className="font-bold text-lg text-slate-700 mb-2">Oda Olanakları</h5>
