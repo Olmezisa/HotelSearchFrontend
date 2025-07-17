@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Hotel, ArrowLeft } from 'lucide-react';
 import { api } from './api/santsgApi';
 
-
 import { HomePage } from './components/search/HomePage';
 import { SearchResults } from './components/results/SearchResults';
 import { HotelDetail } from './components/detail/HotelDetail';
@@ -15,7 +14,7 @@ export default function App() {
   const [selectedHotel, setSelectedHotel] = useState(null);
   const [lastSearchParams, setLastSearchParams] = useState(null);
   const [view, setView] = useState('search');
-  const [loading, setLoading] = useState(false); // Başlangıçta false yapıldı
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchId, setSearchId] = useState(null);
 
@@ -38,8 +37,8 @@ export default function App() {
 
   const handlePriceSearch = async (searchParams) => {
     setLoading(true);
+    setError(null);
     try {
-      setError(null);
       setLastSearchParams(searchParams);
       const checkInDate = new Date(searchParams.checkIn);
       const checkOutDate = new Date(searchParams.checkOut);
@@ -76,72 +75,60 @@ export default function App() {
     }
   };
 
-  
-
-const handleHotelSelect = async (productId, provider) => {
-  setLoading(true);
-  setError(null);
-  
-  try {
-    // api.getProductInfo doğrudan otel objesini döndürüyor.
-    const hotelData = await api.getProductInfo(productId, provider);
-
-    // Gelen verinin geçerli bir obje olup olmadığını kontrol et.
-    if (hotelData && Object.keys(hotelData).length > 0) {
-      setSelectedHotel(hotelData);
-      setView('detail');
-    } else {
-      // API'dan boş veya geçersiz bir yanıt gelirse hata ver.
-      console.error("Geçersiz veya boş otel detayı alındı.", hotelData);
-      setError("Seçilen otelin detayları yüklenemedi.");
-    }
-
-  } catch (err) {
-    console.error("Otel detayı alınırken hata oluştu:", err);
-    setError("Otel detayları alınırken bir hata oluştu.");
-  } finally {
-    setLoading(false);
-  }
-};
-  // Bu fonksiyon arama sonuçları listesindeki bir otelin teklif detayını getirir.
-  const handleOfferFetch = async (productId, offerId) => {
-    if (!searchId || !offerId) {
-      setError("Arama ID'si veya Teklif ID'si bulunamadı. Lütfen yeni bir arama yapın.");
-      return;
-    }
-    
+  // GÜNCELLENDİ: Bu fonksiyon artık getProductInfo ve getOffers'ı birlikte kullanarak doğru veriyi getiriyor.
+  const handleHotelSelect = async (productId, provider) => {
     setLoading(true);
+    setError(null);
     try {
-      setError(null);
-      const requestParams = {
-        searchId: searchId,
-        offerId: offerId,
-        productType: 2,
-        productId: productId,
-        currency: lastSearchParams.currency,
-        culture: "en-US",
-        getRoomInfo: true,
-      };
-      
-      const offersResponse = await api.getOffers(requestParams);
-      
-      // Arama sonuçları listesindeki ilgili oteli bul ve güncelle.
-      setSearchResults(prevResults => 
-        prevResults.map(hotel => {
-          if (hotel.id === productId) {
-            // Yeni oda bilgilerini ve bir bayrağı otele ekle
-            return { ...hotel, ...offersResponse.body, isOfferDetailVisible: true };
-          }
-          // Diğer otellerin detaylarını gizle
-          return { ...hotel, isOfferDetailVisible: false };
-        })
-      );
-      
+        if (!lastSearchParams || !searchId) {
+            throw new Error("Arama bilgileri eksik. Lütfen yeni bir arama yapın.");
+        }
+        
+        // 1. Arama sonuçlarından tıklanan oteli ve ilk teklifin ID'sini bul.
+        const hotelFromSearch = searchResults.find(h => h.id === productId);
+        const initialOfferId = hotelFromSearch?.offers?.[0]?.offerId;
+
+        if (!initialOfferId) {
+            throw new Error("Geçerli bir teklif ID'si bulunamadı.");
+        }
+
+        // 2. getOffers için gerekli parametreleri hazırla.
+        const offersRequestParams = {
+            searchId: searchId,
+            offerId: initialOfferId, // <<<< ÖNEMLİ: offerId eklendi.
+            productId: productId,
+            productType: 2,
+            currency: lastSearchParams.currency,
+            culture: "en-US",
+            getRoomInfo: true,
+        };
+
+        // 3. İki API isteğini aynı anda yap.
+        const [staticInfoResponse, offersResponse] = await Promise.all([
+            api.getProductInfo(productId, provider),
+            api.getOffers(offersRequestParams) // <<<< DOĞRU METOT: getOffers'ı çağırıyoruz.
+        ]);
+
+        if (!staticInfoResponse) {
+            throw new Error("Otel statik bilgileri alınamadı.");
+        }
+
+        // 4. Gelen verileri birleştir.
+        const offersToShow = offersResponse.body?.offers || [];
+        
+        const mergedHotelData = {
+            ...staticInfoResponse,
+            offers: offersToShow,
+        };
+
+        setSelectedHotel(mergedHotelData);
+        setView('detail');
+
     } catch (err) {
-      setError("Teklif detayları alınamadı.");
-      console.error(err);
+        console.error("Otel detayı alınırken hata oluştu:", err);
+        setError("Otel detayları alınırken bir hata oluştu.");
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
   };
 
@@ -158,18 +145,18 @@ const handleHotelSelect = async (productId, provider) => {
             </button>
             <SearchResults
               results={searchResults}
-              onHotelSelect={handleHotelSelect}   // Detay sayfasına gitmek için
-              onOfferFetch={handleOfferFetch}     // Teklif detaylarını getirmek için
+              onHotelSelect={handleHotelSelect}
               currency={lastSearchParams?.currency || 'EUR'}
             />
           </>
         );
       case 'detail':
         return selectedHotel && (
-            <HotelDetail 
-                hotel={selectedHotel} 
-                onBack={() => setView('results')} 
-            />
+          <HotelDetail 
+            hotel={selectedHotel} 
+            onBack={() => setView('results')}
+            currency={lastSearchParams?.currency || 'EUR'}
+          />
         );
       case 'search':
       default:

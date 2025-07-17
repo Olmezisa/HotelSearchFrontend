@@ -31,10 +31,11 @@ export const api = {
   }).then(res => res.json()),
   
   getOffers: (params) => {
-    const queryParams = new URLSearchParams(params).toString();
-    const url = `${API_ROOT_BASE_URL}/api/gateway/get-offers?${queryParams}`;
+    const url = `${API_ROOT_BASE_URL}/api/gateway/get-offers`;
     return fetch(url, {
-      method: 'GET',
+      method: 'POST', // Metot POST olarak değiştirildi.
+      headers: { 'Content-Type': 'application/json' }, // Content-Type başlığı eklendi.
+      body: JSON.stringify(params), // Parametreler body içinde JSON olarak gönderiliyor.
     }).then(res => res.json());
   },
 };
