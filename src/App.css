@@ -36,3 +36,13 @@
     transform: rotate(360deg);
   }
 }
+
+/* Kaydırma çubuğunu gizleyen sınıf */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* Internet Explorer */
+  scrollbar-width: none;     /* Firefox */
+}

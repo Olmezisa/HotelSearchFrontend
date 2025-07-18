@@ -177,15 +177,15 @@ export const SearchForm = ({ onSearch, nationality, currency }) => {
         {/*burda searchbar içindeki kutucukların gap 4 olarak değiştirdim ve grid-cols kısmı 6 olarak yaptım hepsini tek bir sıra haline getirildi.*/}
         <div className="w-full flex justify-center">
   <div className="scale-[0.9] origin-top max-w-6xl w-full px-2">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 w-full">
+        <div className="flex flex-col lg:flex-row gap-3 w-full">
           <div className="lg:col-span-2 w-full bg-white/20 rounded-lg flex items-center px-4 py-3">
             <MapPin className="h-5 w-5 text-white/70 mr-3" />
             <AutocompleteInput onLocationSelect={setLocation} query={query} setQuery={setQuery} />
           </div>
           <div className="relative w-full bg-white/20 rounded-lg px-4 py-3" ref={calendarRef}>
-            <button type="button" onClick={() => setShowCalendar(!showCalendar)} className="flex items-center w-full">
+            <button type="button" onClick={() => setShowCalendar(!showCalendar)} className="flex items-center justify-center w-full h-full min-h-[3rem]">
               <Calendar className="h-5 w-5 text-white/70 mr-3" />
-              <span>
+              <span clasname="text-center">
                 {checkIn && checkOut
                   ? `${new Date(checkIn).toLocaleDateString()} - ${new Date(checkOut).toLocaleDateString()}`
                   : 'Tarih Seçin'}
@@ -193,7 +193,7 @@ export const SearchForm = ({ onSearch, nationality, currency }) => {
             </button>
 
             {showCalendar && (
-              <div className="absolute z-30 mt-2">
+              <div className="absolute z-30 top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white rounded-lg shadow-2xl border border-gray-200">
                 <DateRange
                   locale={tr}
                   ranges={[{
@@ -213,7 +213,7 @@ export const SearchForm = ({ onSearch, nationality, currency }) => {
             )}
           </div>
           <div className="relative w-full" ref={roomsRef}>
-            <button type="button" onClick={() => setShowRoomsDropdown(!showRoomsDropdown)} className="w-full bg-white/20 rounded-lg flex items-center px-1 py-7 text-left">
+            <button type="button" onClick={() => setShowRoomsDropdown(!showRoomsDropdown)} className="w-full bg-white/20 rounded-lg flex items-center justify-center px-4 py-3 h-full min-h-[3rem]">
               <Users className="h-5 w-5 text-white/70 mr-3" />
               <span>{totalGuests} Misafir, {rooms.length} Oda</span>
             </button>
@@ -231,7 +231,7 @@ export const SearchForm = ({ onSearch, nationality, currency }) => {
               </div>
             )}
           </div>
-          <button type="submit" className="w-full lg:col-span-1 bg-white text-blue-600 font-bold py-2 px-4 rounded-md hover:bg-gray-200 transition-colors flex items-center justify-center text-base shadow-md">
+          <button type="submit" className="w-full lg:col-span-1 bg-[#F9F7F3] text-[#F7A072] font-bold py-2 px-4 rounded-md hover:bg-gray-200 transition-colors flex items-center justify-center text-base shadow-md">
               Otelleri Keşfet
             </button>
         </div></div> </div>
