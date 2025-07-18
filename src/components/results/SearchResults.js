@@ -18,12 +18,12 @@ export const SearchResults = ({ results, onHotelSelect, onOfferFetch, currency, 
 
     // 👇 Yükleme durumu devam ediyorsa Spinner ve "Yükleniyor..." metnini göster
     if (loading) {
-      return (
-        <div className="flex flex-col items-center justify-center py-16 px-6 bg-white rounded-xl shadow-md">
-          <Spinner />
-          <p className="mt-4 text-xl font-semibold text-gray-700">Yükleniyor...</p>
-        </div>
-      );
+        return (
+            <div className="flex flex-col items-center justify-center py-16 px-6 bg-white rounded-xl shadow-md">
+                <Spinner />
+                <p className="mt-4 text-xl font-semibold text-gray-700">Yükleniyor...</p>
+            </div>
+        );
     }
 
     // 👇 Yükleme bitti VE sonuçlar boşsa "Sonuç Bulunamadı" mesajını göster
