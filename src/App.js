@@ -7,6 +7,7 @@ import { HomePage } from './components/search/HomePage';
 import { SearchResults } from './components/results/SearchResults';
 import { HotelDetail } from './components/detail/HotelDetail';
 import { Spinner } from './components/common/Spinner';
+import { LoginPage } from './components/login/LoginPage';
 
 export default function App() {
   const [nationalities, setNationalities] = useState([]);
@@ -192,6 +193,12 @@ export default function App() {
                 ))}
               </select>
             </div>
+            <Link
+              to="/login"
+              className="text-blue-600 hover:text-blue-800 font-semibold transition-colors"
+            >
+              Giriş Yap
+            </Link>
           </div>
         </nav>
       </header>
@@ -242,7 +249,7 @@ export default function App() {
               onBack={() => navigate(-1)}
             />
           } />
-
+          <Route path="/login" element={<LoginPage />} />
           <Route path="*" element={<div className="text-center py-10 text-xl text-gray-600">Sayfa Bulunamadı!</div>} />
         </Routes>
       </main>
