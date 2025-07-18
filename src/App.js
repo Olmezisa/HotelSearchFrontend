@@ -224,8 +224,6 @@ export default function App() {
 
                 {/* Search Results - This will be on the right */}
                 <div className="md:col-span-3 lg:col-span-3 space-y-6">
-                  {/* Title for Search Results, as seen in your screenshot */}
-                  <h1 className="text-3xl font-bold text-gray-800 mb-4">Arama Sonuçları</h1>
                   <SearchResults
                     results={searchResults}
                     onHotelSelect={handleHotelSelect}
@@ -254,9 +252,3 @@ export default function App() {
     </div>
   );
 }
-
-/*results={searchResults}
-                onHotelSelect={handleHotelSelect}
-                onOfferFetch={handleOfferFetch}
-                currency={lastSearchParams?.currency || 'EUR'}
-                loading={loading} */
