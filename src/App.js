@@ -6,6 +6,7 @@ import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { HomePage } from './components/search/HomePage';
 import { SearchResults } from './components/results/SearchResults';
 import { HotelDetail } from './components/detail/HotelDetail';
+import { OfferDetail } from './components/detail/OfferDetail';
 import { Spinner } from './components/common/Spinner';
 
 export default function App() {
@@ -232,6 +233,11 @@ export default function App() {
               onBack={() => navigate(-1)}
             />
           } />
+          <Route path="/offer-details/:offerId/:currency" element={
+                        <OfferDetail
+                            onBack={() => navigate(-1)}
+                        />
+                    } />
 
           <Route path="*" element={<div className="text-center py-10 text-xl text-gray-600">Sayfa Bulunamadı!</div>} />
         </Routes>

@@ -3,6 +3,7 @@ import { ArrowLeft, MapPin, BedDouble, Star, Tag, ShoppingCart, Wifi, Wind, Tv2,
 import { useParams } from 'react-router-dom'; // useParams'ı import ettik
 import { api } from '../../api/santsgApi'; // API bağlantısını import ettik
 import { Spinner } from '../common/Spinner'; // Spinner'ı import ettik
+import { Link} from 'react-router-dom';
 
 // --- İkon Kütüphanesi ---
 const ICONS = {
@@ -39,7 +40,7 @@ const StarRating = ({ rating, starCount = 5 }) => (
 );
 
 // --- HotelDetail Bileşeni ---
-export const HotelDetail = ({ onBack }) => {
+export const HotelDetail = ({ onBack}) => {
     // URL'den productId, providerId, searchId, currency ve offerId'yi alıyoruz
     const { productId, providerId, searchId, currency, offerId } = useParams();
     const [hotel, setHotel] = useState(null);
@@ -203,14 +204,22 @@ export const HotelDetail = ({ onBack }) => {
                                                     {offer.price.amount.toFixed(2)} {currency}
                                                 </p>
                                             </div>
-                                            <button className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-gradient-to-r from-rose-500 to-orange-400 text-white shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-auto">
-                                                <ShoppingCart className="h-6 w-6 mr-2" />
-                                                Rezervasyon
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
+                                             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                                                <Link
+                                to={`/offer-details/${offer.offerId}/${currency}`}
+                                className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-white border border-teal-500 text-teal-500 shadow-sm transition-all duration-300 transform hover:bg-teal-50 hover:shadow-lg w-full"
+                            >
+                                Detayları Gör
+                            </Link>
+                            <button className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-gradient-to-r from-rose-500 to-orange-400 text-white shadow-lg transition-all duration-300 transform hover:scale-105 w-full">
+                                <ShoppingCart className="h-6 w-6 mr-2" />
+                                Rezervasyon
+                            </button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </section>
                         )}
 
                         {rooms.length > 0 && (
