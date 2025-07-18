@@ -260,7 +260,7 @@ export default function App() {
           <Route path="*" element={<div className="text-center py-10 text-xl text-gray-600">Sayfa Bulunamadı!</div>} />
         </Routes>
       </main>
- <footer className="bg-white shadow-lg p-10 mt-8 text-[#001624] text-base sticky bottom-0 z-50">
+ <footer className="bg-white shadow-lg p-10 mt-8 text-[#001624] text-base sticky ">
   <div className="grid grid-cols-3 items-center">
     <div></div>
     <p className="text-center">© 2025 Staj Projesi - SAN TSG</p>
