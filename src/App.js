@@ -8,7 +8,8 @@ import { SearchResults } from './components/results/SearchResults';
 import { HotelDetail } from './components/detail/HotelDetail';
 import { OfferDetail } from './components/detail/OfferDetail';
 import { Spinner } from './components/common/Spinner';
-import { LoginPage } from './components/login/LoginPage';
+import  LoginPage  from './components/login/LoginPage';
+import voyagoLogo from './voyago2.png';
 
 export default function App() {
   const [nationalities, setNationalities] = useState([]);
@@ -159,19 +160,19 @@ export default function App() {
 
   return (
     <div className="bg-gray-100 min-h-screen font-sans text-gray-900">
-      <header className="bg-white shadow-md">
-        <nav className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <Hotel className="h-8 w-8 text-blue-600" />
-            <Link to="/" className="text-2xl font-bold text-gray-800">Voyago</Link>
+      <header className="bg-white shadow-md sticky top-0 z-50">
+        <nav className="container mx-auto px-4 py-8 flex justify-between items-center">
+          <div className="flex items-center space-x-3">
+            <img src={voyagoLogo} alt="Voyago Logo" className="h-12 w-12" />
+            <Link to="/" className="text-3xl font-bold text-[#001624]">Voyago</Link>
           </div>
           <div className="flex items-center space-x-4">
             <div className="flex items-center">
-              <Globe className="h-5 w-5 text-gray-500 mr-2" />
+              <Globe className="h-7 w-7 text-[#2883BB] mr-3" />
               <select
                 value={nationality}
                 onChange={e => setNationality(e.target.value)}
-                className="w-10 appearance-none bg-transparent focus:outline-none text-gray-700 border-none p-0 py-0 cursor-pointer relative z-10"
+                className="w-10 appearance-none bg-transparent focus:outline-none text-[#2883BB] border-none p-0 py-0 cursor-pointer relative z-14"
               >
                 {nationalities.map(n => (
                   <option key={n.id} value={n.id}>
@@ -181,11 +182,11 @@ export default function App() {
               </select>
             </div>
             <div className="flex items-center">
-              <DollarSign className="h-5 w-5 text-gray-500 mr-2" />
+              <DollarSign className="h-7 w-7 text-[#2883BB] mr-2" />
               <select
                 value={currency}
                 onChange={e => setCurrency(e.target.value)}
-                className="w-10 appearance-none bg-transparent focus:outline-none text-gray-700 border-none p-0 py-0 cursor-pointer relative z-10"
+                className="w-10 appearance-none bg-transparent focus:outline-none text-[#2883BB] border-none p-0 py-0 cursor-pointer relative z-14"
               >
                 {currencies.map(c => (
                   <option key={c.code} value={c.code}>
@@ -196,7 +197,7 @@ export default function App() {
             </div>
             <Link
               to="/login"
-              className="text-blue-600 hover:text-blue-800 font-semibold transition-colors"
+              className="text-[#2883BB] hover:text-[#B5E2FA] font-semibold transition-colors text-lg flex items-center"
             >
               Giriş Yap
             </Link>
@@ -259,9 +260,20 @@ export default function App() {
           <Route path="*" element={<div className="text-center py-10 text-xl text-gray-600">Sayfa Bulunamadı!</div>} />
         </Routes>
       </main>
-      <footer className="text-center p-4 mt-8 text-gray-500 text-sm">
-        <p>© 2025 Staj Projesi - SAN TSG</p>
-      </footer>
+ <footer className="bg-white shadow-lg p-10 mt-8 text-[#001624] text-base sticky bottom-0 z-50">
+  <div className="grid grid-cols-3 items-center">
+    <div></div>
+    <p className="text-center">© 2025 Staj Projesi - SAN TSG</p>
+    <div className="flex justify-end">
+      <Link 
+        to="/add-property" 
+        className="bg-[#2883BB] text-white px-6 py-2 rounded-lg hover:bg-[#1a5a8a] transition-colors font-semibold"
+      >
+        Tesisinizi Ekleyin
+      </Link>
+    </div>
+  </div>
+</footer>
     </div>
   );
 }
