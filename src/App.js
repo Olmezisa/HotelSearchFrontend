@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Hotel, ArrowLeft, Globe, DollarSign } from 'lucide-react';
 import { api } from './api/santsgApi';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
-
+import { FilterSection } from './components/filter/FilterPanel';
 import { HomePage } from './components/search/HomePage';
 import { SearchResults } from './components/results/SearchResults';
 import { HotelDetail } from './components/detail/HotelDetail';
 import { OfferDetail } from './components/detail/OfferDetail';
 import { Spinner } from './components/common/Spinner';
+import { LoginPage } from './components/login/LoginPage';
 
 export default function App() {
   const [nationalities, setNationalities] = useState([]);
@@ -104,7 +105,7 @@ export default function App() {
 
       const currentSearchId = searchId || '';
       const currentCurrency = lastSearchParams?.currency || '';
-      
+
       // 👇 offerId'yi de URL parametresi olarak gönderiyoruz
       navigate(`/hotel/${productId}/${provider}/${currentSearchId}/${currentCurrency}/${initialOfferId}`);
     } catch (err) {
@@ -193,6 +194,12 @@ export default function App() {
                 ))}
               </select>
             </div>
+            <Link
+              to="/login"
+              className="text-blue-600 hover:text-blue-800 font-semibold transition-colors"
+            >
+              Giriş Yap
+            </Link>
           </div>
         </nav>
       </header>
@@ -217,13 +224,23 @@ export default function App() {
               <button onClick={() => navigate('/')} className="mb-4 flex items-center text-blue-600 font-semibold hover:text-blue-800 transition-colors">
                 <ArrowLeft className="h-5 w-5 mr-1" /> Yeni Arama Yap
               </button>
-              <SearchResults
-                results={searchResults}
-                onHotelSelect={handleHotelSelect}
-                onOfferFetch={handleOfferFetch}
-                currency={lastSearchParams?.currency || 'EUR'}
-                loading={loading}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-6 items-start">
+                {/* Filter Section - This will be on the left */}
+                <div className="md:col-span-1 lg:col-span-1 sticky top-4">
+                  <FilterSection /> {/* ! IMPORTANT: Render your new FilterSection component here */}
+                </div>
+
+                {/* Search Results - This will be on the right */}
+                <div className="md:col-span-3 lg:col-span-3 space-y-6">
+                  <SearchResults
+                    results={searchResults}
+                    onHotelSelect={handleHotelSelect}
+                    onOfferFetch={handleOfferFetch}
+                    currency={lastSearchParams?.currency || 'EUR'}
+                    loading={loading}
+                  />
+                </div>
+              </div>
             </>
           } />
 
@@ -238,7 +255,7 @@ export default function App() {
                             onBack={() => navigate(-1)}
                         />
                     } />
-
+          <Route path="/login" element={<LoginPage />} />
           <Route path="*" element={<div className="text-center py-10 text-xl text-gray-600">Sayfa Bulunamadı!</div>} />
         </Routes>
       </main>
@@ -248,4 +265,3 @@ export default function App() {
     </div>
   );
 }
-
