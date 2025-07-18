@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, MapPin, BedDouble, Star, Tag, ShoppingCart, Wifi, Wind, Tv2, UtensilsCrossed, Droplets, ParkingCircle, Sparkles,XCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, MapPin, BedDouble, Star, Tag, ShoppingCart, Wifi, Wind, Tv2, UtensilsCrossed, Droplets, ParkingCircle, Sparkles, Phone, Printer,XCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+
 import { useParams } from 'react-router-dom'; // useParams'ı import ettik
 import { api } from '../../api/santsgApi'; // API bağlantısını import ettik
 import { Spinner } from '../common/Spinner'; // Spinner'ı import ettik
@@ -364,6 +365,28 @@ export const HotelDetail = ({ onBack }) => {
                                 </div>
                             </div>
                         )}
+                        {(hotel.phoneNumber || hotel.faxNumber) && (
+        <div className="p-8 bg-white/70 backdrop-blur-md rounded-2xl border border-gray-200/80 shadow-lg">
+            <h3 className="text-2xl font-bold mb-6 text-slate-800">İletişim Bilgileri</h3>
+            <div className="space-y-4">
+                {hotel.phoneNumber && (
+                    <div className="flex items-center text-lg text-slate-700">
+                        <Phone className="h-5 w-5 mr-3 text-rose-500 flex-shrink-0" />
+                        <a href={`tel:${hotel.phoneNumber}`} className="hover:text-rose-600 transition-colors">
+                            {hotel.phoneNumber}
+                        </a>
+                    </div>
+                )}
+                {hotel.faxNumber && (
+                    <div className="flex items-center text-lg text-slate-700">
+                        <Printer className="h-5 w-5 mr-3 text-rose-500 flex-shrink-0" />
+                        <span>{hotel.faxNumber}</span>
+                    </div>
+                )}
+            </div>
+        </div>
+    )}
+
                     </aside>
                 </div>
             </div>
