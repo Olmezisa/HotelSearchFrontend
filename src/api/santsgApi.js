@@ -38,4 +38,17 @@ export const api = {
       body: JSON.stringify(params), // Parametreler body içinde JSON olarak gönderiliyor.
     }).then(res => res.json());
   },
+  getOfferDetails: (offerIds, currency) => {
+        const url = `${API_ROOT_BASE_URL}/api/gateway/get-offer-details`;
+        const requestBody = {
+            offerIds: offerIds,
+            currency: currency,
+            getProductInfo: true // Backend'deki DTO'ya uygun
+        };
+        return fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody),
+        }).then(res => res.json());
+    },
 };
