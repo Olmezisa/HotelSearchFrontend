@@ -4,9 +4,9 @@ import { ArrowLeft, MapPin, BedDouble, Star, Tag, ShoppingCart, Wifi, Wind, Tv2,
 import { useParams } from 'react-router-dom';
 import { api } from '../../api/santsgApi';
 import { Spinner } from '../common/Spinner';
-import { Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 //rezervasyon yonlendirmesi eklendi
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
 // --- İkon Kütüphanesi ---
 const ICONS = {
@@ -105,7 +105,7 @@ export const HotelDetail = ({ onBack }) => {
     const [isImageLoading, setIsImageLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     const openImageModal = (index = 0) => {
         setCurrentImageIndex(index);
@@ -235,9 +235,9 @@ export const HotelDetail = ({ onBack }) => {
 
                 <div className="relative w-full h-[60vh] md:h-[75vh] rounded-3xl overflow-hidden flex items-end p-8 md:p-12 shadow-2xl border cursor-pointer"
                     onClick={() => openImageModal(allHotelImages.findIndex(img => img.urlFull === mainImage))}
-                    >
+                >
 
-          
+
                     {/* Bulanık Arka Plan Rengi */}
                     <div className={`absolute inset-0 transition-opacity duration-1000 ${isImageLoading ? 'opacity-0' : 'opacity-100'}`}>
                         <img
@@ -321,18 +321,25 @@ export const HotelDetail = ({ onBack }) => {
                                             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                                                 <Link
 
-                                        to={`/offer-details/${offer.offerId}/${currency}`}
-                                        className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-white border border-[#2883bb] text-[#2883bb] shadow-sm transition-all duration-300 transform hover:bg-[#b5e2fa] hover:shadow-lg w-full"
-                                    >
-                                        Detayları Gör
-                                    </Link>
-                                 
-                                    <button onClick={() => navigate('/booking')} className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-gradient-to-r from-[#f7a072] to-[#ac440b] text-white shadow-lg transition-all duration-300 transform hover:scale-105 w-full">
-
-
+                                                    to={`/offer-details/${offer.offerId}/${currency}`}
+                                                    className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-white border border-[#2883bb] text-[#2883bb] shadow-sm transition-all duration-300 transform hover:bg-[#b5e2fa] hover:shadow-lg w-full"
+                                                >
+                                                    Detayları Gör
+                                                </Link>
+                                                <button
+                                                    onClick={() => navigate('/booking', {
+                                                        state: {
+                                                            hotel,
+                                                            selectedOffer: offer
+                                                        }
+                                                    })}
+                                                    className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-gradient-to-r from-[#f7a072] to-[#ac440b] text-white shadow-lg transition-all duration-300 transform hover:scale-105 w-full"
+                                                >
                                                     <ShoppingCart className="h-6 w-6 mr-2" />
                                                     Rezervasyon
                                                 </button>
+
+
                                             </div>
                                         </div>
                                     ))}
@@ -366,7 +373,7 @@ export const HotelDetail = ({ onBack }) => {
                             <section className="animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
 
                                 <h3 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#eddea4] to-[#f2bf8b] flex items-center">
-                                    <BedDouble className="h-9 w-9 mr-4"/> Oda Seçenekleri
+                                    <BedDouble className="h-9 w-9 mr-4" /> Oda Seçenekleri
 
                                 </h3>
                                 <div className="space-y-8">

@@ -8,7 +8,7 @@ import { SearchResults } from './components/results/SearchResults';
 import { HotelDetail } from './components/detail/HotelDetail';
 import { OfferDetail } from './components/detail/OfferDetail';
 import { Spinner } from './components/common/Spinner';
-import  LoginPage  from './components/login/LoginPage';
+import LoginPage from './components/login/LoginPage';
 import voyagoLogo from './voyago2.png';
 import BookingPage from './components/booking/BookingPage';
 
@@ -276,7 +276,9 @@ export default function App() {
           <Route path="*" element={<div className="text-center py-10 text-xl text-gray-600">Sayfa Bulunamadı!</div>} />
 
           // Yeni BookingPage rotasını ekledik//
-          <Route path="/booking" element={<BookingPage />} />
+          <Route path="/booking" element={<BookingPage
+            currency={currency}
+            nationality={nationality} />} />
 
         </Routes>
       </main>
