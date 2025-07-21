@@ -6,7 +6,7 @@ import { api } from '../../api/santsgApi';
 import { Spinner } from '../common/Spinner';
 import { Link} from 'react-router-dom';
 //rezervasyon yonlendirmesi eklendi
-import { useNavigate } from 'react-router-dom
+import { useNavigate } from 'react-router-dom'
 
 // --- İkon Kütüphanesi ---
 const ICONS = {
