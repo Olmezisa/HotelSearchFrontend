@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const GuestForm = ({ onChange, numberOfGuests = 2, nationality = "TR", currency = "EUR" }) => {
+const GuestForm = ({ onChange, numberOfGuests = [], nationality = "TR", currency = "EUR" }) => {
   const [form, setForm] = useState({
     email: "",
     phone: "",

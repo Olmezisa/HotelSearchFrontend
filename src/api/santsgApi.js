@@ -51,4 +51,17 @@ export const api = {
             body: JSON.stringify(requestBody),
         }).then(res => res.json());
     },
+
+/*burada son endpointi ekledim*/
+    beginTransaction: (payload) => {
+    return fetch(`${API_ROOT_BASE_URL}/api/booking/begin-transaction`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }).then(res => {
+      if (!res.ok) throw new Error('Begin transaction API hatası');
+      return res.json();
+    });
+  },
 };
+

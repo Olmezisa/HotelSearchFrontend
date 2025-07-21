@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import GuestForm from "./GuestForm";
 import PaymentForm from "./PaymentForm";
 import { useLocation } from "react-router-dom";
+import {api } from "../../api/santsgApi"; // ✅ Yeni API fonksiyonu eklendi
 
-const BookingPage = ({ currency, nationality }) => {
+const BookingPage = ({ currency = "EUR", nationality }) => {
   const { state } = useLocation();
   const hotel = state?.hotel;
   const offer = state?.selectedOffer;
@@ -13,29 +14,43 @@ const BookingPage = ({ currency, nationality }) => {
   const [guestInfo, setGuestInfo] = useState(null);
   const [paymentInfo, setPaymentInfo] = useState(null);
 
-  const handleSubmit = () => {
-    // Validasyon eklendi
+  const handleSubmit = async () => {
+    // ✅ Form validasyonları
     if (!guestInfo || !guestInfo.isValid) {
-      alert("Lütfen misafir bilgilerini eksiksiz ve doğru doldurun.");
+      alert("Lütfen misafir bilgilerini eksiksiz doldurun.");
       return;
     }
     if (!paymentInfo || !paymentInfo.isValid) {
-      alert("Lütfen ödeme bilgilerini eksiksiz ve doğru doldurun.");
+      alert("Lütfen ödeme bilgilerini eksiksiz doldurun.");
       return;
     }
 
+    // ✅ API'ye gönderilecek payload
     const payload = {
-      hotel,
-      offer,
-      guestInfo,
-      paymentInfo,
-      numberOfGuests,
-      numberOfRooms,
+      searchId: offer?.searchId,
+      offerId: offer?.offerId,
+      productId: hotel?.productId || offer?.productId,
+      productType: offer?.productType,
+      currency: currency,
+      culture: "en-US",
+      getRoomInfo: true,
+      guests: guestInfo.guests,
+      payment: paymentInfo,
     };
 
-    console.log("Rezervasyon Bilgileri:", payload);
-    alert("Rezervasyon başarıyla alındı! (Simülasyon)");
-    // TODO: API çağrısı yapılacak
+    try {
+      const response = await api(payload);
+      if (response?.header?.success) {
+        alert("Rezervasyon başarıyla başlatıldı!");
+        console.log("Rezervasyon Cevabı:", response);
+        // navigate("/confirmation", { state: response });
+      } else {
+        alert("Hata: " + (response?.header?.messages?.[0]?.message || "Bilinmeyen hata"));
+      }
+    } catch (err) {
+      console.error("API Hatası:", err);
+      alert("Sunucuya bağlanılamadı.");
+    }
   };
 
   return (
@@ -60,35 +75,18 @@ const BookingPage = ({ currency, nationality }) => {
             <p className="text-gray-700 mt-1">Adres: {hotel.address || "Adres bilgisi yok"}</p>
             <p className="text-gray-700 mt-1">Oda: {offer.rooms?.[0]?.roomName || "Belirtilmemiş"}</p>
             <p className="text-gray-700 mt-1">Pansiyon: {offer.rooms?.[0]?.boardName || "Belirtilmemiş"}</p>
-
-            {/* Yeni Eklenecek Alanlar */}
-            {numberOfGuests && (
-              <p className="text-gray-700 mt-1">
-                Kişi Sayısı: <strong>{numberOfGuests}</strong>
-              </p>
-            )}
-            {numberOfRooms && (
-              <p className="text-gray-700 mt-1">
-                Oda Adeti: <strong>{numberOfRooms}</strong>
-              </p>
-            )}
-
-            {/* 5. madde: Otel Yıldızı ve İptal Politikası */}
-            <p className="text-gray-700 mt-1">
-              Yıldız: <strong>{hotel.stars || "Bilinmiyor"}</strong>
-            </p>
-            <p className="text-gray-700 mt-1">
-              İptal Politikası: <strong>{offer.cancellationPolicy || "Belirtilmemiş"}</strong>
-            </p>
-
+            <p className="text-gray-700 mt-1">Yıldız: {hotel.stars || "Bilinmiyor"}</p>
+            <p className="text-gray-700 mt-1">İptal Politikası: {offer.cancellationPolicy || "Belirtilmemiş"}</p>
             <p className="text-lg font-semibold mt-3 text-blue-700">
-              Fiyat: {offer.price?.amount?.toFixed(2) || "N/A"} {offer.price?.currency || ""}
+              Fiyat: {offer.price?.amount?.toFixed(2)} {offer.price?.currency}
             </p>
+            <p className="text-gray-700 mt-1">Kişi Sayısı: {numberOfGuests}</p>
+            <p className="text-gray-700 mt-1">Oda Sayısı: {numberOfRooms}</p>
           </div>
         </div>
       ) : (
         <div className="text-red-500 font-semibold mb-6">
-          Otel veya teklif bilgisi bulunamadı. Lütfen yeniden arama yapınız.
+          Otel veya teklif bilgisi eksik. Lütfen geri dönüp yeniden seçim yapın.
         </div>
       )}
 
@@ -97,7 +95,8 @@ const BookingPage = ({ currency, nationality }) => {
           onChange={setGuestInfo}
           numberOfGuests={numberOfGuests}
           nationality={nationality}
-          currency={currency} />
+          currency={currency}
+        />
         <PaymentForm onChange={setPaymentInfo} />
       </div>
 
@@ -106,7 +105,7 @@ const BookingPage = ({ currency, nationality }) => {
           onClick={handleSubmit}
           className="bg-gradient-to-r from-[#2883bb] to-[#093b5a] text-white px-8 py-4 rounded-xl text-lg font-bold shadow-md hover:scale-105 transition-all duration-300"
         >
-          Rezervasyonu Tamamla
+          Rezervasyonu Başlat
         </button>
       </div>
     </div>
