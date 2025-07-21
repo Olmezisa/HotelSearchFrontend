@@ -51,16 +51,19 @@ export default function App() {
     setError(null);
     setSearchResults(null); // Önceki sonuçları temizle
     setSearchId(null); // Önceki arama ID'sini temizle
+    let requestBody;
+    let response;
+    console.log("searchParams:", searchParams)
 
     // Arama butonuna basılır basılmaz sonuçlar sayfasına yönlendir
-    navigate('/results');
 
     try {
-      const SearchParams = { ...searchParams, nationality, currency };
-      setLastSearchParams(SearchParams);
+      const SearchParamsWMeta = { ...searchParams, nationality, currency };
+      setLastSearchParams(SearchParamsWMeta);
+      console.log(SearchParamsWMeta);
 
-      const checkInDate = new Date(SearchParams.checkIn);
-      const checkOutDate = new Date(SearchParams.checkOut);
+      const checkInDate = new Date(SearchParamsWMeta.checkIn);
+      const checkOutDate = new Date(SearchParamsWMeta.checkOut);
       const nights = Math.round((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
 
       const baseRequest = {
@@ -68,22 +71,33 @@ export default function App() {
         checkStopSale: true,
         getOnlyBestOffers: true,
         productType: 2,
-        roomCriteria: SearchParams.roomCriteria,
-        nationality: SearchParams.nationality,
-        checkIn: SearchParams.checkIn,
+        roomCriteria: SearchParamsWMeta.roomCriteria,
+        nationality: SearchParamsWMeta.nationality,
+        checkIn: SearchParamsWMeta.checkIn,
         night: nights,
-        currency: SearchParams.currency,
+        currency: SearchParamsWMeta.currency,
         culture: "en-US",
       };
-      const requestBody = {
-        ...baseRequest,
-        arrivalLocations: [{ id: searchParams.locationId, type: searchParams.locationType }]
-      };
 
-      const results = await api.searchByLocation(requestBody);
+      if (SearchParamsWMeta.locationType === 1) {
+        requestBody = {
+          ...baseRequest,
+          arrivalLocations: [{ id: searchParams.locationId, type: 2 }]
+        };
+        response = await api.searchByLocation(requestBody);
+      } else if (SearchParamsWMeta.locationType === 2){
+        requestBody = {
+          ...baseRequest, 
+          Products: [searchParams.locationId]
+        }
+        response = await api.searchByHotel(requestBody);
+      } else {
+        console.log("Location type is undefined.")
+      }
 
-      setSearchResults(results.body?.hotels || []);
-      setSearchId(results.body?.searchId || null);
+      setSearchResults(response.body?.hotels || []);
+      setSearchId(response.body?.searchId || null);
+      navigate('/results');
     } catch (err) {
       setError("Arama sırasında bir hata oluştu.");
       console.error(err);
@@ -254,10 +268,10 @@ export default function App() {
             />
           } />
           <Route path="/offer-details/:offerId/:currency" element={
-                        <OfferDetail
-                            onBack={() => navigate(-1)}
-                        />
-                    } />
+            <OfferDetail
+              onBack={() => navigate(-1)}
+            />
+          } />
           <Route path="/login" element={<LoginPage />} />
           <Route path="*" element={<div className="text-center py-10 text-xl text-gray-600">Sayfa Bulunamadı!</div>} />
 
@@ -266,20 +280,20 @@ export default function App() {
 
         </Routes>
       </main>
- <footer className="bg-white shadow-lg p-10 mt-8 text-[#001624] text-base sticky ">
-  <div className="grid grid-cols-3 items-center">
-    <div></div>
-    <p className="text-center">© 2025 Staj Projesi - SAN TSG</p>
-    <div className="flex justify-end">
-      <Link 
-        to="/add-property" 
-        className="bg-[#2883BB] text-white px-6 py-2 rounded-lg hover:bg-[#1a5a8a] transition-colors font-semibold"
-      >
-        Tesisinizi Ekleyin
-      </Link>
-    </div>
-  </div>
-</footer>
+      <footer className="bg-white shadow-lg p-10 mt-8 text-[#001624] text-base sticky ">
+        <div className="grid grid-cols-3 items-center">
+          <div></div>
+          <p className="text-center">© 2025 Staj Projesi - SAN TSG</p>
+          <div className="flex justify-end">
+            <Link
+              to="/add-property"
+              className="bg-[#2883BB] text-white px-6 py-2 rounded-lg hover:bg-[#1a5a8a] transition-colors font-semibold"
+            >
+              Tesisinizi Ekleyin
+            </Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
