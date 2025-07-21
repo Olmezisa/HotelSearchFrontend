@@ -10,6 +10,8 @@ import { OfferDetail } from './components/detail/OfferDetail';
 import { Spinner } from './components/common/Spinner';
 import  LoginPage  from './components/login/LoginPage';
 import voyagoLogo from './voyago2.png';
+import BookingPage from './components/booking/BookingPage';
+
 
 export default function App() {
   const [nationalities, setNationalities] = useState([]);
@@ -258,6 +260,10 @@ export default function App() {
                     } />
           <Route path="/login" element={<LoginPage />} />
           <Route path="*" element={<div className="text-center py-10 text-xl text-gray-600">Sayfa Bulunamadı!</div>} />
+
+          // Yeni BookingPage rotasını ekledik//
+          <Route path="/booking" element={<BookingPage />} />
+
         </Routes>
       </main>
  <footer className="bg-white shadow-lg p-10 mt-8 text-[#001624] text-base sticky ">

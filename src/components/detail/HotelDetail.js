@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, MapPin, BedDouble, Star, Tag, ShoppingCart, Wifi, Wind, Tv2, UtensilsCrossed, Droplets, ParkingCircle, Sparkles, Phone, Printer, XCircle, ChevronLeft, ChevronRight, Link as LinkIcon, CalendarDays, CreditCard, Globe, Lock, Building2, Scissors, Accessibility } from 'lucide-react';
 
-import { useParams } from 'react-router-dom'; // useParams'ı import ettik
-import { api } from '../../api/santsgApi'; // API bağlantısını import ettik
-import { Spinner } from '../common/Spinner'; // Spinner'ı import ettik
-import { Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { api } from '../../api/santsgApi';
+import { Spinner } from '../common/Spinner';
+import { Link} from 'react-router-dom';
+//rezervasyon yonlendirmesi eklendi
+import { useNavigate } from 'react-router-dom
 
 // --- İkon Kütüphanesi ---
 const ICONS = {
@@ -37,8 +39,9 @@ const StarRating = ({ rating, starCount = 5 }) => (
         {[...Array(starCount)].map((_, i) => (
             <Star
                 key={`star-${i}`}
-                className={`h-6 w-6 transition-all duration-300 ${i < rating ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`}
-                style={{ filter: `drop-shadow(0 0 4px ${i < rating ? 'rgba(251, 191, 36, 0.5)' : 'transparent'})` }}
+
+                className={`h-6 w-6 transition-all duration-300 ${i < rating ? 'text-[#f2bf8b] fill-[#f2bf8b]' : 'text-gray-300'}`}
+                style={{ filter: `drop-shadow(0 0 4px ${i < rating ? 'rgba(242, 191, 139, 0.5)' : 'transparent'})` }}
             />
         ))}
     </div>
@@ -62,7 +65,7 @@ const ImageGalleryModal = ({ images, currentIndex, onClose, onNavigate }) => {
 
             <div className="relative w-full h-full flex items-center justify-center">
                 <img
-                    src={currentImage?.urlFull || 'https://placehold.co/1200x800/e2e8f0/94a3b8?text=Resim+Bulunamadı'}
+                    src={currentImage?.urlFull || 'https://placehold.co/1200x800/b5e2fa/093b5a?text=Resim+Bulunamadı'}
                     alt="Büyük Otel Resmi"
                     className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-lg"
                 />
@@ -102,8 +105,9 @@ export const HotelDetail = ({ onBack }) => {
     const [isImageLoading, setIsImageLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const navigate = useNavigate(); 
 
-    const openImageModal = (index = 0) => { // Varsayılan olarak ilk görseli aç
+    const openImageModal = (index = 0) => {
         setCurrentImageIndex(index);
         setIsModalOpen(true);
     };
@@ -113,7 +117,7 @@ export const HotelDetail = ({ onBack }) => {
     };
 
     const navigateImage = (direction) => {
-        const totalImages = allHotelImages.length; // allHotelImages'ın scope'una dikkat edin
+        const totalImages = allHotelImages.length;
         if (totalImages === 0) return;
 
         let newIndex = (currentImageIndex + direction) % totalImages;
@@ -121,7 +125,7 @@ export const HotelDetail = ({ onBack }) => {
             newIndex = totalImages - 1;
         }
         setCurrentImageIndex(newIndex);
-        setMainImage(allHotelImages[newIndex].urlFull); // Ana görseli de güncelle
+        setMainImage(allHotelImages[newIndex].urlFull);
     };
 
     useEffect(() => {
@@ -187,7 +191,7 @@ export const HotelDetail = ({ onBack }) => {
             setMainImage(url);
             setIsImageLoading(false);
             if (index !== undefined) {
-                setCurrentImageIndex(index); // Thumbnail'dan seçilirse index'i ayarla
+                setCurrentImageIndex(index);
             }
         };
         img.onerror = () => setIsImageLoading(false);
@@ -195,7 +199,7 @@ export const HotelDetail = ({ onBack }) => {
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center py-16 px-6 bg-white rounded-xl shadow-md min-h-[60vh]">
+            <div className="flex flex-col items-center justify-center py-16 px-6 bg-[#f9f7f3] rounded-xl shadow-md min-h-[60vh]">
                 <Spinner />
                 <p className="mt-4 text-xl font-semibold text-gray-700">Otel Detayları Yükleniyor...</p>
             </div>
@@ -221,32 +225,34 @@ export const HotelDetail = ({ onBack }) => {
     const rooms = hotel?.rooms || [];
     const currentSeason = hotel.seasons?.[0];
     return (
-        <div className="bg-gray-50 text-slate-800 min-h-screen font-sans overflow-x-hidden">
+        <div className="bg-[#f9f7f3] text-[#093b5a] min-h-screen font-sans overflow-x-hidden"> {/* BURASI DEĞİŞTİ */}
             <div className="relative z-10 container mx-auto p-4 sm:p-6 lg:p-8">
                 <button onClick={onBack} className="inline-flex items-center font-semibold mb-8 bg-white/60 backdrop-blur-md pr-5 pl-3 py-2 rounded-full border border-gray-200/80 shadow-sm hover:shadow-lg hover:bg-white transition-all duration-300 group">
                     <ArrowLeft className="h-6 w-6 mr-2 text-gray-500 transition-transform duration-300 group-hover:-translate-x-1" />
                     Sonuçlara Geri Dön
                 </button>
 
-                <div className="relative w-full h-[60vh] md:h-[75vh] rounded-3xl overflow-hidden flex items-end p-8 md:p-12 shadow-2xl border cursor-pointer" // !cursor-pointer eklendi
-                    onClick={() => openImageModal(allHotelImages.findIndex(img => img.urlFull === mainImage))} // !Tıklanıldığında modalı aç
-                >
+
+                <div className="relative w-full h-[60vh] md:h-[75vh] rounded-3xl overflow-hidden flex items-end p-8 md:p-12 shadow-2xl border cursor-pointer"
+                    onClick={() => openImageModal(allHotelImages.findIndex(img => img.urlFull === mainImage))}
+                    >
+
+          
                     {/* Bulanık Arka Plan Rengi */}
                     <div className={`absolute inset-0 transition-opacity duration-1000 ${isImageLoading ? 'opacity-0' : 'opacity-100'}`}>
                         <img
-                            src={mainImage || 'https://placehold.co/1200x800/e2e8f0/94a3b8?text=Resim+Bulunamadı'}
+                            src={mainImage || 'https://placehold.co/1200x800/b5e2fa/093b5a?text=Resim+Bulunamadı'}
                             alt="Bulanık Arka Plan"
-                            className="w-full h-full object-cover filter blur-lg scale-105" // blur-lg ve scale-105 eklendi
+                            className="w-full h-full object-cover filter blur-lg scale-105"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent"></div>
                     </div>
 
-                    {/* Ana Görsel (bulanık olmayan, kendi boyutunda veya sığacak şekilde) */}
                     <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-1000 ${isImageLoading ? 'opacity-0' : 'opacity-100'}`}>
                         <img
-                            src={mainImage || 'https://placehold.co/1200x800/e2e8f0/94a3b8?text=Resim+Bulunamadı'}
+                            src={mainImage || 'https://placehold.co/1200x800/b5e2fa/093b5a?text=Resim+Bulunamadı'}
                             alt="Ana Otel Resmi"
-                            className="w-full h-full object-contain" // max-w-full max-h-full yerine w-full h-full kullanıldı
+                            className="w-full h-full object-contain"
                         />
                     </div>
 
@@ -269,7 +275,7 @@ export const HotelDetail = ({ onBack }) => {
                                     key={media.urlFull ? `${media.urlFull}-${index}` : index}
                                     src={media.urlFull}
                                     alt={`Thumbnail ${index + 1}`}
-                                    className={`flex-shrink-0 w-32 h-20 object-cover rounded-lg cursor-pointer transition-all duration-300 border-2 shadow-sm ${mainImage === media.urlFull ? 'border-rose-500 scale-110 shadow-lg' : 'border-transparent opacity-80 hover:opacity-100'}`}
+                                    className={`flex-shrink-0 w-32 h-20 object-cover rounded-lg cursor-pointer transition-all duration-300 border-2 shadow-sm ${mainImage === media.urlFull ? 'border-[#f7a072] scale-110 shadow-lg' : 'border-transparent opacity-80 hover:opacity-100'}`}
                                     onClick={() => handleImageSelect(media.urlFull, index)}
                                 />
                             ))}
@@ -292,14 +298,14 @@ export const HotelDetail = ({ onBack }) => {
                         )}
                         {textCategories.map((cat, idx) => (
                             <section key={cat.name || idx} className="animate-fade-in-up" style={{ animationDelay: `${0.4 + idx * 0.2}s` }}>
-                                <h3 className="text-4xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-orange-500">{cat.name}</h3>
+                                <h3 className="text-4xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-[#f7a072] to-[#ac440b]">{cat.name}</h3>
                                 <div className="text-lg text-slate-600 leading-relaxed prose max-w-none" dangerouslySetInnerHTML={{ __html: cat.presentations?.[0]?.text || '' }}></div>
                             </section>
                         ))}
 
                         {offers.length > 0 && (
                             <section className="animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-                                <h3 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-cyan-500 flex items-center">
+                                <h3 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#2883bb] to-[#093b5a] flex items-center">
                                     <Tag className="h-9 w-9 mr-4" /> Fiyat Teklifleri
                                 </h3>
                                 <div className="space-y-4">
@@ -308,18 +314,22 @@ export const HotelDetail = ({ onBack }) => {
                                             <div>
                                                 <h4 className="font-bold text-xl text-slate-800">{offer.rooms[0].roomName}</h4>
                                                 <p className="text-md text-slate-600 mt-1">{offer.rooms[0].boardName}</p>
-                                                <p className="text-2xl font-bold text-teal-600 mt-2">
+                                                <p className="text-2xl font-bold text-[#2883bb] mt-2">
                                                     {offer.price.amount.toFixed(2)} {currency}
                                                 </p>
                                             </div>
                                             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                                                 <Link
-                                                    to={`/offer-details/${offer.offerId}/${currency}`}
-                                                    className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-white border border-teal-500 text-teal-500 shadow-sm transition-all duration-300 transform hover:bg-teal-50 hover:shadow-lg w-full"
-                                                >
-                                                    Detayları Gör
-                                                </Link>
-                                                <button className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-gradient-to-r from-rose-500 to-orange-400 text-white shadow-lg transition-all duration-300 transform hover:scale-105 w-full">
+
+                                        to={`/offer-details/${offer.offerId}/${currency}`}
+                                        className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-white border border-[#2883bb] text-[#2883bb] shadow-sm transition-all duration-300 transform hover:bg-[#b5e2fa] hover:shadow-lg w-full"
+                                    >
+                                        Detayları Gör
+                                    </Link>
+                                 
+                                    <button onClick={() => navigate('/booking')} className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-gradient-to-r from-[#f7a072] to-[#ac440b] text-white shadow-lg transition-all duration-300 transform hover:scale-105 w-full">
+
+
                                                     <ShoppingCart className="h-6 w-6 mr-2" />
                                                     Rezervasyon
                                                 </button>
@@ -328,6 +338,7 @@ export const HotelDetail = ({ onBack }) => {
                                     ))}
                                 </div>
                             </section>
+
                         )}
                         {/* Ödeme Planı Bilgileri */}
                         {hotel.paymentPlanInfo && hotel.paymentPlanInfo.length > 0 && (
@@ -348,12 +359,15 @@ export const HotelDetail = ({ onBack }) => {
                                     ))}
                                 </div>
                             </section>
+
                         )}
 
                         {rooms.length > 0 && (
                             <section className="animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
-                                <h3 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 flex items-center">
-                                    <BedDouble className="h-9 w-9 mr-4" /> Oda Seçenekleri
+
+                                <h3 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#eddea4] to-[#f2bf8b] flex items-center">
+                                    <BedDouble className="h-9 w-9 mr-4"/> Oda Seçenekleri
+
                                 </h3>
                                 <div className="space-y-8">
                                     {rooms.map(room => (
@@ -407,6 +421,7 @@ export const HotelDetail = ({ onBack }) => {
                             </div>
                         )}
                         {(hotel.phoneNumber || hotel.faxNumber) && (
+
                             <div className="p-8 bg-white/70 backdrop-blur-md rounded-2xl border border-gray-200/80 shadow-lg">
                                 <h3 className="text-2xl font-bold mb-6 text-slate-800">İletişim Bilgileri</h3>
                                 <div className="space-y-4">
@@ -447,6 +462,7 @@ export const HotelDetail = ({ onBack }) => {
                                 </div>
                             </div>
                         )}
+
 
                     </aside>
                 </div>
