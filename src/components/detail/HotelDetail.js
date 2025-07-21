@@ -7,6 +7,7 @@ import { Spinner } from '../common/Spinner';
 import { Link } from 'react-router-dom';
 //rezervasyon yonlendirmesi eklendi
 import { useNavigate } from 'react-router-dom';
+import select from 'daisyui/components/select';
 
 // --- İkon Kütüphanesi ---
 const ICONS = {
@@ -326,13 +327,20 @@ export const HotelDetail = ({ onBack }) => {
                                                 >
                                                     Detayları Gör
                                                 </Link>
+                                                 <button
+                                              onClick={() => navigate('/booking', {
+                                                                state: {
+                                                        hotel,
+                                                       selectedOffer: offer
+                                                                                }
+                                                                              })}
+                                          className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-gradient-to-r from-[#f7a072] to-[#ac440b] text-white shadow-lg transition-all duration-300 transform hover:scale-105 w-full"
+                                                                        >
+                                       <ShoppingCart className="h-6 w-6 mr-2" />
+                                     Rezervasyon
+                                         </button>
 
-                                                <button onClick={() => navigate('/booking')} className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-gradient-to-r from-[#f7a072] to-[#ac440b] text-white shadow-lg transition-all duration-300 transform hover:scale-105 w-full">
-
-
-                                                    <ShoppingCart className="h-6 w-6 mr-2" />
-                                                    Rezervasyon
-                                                </button>
+                                               
                                             </div>
                                         </div>
                                     ))}
