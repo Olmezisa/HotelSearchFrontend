@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, MapPin, BedDouble, Star, Tag, ShoppingCart, Wifi, Wind, Tv2, UtensilsCrossed, Droplets, ParkingCircle, Sparkles, Phone, Printer,XCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, MapPin, BedDouble, Star, Tag, ShoppingCart, Wifi, Wind, Tv2, UtensilsCrossed, Droplets, ParkingCircle, Sparkles, Phone, Printer, XCircle, ChevronLeft, ChevronRight, Link as LinkIcon, CalendarDays, CreditCard, Globe, Lock, Building2, Scissors, Accessibility } from 'lucide-react';
 
 import { useParams } from 'react-router-dom'; // useParams'ı import ettik
 import { api } from '../../api/santsgApi'; // API bağlantısını import ettik
 import { Spinner } from '../common/Spinner'; // Spinner'ı import ettik
-import { Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 // --- İkon Kütüphanesi ---
 const ICONS = {
@@ -17,6 +17,10 @@ const ICONS = {
     'restaurant': <UtensilsCrossed className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
     'havuz': <Droplets className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
     'otopark': <ParkingCircle className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
+    'safe': <Lock className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
+    'balcony': <Building2 className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
+    'hair drier': <Scissors className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
+    'handicapped': <Accessibility className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
 };
 
 const FacilityIcon = ({ name }) => {
@@ -31,9 +35,9 @@ const FacilityIcon = ({ name }) => {
 const StarRating = ({ rating, starCount = 5 }) => (
     <div className="flex items-center">
         {[...Array(starCount)].map((_, i) => (
-            <Star 
-                key={`star-${i}`} 
-                className={`h-6 w-6 transition-all duration-300 ${i < rating ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`} 
+            <Star
+                key={`star-${i}`}
+                className={`h-6 w-6 transition-all duration-300 ${i < rating ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`}
                 style={{ filter: `drop-shadow(0 0 4px ${i < rating ? 'rgba(251, 191, 36, 0.5)' : 'transparent'})` }}
             />
         ))}
@@ -119,7 +123,7 @@ export const HotelDetail = ({ onBack }) => {
         setCurrentImageIndex(newIndex);
         setMainImage(allHotelImages[newIndex].urlFull); // Ana görseli de güncelle
     };
-    
+
     useEffect(() => {
         const fetchHotelDetails = async () => {
             setLoading(true);
@@ -153,7 +157,7 @@ export const HotelDetail = ({ onBack }) => {
                 }
 
                 const offersToShow = offersResponse.body?.offers || [];
-                
+
                 const mergedHotelData = {
                     ...hotelInfo,
                     offers: offersToShow,
@@ -179,9 +183,9 @@ export const HotelDetail = ({ onBack }) => {
         setIsImageLoading(true);
         const img = new Image();
         img.src = url;
-        img.onload = () => { 
-            setMainImage(url); 
-            setIsImageLoading(false); 
+        img.onload = () => {
+            setMainImage(url);
+            setIsImageLoading(false);
             if (index !== undefined) {
                 setCurrentImageIndex(index); // Thumbnail'dan seçilirse index'i ayarla
             }
@@ -215,7 +219,7 @@ export const HotelDetail = ({ onBack }) => {
     const textCategories = hotel?.seasons?.[0]?.textCategories || [];
     const offers = hotel?.offers || [];
     const rooms = hotel?.rooms || [];
-
+    const currentSeason = hotel.seasons?.[0];
     return (
         <div className="bg-gray-50 text-slate-800 min-h-screen font-sans overflow-x-hidden">
             <div className="relative z-10 container mx-auto p-4 sm:p-6 lg:p-8">
@@ -226,7 +230,7 @@ export const HotelDetail = ({ onBack }) => {
 
                 <div className="relative w-full h-[60vh] md:h-[75vh] rounded-3xl overflow-hidden flex items-end p-8 md:p-12 shadow-2xl border cursor-pointer" // !cursor-pointer eklendi
                     onClick={() => openImageModal(allHotelImages.findIndex(img => img.urlFull === mainImage))} // !Tıklanıldığında modalı aç
-                    >
+                >
                     {/* Bulanık Arka Plan Rengi */}
                     <div className={`absolute inset-0 transition-opacity duration-1000 ${isImageLoading ? 'opacity-0' : 'opacity-100'}`}>
                         <img
@@ -275,6 +279,17 @@ export const HotelDetail = ({ onBack }) => {
 
                 <div className="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-12">
                     <div className="lg:col-span-2 space-y-16">
+                        {/* Mevcut Sezon Bilgisi */}
+                        {currentSeason && (
+                            <section className="p-6 bg-blue-50/70 backdrop-blur-md rounded-2xl border border-blue-200/80 shadow-md animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+                                <h3 className="text-2xl font-bold mb-4 text-blue-800 flex items-center">
+                                    <CalendarDays className="h-7 w-7 mr-3" /> Mevcut Sezon
+                                </h3>
+                                <p className="text-lg text-slate-700">
+                                    **{currentSeason.name}**: {new Date(currentSeason.beginDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })} - {new Date(currentSeason.endDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })} tarihleri arasında geçerlidir.
+                                </p>
+                            </section>
+                        )}
                         {textCategories.map((cat, idx) => (
                             <section key={cat.name || idx} className="animate-fade-in-up" style={{ animationDelay: `${0.4 + idx * 0.2}s` }}>
                                 <h3 className="text-4xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-orange-500">{cat.name}</h3>
@@ -297,28 +312,48 @@ export const HotelDetail = ({ onBack }) => {
                                                     {offer.price.amount.toFixed(2)} {currency}
                                                 </p>
                                             </div>
-                                             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                                            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                                                 <Link
-                                to={`/offer-details/${offer.offerId}/${currency}`}
-                                className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-white border border-teal-500 text-teal-500 shadow-sm transition-all duration-300 transform hover:bg-teal-50 hover:shadow-lg w-full"
-                            >
-                                Detayları Gör
-                            </Link>
-                            <button className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-gradient-to-r from-rose-500 to-orange-400 text-white shadow-lg transition-all duration-300 transform hover:scale-105 w-full">
-                                <ShoppingCart className="h-6 w-6 mr-2" />
-                                Rezervasyon
-                            </button>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </section>
+                                                    to={`/offer-details/${offer.offerId}/${currency}`}
+                                                    className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-white border border-teal-500 text-teal-500 shadow-sm transition-all duration-300 transform hover:bg-teal-50 hover:shadow-lg w-full"
+                                                >
+                                                    Detayları Gör
+                                                </Link>
+                                                <button className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-gradient-to-r from-rose-500 to-orange-400 text-white shadow-lg transition-all duration-300 transform hover:scale-105 w-full">
+                                                    <ShoppingCart className="h-6 w-6 mr-2" />
+                                                    Rezervasyon
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+                        {/* Ödeme Planı Bilgileri */}
+                        {hotel.paymentPlanInfo && hotel.paymentPlanInfo.length > 0 && (
+                            <section className="animate-fade-in-up" style={{ animationDelay: '1.0s' }}>
+                                <h3 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-indigo-500 flex items-center">
+                                    <CreditCard className="h-9 w-9 mr-4" /> Ödeme Planı Bilgileri
+                                </h3>
+                                <div className="space-y-4">
+                                    {hotel.paymentPlanInfo.map((plan, idx) => (
+                                        <div key={idx} className="p-6 bg-white/70 backdrop-blur-md rounded-2xl border border-gray-200/80 shadow-md">
+                                            <p className="text-lg text-slate-700">
+                                                Ödeme Zamanı: {plan.paymentTimeStatus === 1 ? 'Rezervasyon Anında' : `${plan.day} Gün Önce`}
+                                            </p>
+                                            <p className="text-lg text-slate-700 mt-2">
+                                                Ödenecek Tutar: {plan.price.percent > 0 ? `${plan.price.percent}%` : `${plan.price.amount.toFixed(2)} ${currency}`}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
                         )}
 
                         {rooms.length > 0 && (
-                             <section className="animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
+                            <section className="animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
                                 <h3 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 flex items-center">
-                                    <BedDouble className="h-9 w-9 mr-4"/> Oda Seçenekleri
+                                    <BedDouble className="h-9 w-9 mr-4" /> Oda Seçenekleri
                                 </h3>
                                 <div className="space-y-8">
                                     {rooms.map(room => (
@@ -327,7 +362,7 @@ export const HotelDetail = ({ onBack }) => {
                                             {room.mediaFiles && room.mediaFiles.length > 0 && (
                                                 <div className="flex space-x-3 pb-4 mb-4 border-b overflow-x-auto">
                                                     {room.mediaFiles.map((img, idx) => (
-                                                        <img key={idx} src={img.urlFull} alt={`${room.name} ${idx+1}`} className="flex-shrink-0 w-40 h-28 object-cover rounded-lg shadow-sm" />
+                                                        <img key={idx} src={img.urlFull} alt={`${room.name} ${idx + 1}`} className="flex-shrink-0 w-40 h-28 object-cover rounded-lg shadow-sm" />
                                                     ))}
                                                 </div>
                                             )}
@@ -339,6 +374,9 @@ export const HotelDetail = ({ onBack }) => {
                                                             <div key={facility.id} className="flex items-center text-sm text-slate-600">
                                                                 <FacilityIcon name={facility.name} />
                                                                 <span>{facility.name}</span>
+                                                                {(facility.isPriced || facility.priced) && (
+                                                                    <span className="ml-1 text-xs text-amber-600 font-medium">(Ücretli)</span>
+                                                                )}
                                                             </div>
                                                         ))}
                                                     </div>
@@ -360,32 +398,55 @@ export const HotelDetail = ({ onBack }) => {
                                         <div key={facility.id} className="flex items-center text-lg text-slate-700">
                                             <FacilityIcon name={facility.name} />
                                             <span>{facility.name}</span>
+                                            {(facility.isPriced || facility.priced) && (
+                                                <span className="ml-1 text-sm text-amber-600 font-medium">(Ücretli)</span>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
                             </div>
                         )}
                         {(hotel.phoneNumber || hotel.faxNumber) && (
-        <div className="p-8 bg-white/70 backdrop-blur-md rounded-2xl border border-gray-200/80 shadow-lg">
-            <h3 className="text-2xl font-bold mb-6 text-slate-800">İletişim Bilgileri</h3>
-            <div className="space-y-4">
-                {hotel.phoneNumber && (
-                    <div className="flex items-center text-lg text-slate-700">
-                        <Phone className="h-5 w-5 mr-3 text-rose-500 flex-shrink-0" />
-                        <a href={`tel:${hotel.phoneNumber}`} className="hover:text-rose-600 transition-colors">
-                            {hotel.phoneNumber}
-                        </a>
-                    </div>
-                )}
-                {hotel.faxNumber && (
-                    <div className="flex items-center text-lg text-slate-700">
-                        <Printer className="h-5 w-5 mr-3 text-rose-500 flex-shrink-0" />
-                        <span>{hotel.faxNumber}</span>
-                    </div>
-                )}
-            </div>
-        </div>
-    )}
+                            <div className="p-8 bg-white/70 backdrop-blur-md rounded-2xl border border-gray-200/80 shadow-lg">
+                                <h3 className="text-2xl font-bold mb-6 text-slate-800">İletişim Bilgileri</h3>
+                                <div className="space-y-4">
+                                    {hotel.phoneNumber && (
+                                        <div className="flex items-center text-lg text-slate-700">
+                                            <Phone className="h-5 w-5 mr-3 text-rose-500 flex-shrink-0" />
+                                            <a href={`tel:${hotel.phoneNumber}`} className="hover:text-rose-600 transition-colors">
+                                                {hotel.phoneNumber}
+                                            </a>
+                                        </div>
+                                    )}
+                                    {hotel.faxNumber && (
+                                        <div className="flex items-center text-lg text-slate-700">
+                                            <Printer className="h-5 w-5 mr-3 text-rose-500 flex-shrink-0" />
+                                            <span>{hotel.faxNumber}</span>
+                                        </div>
+                                    )}
+                                    {hotel.homePage && (
+                                        <div className="flex items-center text-lg text-slate-700">
+                                            <LinkIcon className="h-5 w-5 mr-3 text-rose-500 flex-shrink-0" />
+                                            <a href={hotel.homePage} target="_blank" rel="noopener noreferrer" className="hover:text-rose-600 transition-colors">
+                                                Resmi Web Sitesi
+                                            </a>
+                                        </div>
+                                    )}
+                                    {hotel.location?.latitude && hotel.location?.longitude && (
+                                        <div className="text-center mt-6">
+                                            <a
+                                                href={`https://www.google.com/maps/search/?api=1&query=${hotel.location.latitude},${hotel.location.longitude}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-400 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
+                                            >
+                                                <Globe className="h-6 w-6 mr-2" /> Haritada Gör
+                                            </a>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
 
                     </aside>
                 </div>
