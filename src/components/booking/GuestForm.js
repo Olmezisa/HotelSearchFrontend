@@ -1,26 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const GuestForm = ({ onChange }) => {
+const GuestForm = ({ onChange, numberOfGuests = 2, nationality = "TR", currency = "EUR" }) => {
   const [form, setForm] = useState({
     email: "",
     phone: "",
-    guest1: { ad: "", soyad: "", tc: "" },
-    guest2: { ad: "", soyad: "", uyruk: "Türkiye" },
+    guests: [],
   });
+
+  useEffect(() => {
+    const emptyGuests = Array.from({ length: numberOfGuests }, () => ({
+      ad: "",
+      soyad: "",
+      tc: "",
+      uyruk: nationality, // otomatik atanır
+    }));
+    setForm((prev) => ({ ...prev, guests: emptyGuests }));
+  }, [numberOfGuests, nationality]);
 
   const handleInput = (field, value) => {
     const updated = { ...form, [field]: value };
     setForm(updated);
-    onChange(updated);
+    onChange(updated); // BookingPage’e ilet
   };
 
-  const handleGuestChange = (guestKey, field, value) => {
-    const updated = {
-      ...form,
-      [guestKey]: { ...form[guestKey], [field]: value },
-    };
+  const handleGuestChange = (index, field, value) => {
+    const updatedGuests = [...form.guests];
+    updatedGuests[index][field] = value;
+    const updated = { ...form, guests: updatedGuests };
     setForm(updated);
-    onChange(updated);
+    onChange(updated); // BookingPage’e ilet
   };
 
   return (
@@ -39,39 +47,42 @@ const GuestForm = ({ onChange }) => {
         onChange={(e) => handleInput("phone", e.target.value)}
       />
 
-      <h2 className="text-xl font-semibold text-[#2883BB]">1. Misafir Bilgileri</h2>
-      <input
-        placeholder="Ad"
-        value={form.guest1.ad}
-        onChange={(e) => handleGuestChange("guest1", "ad", e.target.value)}
-      />
-      <input
-        placeholder="Soyad"
-        value={form.guest1.soyad}
-        onChange={(e) => handleGuestChange("guest1", "soyad", e.target.value)}
-      />
-      <input
-        placeholder="T.C. Kimlik No"
-        value={form.guest1.tc}
-        onChange={(e) => handleGuestChange("guest1", "tc", e.target.value)}
-      />
+      {form.guests.map((guest, index) => (
+        <div key={index} className="pt-4 border-t border-gray-200">
+          <h2 className="text-xl font-semibold text-[#2883BB]">
+            {index + 1}. Misafir Bilgileri
+          </h2>
+          <input
+            placeholder="Ad"
+            className="input-style"
+            value={guest.ad}
+            onChange={(e) => handleGuestChange(index, "ad", e.target.value)}
+          />
+          <input
+            placeholder="Soyad"
+            className="input-style"
+            value={guest.soyad}
+            onChange={(e) => handleGuestChange(index, "soyad", e.target.value)}
+          />
+          <input
+            placeholder="Uyruk"
+            className="input-style"
+            value={guest.uyruk}
+            onChange={(e) => handleGuestChange(index, "uyruk", e.target.value)}
+          />
+          <input
+            placeholder="T.C. Kimlik No"
+            className="input-style"
+            value={guest.tc}
+            onChange={(e) => handleGuestChange(index, "tc", e.target.value)}
+          />
 
-      <h2 className="text-xl font-semibold text-[#2883BB]">2. Misafir Bilgileri</h2>
-      <input
-        placeholder="Ad"
-        value={form.guest2.ad}
-        onChange={(e) => handleGuestChange("guest2", "ad", e.target.value)}
-      />
-      <input
-        placeholder="Soyad"
-        value={form.guest2.soyad}
-        onChange={(e) => handleGuestChange("guest2", "soyad", e.target.value)}
-      />
-      <input
-        placeholder="Uyruk"
-        value={form.guest2.uyruk}
-        onChange={(e) => handleGuestChange("guest2", "uyruk", e.target.value)}
-      />
+        </div>
+      ))}
+
+      <p className="text-sm text-gray-500 pt-2">
+        Ödeme {currency} cinsindendir.
+      </p>
     </div>
   );
 };

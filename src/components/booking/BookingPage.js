@@ -3,7 +3,7 @@ import GuestForm from "./GuestForm";
 import PaymentForm from "./PaymentForm";
 import { useLocation } from 'react-router-dom';
 
-const BookingPage = () => {
+const BookingPage = ({ currency, nationality }) => {
   const { state } = useLocation();
   const hotel = state?.hotel;
   const offer = state?.selectedOffer;
@@ -83,7 +83,11 @@ const BookingPage = () => {
 
       {/* Form Alanı */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <GuestForm onChange={setGuestInfo} />
+        <GuestForm
+          onChange={setGuestInfo}
+          numberOfGuests={numberOfGuests}
+          nationality={nationality}
+          currency={currency} />
         <PaymentForm onChange={setPaymentInfo} />
       </div>
 
