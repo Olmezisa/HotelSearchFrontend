@@ -8,7 +8,7 @@ import { SearchResults } from './components/results/SearchResults';
 import { HotelDetail } from './components/detail/HotelDetail';
 import { OfferDetail } from './components/detail/OfferDetail';
 import { Spinner } from './components/common/Spinner';
-import  LoginPage  from './components/login/LoginPage';
+import LoginPage from './components/login/LoginPage';
 import voyagoLogo from './voyago2.png';
 import BookingPage from './components/booking/BookingPage';
 
@@ -254,32 +254,34 @@ export default function App() {
             />
           } />
           <Route path="/offer-details/:offerId/:currency" element={
-                        <OfferDetail
-                            onBack={() => navigate(-1)}
-                        />
-                    } />
+            <OfferDetail
+              onBack={() => navigate(-1)}
+            />
+          } />
           <Route path="/login" element={<LoginPage />} />
           <Route path="*" element={<div className="text-center py-10 text-xl text-gray-600">Sayfa Bulunamadı!</div>} />
 
           // Yeni BookingPage rotasını ekledik//
-          <Route path="/booking" element={<BookingPage />} />
+          <Route path="/booking" element={<BookingPage
+            currency={currency}
+            nationality={nationality} />} />
 
         </Routes>
       </main>
- <footer className="bg-white shadow-lg p-10 mt-8 text-[#001624] text-base sticky ">
-  <div className="grid grid-cols-3 items-center">
-    <div></div>
-    <p className="text-center">© 2025 Staj Projesi - SAN TSG</p>
-    <div className="flex justify-end">
-      <Link 
-        to="/add-property" 
-        className="bg-[#2883BB] text-white px-6 py-2 rounded-lg hover:bg-[#1a5a8a] transition-colors font-semibold"
-      >
-        Tesisinizi Ekleyin
-      </Link>
-    </div>
-  </div>
-</footer>
+      <footer className="bg-white shadow-lg p-10 mt-8 text-[#001624] text-base sticky ">
+        <div className="grid grid-cols-3 items-center">
+          <div></div>
+          <p className="text-center">© 2025 Staj Projesi - SAN TSG</p>
+          <div className="flex justify-end">
+            <Link
+              to="/add-property"
+              className="bg-[#2883BB] text-white px-6 py-2 rounded-lg hover:bg-[#1a5a8a] transition-colors font-semibold"
+            >
+              Tesisinizi Ekleyin
+            </Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
