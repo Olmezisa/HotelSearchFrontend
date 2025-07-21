@@ -8,7 +8,6 @@ import { Link } from 'react-router-dom';
 //rezervasyon yonlendirmesi eklendi
 import { useNavigate } from 'react-router-dom';
 
-
 // --- İkon Kütüphanesi ---
 const ICONS = {
     'default': <Sparkles className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
