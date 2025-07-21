@@ -328,10 +328,12 @@ export const HotelDetail = ({ onBack }) => {
                                                 </Link>
                                                 <button
                                                     onClick={() => navigate('/booking', {
-                                                        state: {
-                                                            hotel,
-                                                            selectedOffer: offer
-                                                        }
+                                                       state: {
+    hotel,
+    selectedOffer: offer,
+    numberOfGuests: offer?.rooms?.[0]?.paxInfo?.numberOfGuests || 3,
+    numberOfRooms: offer?.rooms?.[0]?.paxInfo?.numberOfRooms || 2
+  }
                                                     })}
                                                     className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-gradient-to-r from-[#f7a072] to-[#ac440b] text-white shadow-lg transition-all duration-300 transform hover:scale-105 w-full"
                                                 >
