@@ -56,6 +56,7 @@ export default function App() {
     console.log("searchParams:", searchParams)
 
     // Arama butonuna basılır basılmaz sonuçlar sayfasına yönlendir
+    navigate('/results');
 
     try {
       const SearchParamsWMeta = { ...searchParams, nationality, currency };
@@ -97,7 +98,7 @@ export default function App() {
 
       setSearchResults(response.body?.hotels || []);
       setSearchId(response.body?.searchId || null);
-      navigate('/results');
+
     } catch (err) {
       setError("Arama sırasında bir hata oluştu.");
       console.error(err);
