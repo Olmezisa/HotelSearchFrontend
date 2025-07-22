@@ -1,360 +1,372 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, Users, Clock, MapPin, Wifi, Car, Coffee, Star } from 'lucide-react';
+import React, { useState } from 'react';
+import { Star, Wifi, Car, Users, MapPin, Calendar, CreditCard, User, Phone, Mail, CheckCircle } from 'lucide-react';
 
 const BookingPage = () => {
   const [selectedRoom, setSelectedRoom] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [bookingData, setBookingData] = useState(null);
+  const [guestInfo, setGuestInfo] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    specialRequests: ''
+  });
+  const [paymentInfo, setPaymentInfo] = useState({
+    cardNumber: '',
+    expiryDate: '',
+    cvv: '',
+    cardHolder: ''
+  });
 
-  // API BAGLA!!!!
-  const mockApiData = {
-    header: {
-      requestId: "d04a941e-a755-4002-931b-24c878a7d546",
-      success: true,
-      responseTime: "2025-07-22T07:01:31.4720618Z"
-    },
-    body: {
-      offers: [
-        {
-          night: 2,
-          availability: 1,
-          rooms: [{ roomName: "Junior suite capacity 2", boardName: "Room only" }],
-          price: { amount: 171.71, currency: "EUR" },
-          priceBreakdowns: [{
-            priceBreakdowns: [
-              { date: "2025-07-24T03:00:00+03:00", price: { amount: 85.85, currency: "EUR" }},
-              { date: "2025-07-25T03:00:00+03:00", price: { amount: 85.85, currency: "EUR" }}
-            ]
-          }],
-          cancellationPolicies: [{ dueDate: "2025-07-22T03:00:00", price: { amount: 171.71, currency: "EUR" }}],
-          checkIn: "2025-07-24T00:00:00Z",
-          available: false,
-          refundable: false
-        },
-        {
-          night: 2,
-          availability: 1,
-          rooms: [{ roomName: "Suite capacity 3", boardName: "Room only" }],
-          price: { amount: 186.01, currency: "EUR" },
-          priceBreakdowns: [{
-            priceBreakdowns: [
-              { date: "2025-07-24T03:00:00+03:00", price: { amount: 93.01, currency: "EUR" }},
-              { date: "2025-07-25T03:00:00+03:00", price: { amount: 93.01, currency: "EUR" }}
-            ]
-          }],
-          available: false,
-          refundable: false
-        },
-        {
-          night: 2,
-          availability: 1,
-          rooms: [{ roomName: "Suite capacity 4", boardName: "Room only" }],
-          price: { amount: 200.31, currency: "EUR" },
-          priceBreakdowns: [{
-            priceBreakdowns: [
-              { date: "2025-07-24T03:00:00+03:00", price: { amount: 100.15, currency: "EUR" }},
-              { date: "2025-07-25T03:00:00+03:00", price: { amount: 100.15, currency: "EUR" }}
-            ]
-          }],
-          available: true,
-          refundable: true
-        },
-        {
-          night: 2,
-          availability: 1,
-          rooms: [{ roomName: "Suite capacity 5", boardName: "Room only" }],
-          price: { amount: 214.61, currency: "EUR" },
-          priceBreakdowns: [{
-            priceBreakdowns: [
-              { date: "2025-07-24T03:00:00+03:00", price: { amount: 107.31, currency: "EUR" }},
-              { date: "2025-07-25T03:00:00+03:00", price: { amount: 107.31, currency: "EUR" }}
-            ]
-          }],
-          available: true,
-          refundable: false
-        },
-        {
-          night: 2,
-          availability: 1,
-          rooms: [{ roomName: "Suite capacity 6", boardName: "Room only" }],
-          price: { amount: 228.93, currency: "EUR" },
-          priceBreakdowns: [{
-            priceBreakdowns: [
-              { date: "2025-07-24T03:00:00+03:00", price: { amount: 114.47, currency: "EUR" }},
-              { date: "2025-07-25T03:00:00+03:00", price: { amount: 114.47, currency: "EUR" }}
-            ]
-          }],
-          available: true,
-          refundable: true
-        }
-      ]
+  const hotelData = {
+    name: "DoubleTree by Hilton Antalya City Centre",
+    rating: 8.4,
+    reviewCount: 1025,
+    reviewText: "Mükemmel",
+    location: "Eşref Mahallesi, Adnan Menderes Bulvarı 61, 07010 Muratpaşa, Antalya",
+    checkIn: "20 Ağustos 2025",
+    checkInTime: "Çarşamba 14:00",
+    checkOut: "21 Ağustos 2025",
+    checkOutTime: "Perşembe 12:00",
+    guests: "2 Yetişkin",
+    nights: "1 gece",
+    roomType: "Standart Oda - 29 m²",
+    features: ["2 Yetişkin", "Sigara İçilmeyen", "Balkon Oda", "Kahvaltı Dahil"]
+  };
+
+  const totalPrice = 26775.25;
+  const priceBreakdown = {
+    roomPrice: 24500.00,
+    taxes: 2275.25,
+    serviceFee: 0
+  };
+
+  const handleInputChange = (section, field, value) => {
+    if (section === 'guest') {
+      setGuestInfo(prev => ({ ...prev, [field]: value }));
+    } else if (section === 'payment') {
+      setPaymentInfo(prev => ({ ...prev, [field]: value }));
     }
   };
 
-  useEffect(() => {
-    // Gerçek uygulamada API çağrısı burada yapılacak
-    const fetchBookingData = async () => {
-      setLoading(true);
-      try {
-        // const response = await fetch('/api/booking-offers');
-        // const data = await response.json();
-        
-        // Mock veri kullanıyoruz
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Loading simülasyonu
-        setBookingData(mockApiData);
-      } catch (error) {
-        console.error('Error fetching booking data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBookingData();
-  }, []);
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('tr-TR', { 
-      day: 'numeric', 
-      month: 'long',
-      year: 'numeric'
-    });
+  const handleBooking = () => {
+    alert('Rezervasyon başarıyla tamamlandı!');
   };
-
-  const extractCapacity = (roomName) => {
-    const match = roomName.match(/capacity (\d+)/);
-    return match ? match[1] : '2';
-  };
-
-  const getRoomType = (roomName) => {
-    if (roomName.includes('Junior suite')) return 'Junior Suite';
-    if (roomName.includes('Suite')) return 'Suite';
-    return 'Standard';
-  };
-
-  const handleBookRoom = (offer) => {
-    if (offer.available) {
-      setSelectedRoom(offer);
-      // Burada rezervasyon işlemi başlatılabilir
-      console.log('Booking room:', offer);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Oda seçenekleri yükleniyor...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!bookingData?.body?.offers) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-100 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600 text-lg">Rezervasyon verileri yüklenemedi</p>
-        </div>
-      </div>
-    );
-  }
-
-  const { offers } = bookingData.body;
-  const checkInDate = offers[0]?.checkIn;
-  const nights = offers[0]?.night;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            🏨 Luxury Hotel Booking
-          </h1>
-          <p className="text-gray-600">En konforlu odalarımızda unutulmaz bir deneyim</p>
-        </div>
+    <div className="min-h-screen bg-gray-100">
 
-        {/* Booking Info Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="flex items-center gap-3">
-              <Calendar className="w-5 h-5 text-indigo-600" />
-              <div>
-                <p className="text-sm text-gray-500">Giriş Tarihi</p>
-                <p className="font-semibold">{formatDate(checkInDate)}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Clock className="w-5 h-5 text-indigo-600" />
-              <div>
-                <p className="text-sm text-gray-500">Konaklama</p>
-                <p className="font-semibold">{nights} Gece</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Users className="w-5 h-5 text-indigo-600" />
-              <div>
-                <p className="text-sm text-gray-500">Misafir</p>
-                <p className="font-semibold">2 Kişi</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <MapPin className="w-5 h-5 text-indigo-600" />
-              <div>
-                <p className="text-sm text-gray-500">Konum</p>
-                <p className="font-semibold">Yunanistan</p>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="max-w-6xl mx-auto p-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - Main Content */}
+          <div className="lg:col-span-2 space-y-6">
 
-        {/* Room Cards Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
-          {offers.map((offer, index) => (
-            <div
-              key={index}
-              className={`bg-white rounded-2xl shadow-lg overflow-hidden border transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
-                offer.available ? 'border-gray-200 hover:border-indigo-300' : 'border-gray-300 opacity-75'
-              }`}
-            >
-              {/* Room Image Placeholder */}
-              <div className="h-48 bg-gradient-to-r from-indigo-500 to-purple-600 relative">
-                <div className="absolute top-4 left-4">
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                    offer.available 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-red-100 text-red-800'
-                  }`}>
-                    {offer.available ? 'Müsait' : 'Dolu'}
+            {/* Hotel Info Section */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">KONAKLAMA BİLGİLERİ</h2>
+
+              <div className="flex gap-4 mb-4">
+                <div className="w-24 h-20 bg-gradient-to-r from-blue-100 to-blue-200 rounded-lg flex items-center justify-center text-xs text-blue-600">
+                  Otel
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900">{hotelData.name}</h3>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="flex">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-4 h-4 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                        />
+                      ))}
+                    </div>
+
+                    <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold">
+                      {hotelData.rating}
+                    </span>
+                    <span className="text-blue-600 text-sm">{hotelData.reviewText}</span>
+                  </div>
+                  <p className="text-sm text-gray-600">{hotelData.location}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+                <div>
+                  <span className="text-gray-600">Giriş:</span>
+                  <div className="font-semibold">{hotelData.checkIn}</div>
+                  <div className="text-gray-500">{hotelData.checkInTime}</div>
+                </div>
+                <div>
+                  <span className="text-gray-600">Çıkış:</span>
+                  <div className="font-semibold">{hotelData.checkOut}</div>
+                  <div className="text-gray-500">{hotelData.checkOutTime}</div>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {hotelData.features.map((feature, index) => (
+                  <span key={index} className="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700">
+                    {feature}
                   </span>
-                </div>
-                <div className="absolute top-4 right-4">
-                  {offer.refundable && (
-                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
-                      İptal Edilebilir
-                    </span>
-                  )}
-                </div>
-                <div className="absolute bottom-4 left-4 text-white">
-                  <h3 className="text-xl font-bold">{getRoomType(offer.rooms[0].roomName)}</h3>
-                  <p className="text-indigo-100">Kapasite: {extractCapacity(offer.rooms[0].roomName)} Kişi</p>
-                </div>
-              </div>
-
-              {/* Room Details */}
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h4 className="font-semibold text-gray-800">{offer.rooms[0].roomName}</h4>
-                    <p className="text-sm text-gray-500">{offer.rooms[0].boardName}</p>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                    <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                    <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                    <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                    <Star className="w-4 h-4 text-gray-300" />
-                  </div>
-                </div>
-
-                {/* Amenities */}
-                <div className="flex items-center gap-4 mb-4 text-gray-600">
-                  <div className="flex items-center gap-1">
-                    <Wifi className="w-4 h-4" />
-                    <span className="text-xs">WiFi</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Car className="w-4 h-4" />
-                    <span className="text-xs">Parking</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Coffee className="w-4 h-4" />
-                    <span className="text-xs">Minibar</span>
-                  </div>
-                </div>
-
-                {/* Price Breakdown */}
-                <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-2xl font-bold text-gray-800">
-                      €{offer.price.amount}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      Toplam {nights} gece
-                    </span>
-                  </div>
-                  <div className="space-y-1">
-                    {offer.priceBreakdowns[0].priceBreakdowns.map((breakdown, idx) => (
-                      <div key={idx} className="flex justify-between text-sm text-gray-600">
-                        <span>Gece {idx + 1}</span>
-                        <span>€{breakdown.price.amount}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Book Button */}
-                <button
-                  onClick={() => handleBookRoom(offer)}
-                  disabled={!offer.available}
-                  className={`w-full py-3 px-4 rounded-xl font-semibold transition-all duration-300 ${
-                    offer.available
-                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 hover:shadow-lg transform hover:scale-105'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  }`}
-                >
-                  {offer.available ? 'Rezervasyon Yap' : 'Müsait Değil'}
-                </button>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
 
-        {/* Summary */}
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl p-6 text-center">
-          <h3 className="text-xl font-bold mb-2">Rezervasyon Özeti</h3>
-          <p className="text-indigo-100">
-            Toplam {offers.length} farklı oda seçeneği • {offers.filter(o => o.available).length} oda müsait
-          </p>
-          <p className="text-indigo-100 mt-1">
-            Fiyatlar {nights} gecelik konaklamayı kapsamaktadır
-          </p>
-        </div>
+            {/* Tespit Notu */}
 
-        {/* Selected Room Modal Placeholder */}
-        {selectedRoom && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl p-6 max-w-md w-full">
-              <h3 className="text-xl font-bold mb-4">Rezervasyon Onayı</h3>
-              <p className="text-gray-600 mb-4">
-                {selectedRoom.rooms[0].roomName} için rezervasyon yapmak istediğinizi onaylayın.
-              </p>
-              <p className="text-2xl font-bold text-indigo-600 mb-4">
-                €{selectedRoom.price.amount}
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setSelectedRoom(null)}
-                  className="flex-1 py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  İptal
-                </button>
-                <button
-                  onClick={() => {
-                    // Rezervasyon işlemi
-                    alert('Rezervasyon başarıyla oluşturuldu!');
-                    setSelectedRoom(null);
-                  }}
-                  className="flex-1 py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                >
-                  Onayla
-                </button>
+
+            {/* Price Info */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h3 className="font-semibold text-gray-900 mb-4">FİYAT BİLGİLERİ</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span>Toplam Tutar:</span>
+                  <span className="font-semibold">{totalPrice.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Guest Information */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h3 className="font-semibold text-gray-900 mb-4">MİSAFİR BİLGİLERİ</h3>
+
+              <div className="space-y-4">
+                <div className="flex gap-4">
+                  <span className="bg-green-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                  <div className="flex-1">
+                    <h4 className="font-semibold mb-3">Oda </h4>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">Ad </label>
+                        <input
+                          type="text"
+                          value={guestInfo.firstName}
+                          onChange={(e) => handleInputChange('guest', 'firstName', e.target.value)}
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                          placeholder="Adınız"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">Soyad</label>
+                        <input
+                          type="text"
+                          value={guestInfo.lastName}
+                          onChange={(e) => handleInputChange('guest', 'lastName', e.target.value)}
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                          placeholder="Soyadınız"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 mb-4">
+                      <input type="radio" name="gender1" defaultChecked className="text-blue-600" />
+                      <span className="text-sm">Kadın</span>
+                      <input type="radio" name="gender1" className="text-blue-600 ml-4" />
+                      <span className="text-sm">Erkek</span>
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="flex items-center gap-2 text-sm">
+                        <input type="checkbox" className="text-blue-600" />
+                        <span>18 yaşından büyüğüm</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <span className="bg-green-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                  <div className="flex-1">
+                    <h4 className="font-semibold mb-3">Oda</h4>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">Ad </label>
+                        <input
+                          type="text"
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                          placeholder="Adınız"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">Soyad</label>
+                        <input
+                          type="text"
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                          placeholder="Soyadınız"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 mb-4">
+                      <input type="radio" name="gender2" defaultChecked className="text-blue-600" />
+                      <span className="text-sm">Kadın</span>
+                      <input type="radio" name="gender2" className="text-blue-600 ml-4" />
+                      <span className="text-sm">Erkek</span>
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="flex items-center gap-2 text-sm">
+                        <input type="checkbox" className="text-blue-600" />
+                        <span>18 yaşından büyüğüm</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Special Requests */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h3 className="font-semibold text-gray-900 mb-4">ÖZEL TALEPLER</h3>
+              <div className="mb-4">
+                <label className="flex items-center gap-2 text-sm mb-3">
+                  <input type="checkbox" className="text-blue-600" />
+                  <span>Hayvanların yemek konusunda dikkatli olmanızı istiyorum</span>
+                </label>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-2">Yazdıktan elbisemi müsaitlik için kaç km var mı?</label>
+                <textarea
+                  rows="3"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                  placeholder="Özel taleplerinizi yazınız..."
+                ></textarea>
               </div>
             </div>
           </div>
-        )}
+
+          {/* Right Column - Booking Summary */}
+          <div className="space-y-6">
+            {/* Payment Cards */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h3 className="font-semibold text-gray-900 mb-4">ÖDEME BİLGİLERİ</h3>
+
+              <div className="mb-4">
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Kabul Edilen Kartlar</h4>
+                <div className="flex gap-2">
+                  <div className="w-8 h-6 bg-blue-600 rounded flex items-center justify-center text-white text-xs font-bold">V</div>
+                  <div className="w-8 h-6 bg-orange-500 rounded flex items-center justify-center text-white text-xs font-bold">M</div>
+                  <div className="w-8 h-6 bg-red-600 rounded flex items-center justify-center text-white text-xs font-bold">MC</div>
+                  <div className="w-8 h-6 bg-blue-500 rounded flex items-center justify-center text-white text-xs font-bold">AE</div>
+                  <div className="w-8 h-6 bg-green-600 rounded flex items-center justify-center text-white text-xs font-bold">T</div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Kart Numarası</label>
+                  <input
+                    type="text"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                    placeholder="**** **** **** ****"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Son Kullanma Tarihi</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <select className="p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none">
+                      <option>Ay</option>
+                      {[...Array(12)].map((_, i) => (
+                        <option key={i} value={i + 1}>{String(i + 1).padStart(2, '0')}</option>
+                      ))}
+                    </select>
+                    <select className="p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none">
+                      <option>Yıl</option>
+                      {[...Array(10)].map((_, i) => (
+                        <option key={i} value={2024 + i}>{2024 + i}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">CVV</label>
+                  <input
+                    type="text"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                    placeholder="*"
+                    maxLength="3"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Taksit Seçeneği</h4>
+                <select className="w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none">
+                  <option>Taksit seç (Sair İmha olanakları)</option>
+                  <option>Tek Çekim</option>
+                  <option>2 Taksit</option>
+                  <option>3 Taksit</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Price Summary */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="bg-green-100 border border-green-300 rounded-lg p-4 mb-4">
+                <div className="flex items-center justify-between">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-green-600">26.775.25 ₺</div>
+                    <div className="text-sm text-gray-600">toplam tutar</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2 text-sm mb-4">
+                <div className="flex justify-between">
+                  <span>Oda fiyatı:</span>
+                  <span>24.500,00 ₺</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Vergiler ve ücretler:</span>
+                  <span>2.275,25 ₺</span>
+                </div>
+                <hr className="my-2" />
+                <div className="flex justify-between font-semibold">
+                  <span>Toplam:</span>
+                  <span>26.775,25 ₺</span>
+                </div>
+              </div>
+
+              <div className="text-xs text-gray-500 mb-4">
+                ⚠ Ödem sona eriştirme alanları üzerinden güvenlik kaynaklarında ortaya karıştırmaktadır.
+              </div>
+
+              <div className="space-y-2 mb-6">
+                <label className="flex items-start gap-2 text-xs">
+                  <input type="checkbox" className="mt-1" />
+                  <span>Üyeliklerini şirketimin altında kullanım bilgisini ve kurallarını kabul ediyorum</span>
+                </label>
+                <label className="flex items-start gap-2 text-xs">
+                  <input type="checkbox" className="mt-1" />
+                  <span>Kişisel Verilerin Korunması Kanunu çerçevesinde, gerekli izinlerin alınmasını ve kişisel veri çalışmalarını onaylıyorum</span>
+                </label>
+                <label className="flex items-start gap-2 text-xs">
+                  <input type="checkbox" className="mt-1" />
+                  <span>E-posta ve SMS ile bildirim almayı kabul ediyorum</span>
+                </label>
+              </div>
+
+              <button
+                onClick={handleBooking}
+                className="w-full bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-lg font-semibold text-lg transition-colors"
+              >
+                📞 Hızlı Rezervasyon
+              </button>
+
+              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold mt-3 transition-colors">
+                💳 Kartla Ödensin
+              </button>
+
+              <p className="text-center text-xs text-gray-500 mt-3">
+                Size <span className="text-blue-600 underline">SANTSG 293 48 21</span> numaralı telefumuzdan ulaşılacaktır.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

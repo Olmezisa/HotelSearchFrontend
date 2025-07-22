@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, BedDouble, MapPin, Star } from 'lucide-react';
 import { api } from '../../api/santsgApi';
 import { Spinner } from '../common/Spinner';
-
+import { useNavigate } from 'react-router-dom';
 // Tarihleri formatlamak için yardımcı fonksiyon
 const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -20,9 +20,9 @@ const formatDate = (dateString) => {
 const StarRating = ({ rating, starCount = 5 }) => (
     <div className="flex items-center">
         {[...Array(starCount)].map((_, i) => (
-            <Star 
-                key={`star-${i}`} 
-                className={`h-5 w-5 ${i < rating ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`} 
+            <Star
+                key={`star-${i}`}
+                className={`h-5 w-5 ${i < rating ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`}
             />
         ))}
     </div>
@@ -34,10 +34,12 @@ export const OfferDetail = ({ onBack }) => {
     const [offerDetails, setOfferDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     // --- YENİ EKLENEN STATE'LER ---
     const [mainImage, setMainImage] = useState('');
     const [isImageLoading, setIsImageLoading] = useState(true);
+
 
     useEffect(() => {
         const fetchOfferDetails = async () => {
@@ -54,7 +56,7 @@ export const OfferDetail = ({ onBack }) => {
                 if (response?.body?.offerDetails?.length > 0) {
                     const details = response.body.offerDetails[0];
                     setOfferDetails(details);
-                    
+
                     // --- YENİ EKLENEN BÖLÜM: Ana resmi ayarla ---
                     const hotelData = details.hotels?.[0];
                     if (hotelData) {
@@ -121,10 +123,10 @@ export const OfferDetail = ({ onBack }) => {
                             {/* --- YENİ EKLENEN BÖLÜM: Resim Galerisi --- */}
                             <div className="relative w-full h-80 md:h-96 rounded-xl overflow-hidden mb-4 bg-gray-200">
                                 <div className={`absolute inset-0 transition-all duration-500 ${isImageLoading ? 'opacity-0 scale-110' : 'opacity-100 scale-100'}`}>
-                                    <img 
-                                        src={mainImage || 'https://placehold.co/800x600/e2e8f0/94a3b8?text=Resim+Bulunamadı'} 
-                                        alt="Ana Otel Resmi" 
-                                        className="w-full h-full object-cover" 
+                                    <img
+                                        src={mainImage || 'https://placehold.co/800x600/e2e8f0/94a3b8?text=Resim+Bulunamadı'}
+                                        alt="Ana Otel Resmi"
+                                        className="w-full h-full object-cover"
                                     />
                                 </div>
                             </div>
@@ -160,7 +162,7 @@ export const OfferDetail = ({ onBack }) => {
 
                     <div className="p-6 bg-white rounded-xl shadow-md">
                         <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center">
-                            <Calendar className="h-6 w-6 mr-3 text-rose-500"/> Seyahat Tarihleri
+                            <Calendar className="h-6 w-6 mr-3 text-rose-500" /> Seyahat Tarihleri
                         </h2>
                         <div className="flex justify-between items-center text-center">
                             <div>
@@ -176,9 +178,9 @@ export const OfferDetail = ({ onBack }) => {
                     </div>
 
                     {roomOffer && (
-                         <div className="p-6 bg-white rounded-xl shadow-md">
+                        <div className="p-6 bg-white rounded-xl shadow-md">
                             <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center">
-                                <BedDouble className="h-6 w-6 mr-3 text-rose-500"/> Konaklama Detayları
+                                <BedDouble className="h-6 w-6 mr-3 text-rose-500" /> Konaklama Detayları
                             </h2>
                             <div>
                                 <p className="text-xl font-semibold text-slate-700">{roomOffer.roomName}</p>
@@ -190,17 +192,25 @@ export const OfferDetail = ({ onBack }) => {
 
                 <aside className="space-y-6 lg:sticky lg:top-8 self-start">
                     <div className="p-6 bg-white rounded-xl shadow-lg border-2 border-rose-500">
-                        <h2 className="text-xl font-bold text-slate-800 mb-4">Ödenecek Tutar</h2>
+                        {/* <h2 className="text-xl font-bold text-slate-800 mb-4">Ödenecek Tutar</h2>
                         <p className="text-4xl font-extrabold text-rose-600">
-                            {offerDetails.passengerAmountToPay?.amount 
+                            {offerDetails.passengerAmountToPay?.amount
                                 ? `${offerDetails.passengerAmountToPay.amount.toFixed(2)} ${offerDetails.passengerAmountToPay.currency}`
                                 : 'Fiyat Bilgisi Yok'
                             }
                         </p>
                         <p className={`mt-4 font-semibold ${!offerDetails.refundable ? 'text-red-600' : 'text-green-600'}`}>
                             {!offerDetails.refundable ? 'İptal Edilemez' : 'İptal Edilebilir'}
-                        </p>
-                        <button className="w-full mt-6 py-3 px-4 bg-rose-500 text-white font-bold rounded-lg shadow-md hover:bg-rose-600 transition-all duration-300 disabled:opacity-50" disabled={!offerDetails.passengerAmountToPay?.amount}>
+                        </p> */}
+                        <button
+                            onClick={() => navigate('/booking', {
+                                state: {
+                                    hotel,
+                                    offerDetails,
+                                    roomOffer
+                                }
+                            })} className="w-full mt-6 py-3 px-4 bg-rose-500 text-white font-bold rounded-lg shadow-md hover:bg-rose-600 transition-all duration-300 disabled:opacity-50" disabled={false}
+                        >
                             Hemen Rezervasyon Yap
                         </button>
                     </div>
@@ -212,7 +222,7 @@ export const OfferDetail = ({ onBack }) => {
                                 {offerDetails.cancellationPolicies.map((policy, index) => (
                                     <li key={index}>
                                         <strong>{formatDate(policy.dueDate)}</strong> tarihine kadar
-                                        {policy.price?.amount 
+                                        {policy.price?.amount
                                             ? ` ${policy.price.amount} ${policy.price.currency} ceza uygulanır.`
                                             : ` ceza uygulanır.`
                                         }
