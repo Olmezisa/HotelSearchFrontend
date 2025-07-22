@@ -9,7 +9,7 @@ export const AutocompleteInput = ({ onLocationSelect }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const fetchSuggestions = useCallback(async (searchQuery) => {
-    if (searchQuery.length < 4) {
+    if (searchQuery.length < 3) {
       setSuggestions([]);
       return;
     }
