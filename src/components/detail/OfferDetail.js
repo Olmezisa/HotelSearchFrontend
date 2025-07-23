@@ -6,6 +6,7 @@ import { ArrowLeft, Calendar, BedDouble, MapPin, Star } from 'lucide-react';
 import { api } from '../../api/santsgApi';
 import { Spinner } from '../common/Spinner';
 import { useNavigate } from 'react-router-dom';
+
 // Tarihleri formatlamak için yardımcı fonksiyon
 const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -203,12 +204,14 @@ export const OfferDetail = ({ onBack }) => {
                             {!offerDetails.refundable ? 'İptal Edilemez' : 'İptal Edilebilir'}
                         </p> */}
                         <button
-                            onClick={() => navigate('/booking', {
-                                state: {
-                                    hotel,
-                                    offerDetails,
-                                    roomOffer
-                                }
+                           onClick={() => navigate('/booking', {
+    state: {
+        hotel,
+        offerDetails,
+        roomOffer,
+        currency
+    }
+
                             })} className="w-full mt-6 py-3 px-4 bg-rose-500 text-white font-bold rounded-lg shadow-md hover:bg-rose-600 transition-all duration-300 disabled:opacity-50" disabled={false}
                         >
                             Hemen Rezervasyon Yap
