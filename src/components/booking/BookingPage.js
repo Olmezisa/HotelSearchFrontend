@@ -829,7 +829,7 @@ const BookingPage = () => {
               </div>
 
               {/* İptal Politikası Bilgisi */}
-              {offerDetails?.refundable !== undefined && ( // İptal edilebilir bilgisi offerDetails'ten alınmalı
+              {/* {offerDetails?.refundable !== undefined && ( // İptal edilebilir bilgisi offerDetails'ten alınmalı
                 <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                   <span className={`font-semibold text-base flex items-center ${!offerDetails.refundable ? 'text-red-600' : 'text-green-600'}`}>
                     {!offerDetails.refundable ? '❌ İptal Edilemez Rezervasyon' : '✅ İptal Edilebilir Rezervasyon'}
@@ -840,7 +840,7 @@ const BookingPage = () => {
                       : "Bu rezervasyon belirli koşullar altında iptal edilebilir. Detaylar için iptal politikasını inceleyiniz."}
                   </p>
                 </div>
-              )}
+              )} */}
             </div>
 
             {/* Guest Information */}
