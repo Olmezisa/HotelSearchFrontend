@@ -1318,7 +1318,13 @@ const BookingPage = () => {
     //! checkOutTime: formatDateTime(transactionData?.reservationData?.endDate) || defaultHotelData.checkOutTime,
     // Misafir sayısını transactionData'dan al
     guests: transactionData?.reservationData?.travellers?.length
-      ? `${transactionData.reservationData.travellers.length} Yetişkin` // Çocuk bilgisi traveller objelerinde yoksa sadece yetişkin sayısı
+      ? (() => {
+        const travellers = transactionData.reservationData.travellers;
+        const adultCount = travellers.filter(t => t.passengerType === 1).length;
+        const childCount = travellers.filter(t => t.passengerType === 2).length;
+
+        return `${adultCount} Yetişkin${childCount > 0 ? `, ${childCount} Çocuk` : ''}`;
+      })()
       : defaultHotelData.guests,
     // Konaklama süresini transactionData'dan al
     nights: transactionData?.reservationData?.reservationInfo?.beginDate && transactionData?.reservationData?.reservationInfo?.endDate
@@ -1422,6 +1428,7 @@ const BookingPage = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-5 border-b pb-3">KONAKLAMA BİLGİLERİ</h2>
 
               <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-6">
+
                 <div className="relative w-full md:w-36 h-28 rounded-xl overflow-hidden bg-gray-200 flex-shrink-0">
                   {/* Yükleme göstergesi - GÜNCELLENDİ */}
                   {isImageLoading && (
@@ -1453,6 +1460,7 @@ const BookingPage = () => {
                       setIsImageLoading(false); // Yükleme durumunu kapat
                     }}
                   />
+
                 </div>
                 <div className="flex-1">
                   <h3 className="font-extrabold text-2xl text-gray-900 mb-1">{currentHotelData.name}</h3>
