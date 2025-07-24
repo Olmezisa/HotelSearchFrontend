@@ -860,9 +860,9 @@ export const OfferDetail = ({ onBack }) => {
                                 })()}
                             </p>
                         )}
-                        <p className={`mt-4 font-semibold ${!offerDetails.refundable ? 'text-red-600' : 'text-green-600'}`}>
+                        {/* <p className={`mt-4 font-semibold ${!offerDetails.refundable ? 'text-red-600' : 'text-green-600'}`}>
                             {!offerDetails.refundable ? 'İptal Edilemez' : 'İptal Edilebilir'}
-                        </p>
+                        </p> */}
                         <button
                             onClick={handleReserveClick}
                             className="w-full mt-6 py-3 px-4 bg-rose-500 text-white font-bold rounded-lg shadow-md hover:bg-rose-600 transition-all duration-300 disabled:opacity-50"
