@@ -84,7 +84,7 @@ export const HomePage = ({ onSearch, nationalities, currencies, nationality, set
       {/* === HERO BÖLÜMÜ === */}
       <div
         className="relative bg-[#F9F7F3] bg-center rounded-2xl min-h-[500px] md:min-h-[600px] flex items-center justify-center p-4"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1653039148541-807e068d489d?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')" }}
+        style={{ backgroundImage: "url('https://cdn.pixabay.com/photo/2020/05/15/19/19/sunset-5174801_1280.jpg')" }}
       >
         {/* Arka planı karartmak için overlay */}
         <div className="absolute inset-0 bg-black bg-opacity-40"></div>
