@@ -1,7 +1,7 @@
 import React from 'react';
 import { MapPin, Star, ChevronRight } from 'lucide-react';
 import { Spinner } from '../common/Spinner';
-import CityMap from '../common/MapComponent';
+import MapComponent from '../common/MapComponent';
 
 
 const StarRating = ({ rating }) => {
@@ -53,7 +53,7 @@ export const SearchResults = ({ results, onHotelSelect, onOfferFetch, currency, 
       {/* 🌍 Şehir haritası - sağ tarafta, büyük ve temaya uygun kenarlıklı */}
       {results[0]?.geolocation && (
         <div className="w-96 h-60 rounded-xl overflow-hidden shadow-lg ml-4 border-2 border-[#D46A00]/30 bg-gradient-to-br from-[#F7A072]/10 to-[#D46A00]/10">
-          <CityMap
+          <MapComponent
             latitude={results[0].geolocation.latitude}
             longitude={results[0].geolocation.longitude}
           />
@@ -61,6 +61,12 @@ export const SearchResults = ({ results, onHotelSelect, onOfferFetch, currency, 
       )}
     </div>
 
+{results.map((hotel) => {
+                const oneNightPrices = hotel.offers?.map(o => {
+                    const nights = o.night || 1;
+                    const totalAmount = o.price?.amount || 0;
+                    return nights > 0 ? totalAmount / nights : totalAmount;
+                });
        
                 const minPrice = oneNightPrices?.length > 0
                     ? Math.min(...oneNightPrices)
@@ -108,7 +114,7 @@ export const SearchResults = ({ results, onHotelSelect, onOfferFetch, currency, 
                             </div>
                         </div>
                     </div>
-                </div>
+        
             );
         })}
     </div>
