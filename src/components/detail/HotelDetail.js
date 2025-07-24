@@ -106,6 +106,8 @@ export const HotelDetail = ({ onBack }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const navigate = useNavigate();
+    const [isBookingLoading, setIsBookingLoading] = useState(false);
+    const [bookingError, setBookingError] = useState(null);
 
     const openImageModal = (index = 0) => {
         setCurrentImageIndex(index);
@@ -126,6 +128,46 @@ export const HotelDetail = ({ onBack }) => {
         }
         setCurrentImageIndex(newIndex);
         setMainImage(allHotelImages[newIndex].urlFull);
+    };
+     const handleStartBooking = async (offerToBook) => {
+        setIsBookingLoading(true);
+        setBookingError(null);
+
+        try {
+            if (!offerToBook?.offerId) {
+                throw new Error("Rezervasyon için geçerli bir teklif seçilmedi.");
+            }
+
+            // API'ye gönderilecek isteğin gövdesini oluşturuyoruz.
+            const requestBody = {
+                offerIds: [offerToBook.offerId],
+                currency: offerToBook.price.currency || currency || "EUR",
+                culture: "en-US"
+            };
+
+            // Rezervasyon işlemini başlatan API'yi çağırıyoruz.
+            const transactionResponse = await api.beginTransaction(requestBody);
+
+            if (transactionResponse?.header?.success) {
+                
+                navigate('/booking', {
+                    state: {
+                       offerDetails: offerToBook,
+            transactionData: transactionResponse.body,
+            mainHotelImage: mainImage,
+            hotel: hotel
+                    }
+                });
+            } else {
+                const errorMessage = transactionResponse?.header?.messages[0]?.message || "Rezervasyon başlatılamadı.";
+                setBookingError(errorMessage);
+            }
+        } catch (e) {
+            console.error("Begin Transaction Hatası:", e);
+            setBookingError(e.message || "Rezervasyon başlatılırken bir hata oluştu.");
+        } finally {
+            setIsBookingLoading(false);
+        }
     };
 
     useEffect(() => {
@@ -340,25 +382,27 @@ export const HotelDetail = ({ onBack }) => {
                                                 >
                                                     Detayları Gör
                                                 </Link>
-                                                <button
-                                                    onClick={() => navigate('/booking', {
-                                                        state: {
-                                                            hotel,
-                                                            selectedOffer: offer,
-                                                            numberOfGuests: offer?.rooms?.[0]?.paxInfo?.numberOfGuests || 3,
-                                                            numberOfRooms: offer?.rooms?.[0]?.paxInfo?.numberOfRooms || 2
-                                                        }
-                                                    })}
-                                                    className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-gradient-to-r from-[#f7a072] to-[#ac440b] text-white shadow-lg transition-all duration-300 transform hover:scale-105 w-full"
-                                                >
+                                                 <button
+                                            onClick={() => handleStartBooking(offer)}
+                                            disabled={isBookingLoading} // Yükleme sırasında butonu pasif yap
+                                            className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-gradient-to-r from-[#f7a072] to-[#ac440b] text-white shadow-lg transition-all duration-300 transform hover:scale-105 w-full disabled:opacity-70 disabled:cursor-not-allowed"
+                                        >
+                                            {isBookingLoading ? (
+                                                <Spinner size="sm" /> // Yükleniyor spinner'ı
+                                            ) : (
+                                                <>
                                                     <ShoppingCart className="h-6 w-6 mr-2" />
                                                     Rezervasyon
-                                                </button>
-
+                                                </>
+                                            )}
+                                        </button>
 
                                             </div>
                                         </div>
                                     ))}
+                                    {bookingError && (
+                                <p className="text-red-600 text-center mt-4 font-semibold">{bookingError}</p>
+                            )}
                                 </div>
                             </section>
 

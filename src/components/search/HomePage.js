@@ -83,8 +83,15 @@ export const HomePage = ({ onSearch, nationalities, currencies, nationality, set
       {/*oda seç kısmında sorun çözüldü 'overflow-hidden' divin içindeki classname kısmından çıkarılınca dropdown kısmı dışarı taşıyor.*/}
       {/* === HERO BÖLÜMÜ === */}
       <div
-        className="relative bg-[#F9F7F3] bg-center rounded-2xl min-h-[500px] md:min-h-[600px] flex items-center justify-center p-4"
-        style={{ backgroundImage: "url('https://cdn.pixabay.com/photo/2020/05/15/19/19/sunset-5174801_1280.jpg')" }}
+
+        className="relative bg-[#F9F7F3] bg-center min-h-[500px] md:min-h-[600px] flex items-center justify-center p-4"
+        style={{
+          backgroundImage: "url('https://cdn.pixabay.com/photo/2020/08/31/09/33/beach-5531919_1280.jpg')",
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+
       >
         {/* Arka planı karartmak için overlay */}
         <div className="absolute inset-0 bg-black bg-opacity-40"></div>
@@ -117,25 +124,48 @@ export const HomePage = ({ onSearch, nationalities, currencies, nationality, set
       </div>
 
       {/* === POPÜLER TEMALAR BÖLÜMÜ === */}
-      <div className="mt-16 py-12">
-        <h2 className="text-5xl font-bold text-left text-[#2883BB] mb-8">Popüler Tatil Temaları</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
+      <div className="relative max-w-7xl mx-auto px-4 py-8 mt-16">
+        <div className="text-center mb-12">
+          <h2 className="text-5xl font-black bg-gradient-to-r from-[#2883BB] via-[#F7A072] to-[#EDDEA4] text-transparent bg-clip-text mb-4">
+            Popüler Tatil Temaları
+          </h2>
+          <div className="w-24 h-1 bg-gradient-to-r from-[#2883BB] to-[#F7A072] mx-auto rounded-full"></div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4 max-w-7xl mx-auto">
           {themes.map((theme, index) => (
-            <div key={index} className="relative rounded-xl overflow-hidden shadow-lg group transform hover:-translate-y-2 transition-transform duration-300">
-              <img src={theme.image} alt={theme.name} loading="lazy" className="w-full h-80 object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-              <div className="absolute bottom-0 left-0 p-6">
-                <h3 className="text-2xl font-bold text-white">{theme.name}</h3>
+            <div key={index} className="group relative rounded-3xl overflow-hidden shadow-xl shadow-indigo-500/20 transform hover:-translate-y-6 hover:rotate-2 transition-all duration-500 border border-white/30 backdrop-blur-sm">
+              {/* Havalı kenarlık parıltı efekti */}
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-500/30 via-purple-500/30 to-cyan-500/30 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"></div>
+
+              <div className="relative z-10 bg-white/80 backdrop-blur-md rounded-3xl overflow-hidden">
+                <img src={theme.image} alt={theme.name} loading="lazy" className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+
+                {/* Havada süzülen parıltı */}
+                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  {Sparkles && <Sparkles className="text-yellow-300 animate-pulse" size={20} />}
+                </div>
+
+                <div className="absolute bottom-0 left-0 p-6 w-full">
+                  <h3 className="text-2xl font-bold text-white mb-2 transform group-hover:translate-y-[-8px] transition-transform duration-500">
+                    {theme.name}
+                  </h3>
+                  <div className="w-12 h-1 bg-gradient-to-r from-yellow-400 to-pink-400 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+                </div>
               </div>
             </div>
           ))}
 
-          {/* === POPÜLER OTELLER SLIDER === */}
-          <section className="relative max-w-7xl mx-auto px-4 py-8 mt-16 ml-20">
-            <div className="mb-8 text-left">
-              <h2 className="text-4xl font-bold text-[#2883BB]">Popüler Oteller</h2>
 
-              <p className="text-lg text-gray-500 mt-1">Sizin için seçilen popüler oteller</p>
+          {/* === POPÜLER OTELLER SLIDER === */}
+          <section className="relative max-w-7xl mx-auto px-4 py-8 mt-16">
+            <div className="text-center mb-12">
+              <h2 className="text-5xl font-black bg-gradient-to-r from-[#F7A072] via-[#EDDEA4] to-[#B5E2FA] text-transparent bg-clip-text mb-2">
+                Popüler Oteller
+              </h2>
+              <p className="text-xl text-gray-600 font-medium">Sizin için seçilen popüler oteller</p>
+              <div className="w-24 h-1 bg-gradient-to-r from-[#F7A072] to-[#EDDEA4] mx-auto rounded-full mt-4"></div>
             </div>
             <button onClick={() => scroll(-300)} className="absolute left-3 top-1/2 -translate-y-1/2 z-15 bg-[#F9F7F3]/80 hover:bg-[#EDDEA4] text-[#2883BB] p-2 rounded-full shadow hidden lg:flex">
               {/* Replaced MdArrowBackIos with inline SVG */}
@@ -145,7 +175,7 @@ export const HomePage = ({ onSearch, nationalities, currencies, nationality, set
               {/* Replaced MdArrowForwardIos with inline SVG */}
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
             </button>
-            <div ref={scrollRef} className="flex gap-7 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide max-w-fit">
+            <div ref={scrollRef} className="flex gap-7 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide px-2 w-full">
               {hotels.map((hotel, index) => (
                 <div key={index} className="min-w-[400px] max-w-[340px] bg-white border border-[#d4c1ec] rounded-2xl shadow hover:shadow-xl hover:scale-[1.03] transition-all duration-300 snap-center"
                   style={{

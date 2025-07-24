@@ -1851,7 +1851,8 @@ const BookingPage = () => {
   const {
     offerDetails: initialOfferDetails,
     transactionData: initialTransactionData,
-    mainHotelImage: initialMainHotelImage
+    mainHotelImage: initialMainHotelImage,
+    hotel:initialHotel
   } = location.state || {};
 
   const [offerDetails, setOfferDetails] = useState(initialOfferDetails);
@@ -1942,7 +1943,7 @@ const BookingPage = () => {
     }
   }, [initialOfferDetails, initialTransactionData, initialMainHotelImage]);
 
-  const hotel = offerDetails?.hotels?.[0];
+  const hotel = initialHotel || offerDetails?.hotels?.[0];
   const roomOffer = hotel?.offers?.[0]?.rooms?.[0];
 
   const currentHotelData = hotel ? {

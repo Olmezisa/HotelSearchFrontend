@@ -49,6 +49,7 @@ export const SearchResults = ({ results, onHotelSelect, onOfferFetch, currency, 
     <div className="flex justify-between items-start mb-6">
       <h1 className="text-3xl font-bold text-[#001624]">Arama Sonuçları</h1>
 
+
       {/* 🌍 Şehir haritası - sağ tarafta, büyük ve temaya uygun kenarlıklı */}
       {results[0]?.geolocation && (
         <div className="w-96 h-60 rounded-xl overflow-hidden shadow-lg ml-4 border-2 border-[#D46A00]/30 bg-gradient-to-br from-[#F7A072]/10 to-[#D46A00]/10">
@@ -60,27 +61,32 @@ export const SearchResults = ({ results, onHotelSelect, onOfferFetch, currency, 
       )}
     </div>
 
-        {results.map((hotel) => {
-            const minPrice = hotel.offers?.length > 0
-                ? Math.min(...hotel.offers.map(o => o.price.amount))
-                : null;
+       
+                const minPrice = oneNightPrices?.length > 0
+                    ? Math.min(...oneNightPrices)
+                    : null;
+                return (
+                    <div key={hotel.id} className="flex flex-col bg-white rounded-2xl shadow-xl hover:bg-[#B5E2FA]/20 transition-allduration-300 overflow-hidden border border-gray-200">
+                        <div className="flex flex-col md:flex-row">
+                            <div className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0">
+                                <img
+                                    src={hotel.thumbnailFull || 'https://placehold.co/400x300/e2e8f0/94a3b8?text=Resim+Yok'}
+                                    alt={hotel.name}
+                                    className="w-full h-48 md:h-full object-cover"
+                                    onError={(e) => { e.target.src = 'https://placehold.co/400x300/e2e8f0/94a3b8?text=Resim+Yok' }}
+                                />
+                            </div>
+                            <div className="p-6 flex flex-col flex-grow">
+                                <div className="flex-grow">
+                                    <div className="flex justify-between items-start">
+                                        <h2 className="text-2xl font-bold text-[#D46A00]">{hotel.name}</h2>
+                                        {hotel.stars > 0 && <StarRating rating={hotel.stars} />}
+                                    </div>
+                                    <div className="flex items-center text-[#2883BB] mt-2">
+                                        <MapPin className="h-5 w-5 mr-2" />
+                                        <span>{hotel.city?.name || 'Şehir bilgisi yok'}</span>
+                                    </div>
 
-            return (
-                <div key={hotel.id} className="flex flex-col bg-white rounded-2xl shadow-xl hover:bg-[#B5E2FA]/20 transition-allduration-300 overflow-hidden border border-gray-200">
-                    <div className="flex flex-col md:flex-row">
-                        <div className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0">
-                            <img
-                                src={hotel.thumbnailFull || 'https://placehold.co/400x300/e2e8f0/94a3b8?text=Resim+Yok'}
-                                alt={hotel.name}
-                                className="w-full h-48  object-cover"
-                                onError={(e) => { e.target.src = 'https://placehold.co/400x300/e2e8f0/94a3b8?text=Resim+Yok' }}
-                            />
-                        </div>
-                        <div className="p-6 flex flex-col flex-grow">
-                            <div className="flex-grow">
-                                <div className="flex justify-between items-start">
-                                    <h2 className="text-2xl font-bold text-[#D46A00]">{hotel.name}</h2>
-                                    {hotel.stars > 0 && <StarRating rating={hotel.stars} />}
                                 </div>
                                 <div className="flex items-center text-[#2883BB] mt-2">
                                     <MapPin className="h-5 w-5 mr-2" />
