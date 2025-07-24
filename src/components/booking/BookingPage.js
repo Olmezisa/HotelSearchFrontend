@@ -258,7 +258,6 @@ const BookingPage = () => {
           setShowBookingSuccessModal(true); // Başarı modalını göster
 
           // getReservationDetail çağrısı artık butona tıklandığında yapılacak
-          // console.log("Rezervasyon Detayları:", reservationDetailResponse.body); // Bu satır kaldırıldı
         } else {
           setSaveGuestInfoError(commitResponse.header.messages[0]?.message || "Rezervasyon kesinleştirilemedi.");
           setShowBookingErrorModal(true);
