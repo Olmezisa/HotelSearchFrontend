@@ -224,6 +224,16 @@ export const HotelDetail = ({ onBack }) => {
     const offers = hotel?.offers || [];
     const rooms = hotel?.rooms || [];
     const currentSeason = hotel.seasons?.[0];
+
+    // Gecelik fiyatları hesapla
+    const oneNightPrices = hotel.offers?.map((offer) => {
+        const nights = offer.night || 1;
+        const totalAmount = offer.price?.amount || 0;
+        return nights > 0 ? totalAmount / nights : totalAmount;
+    }) || [];
+
+    // Minimum gecelik fiyatı bul
+    const minNightlyPrice = oneNightPrices.length > 0 ? Math.min(...oneNightPrices) : null;
     return (
         <div className="bg-[#f9f7f3] text-[#093b5a] min-h-screen font-sans overflow-x-hidden"> {/* BURASI DEĞİŞTİ */}
             <div className="relative z-10 container mx-auto p-4 sm:p-6 lg:p-8">
@@ -314,9 +324,11 @@ export const HotelDetail = ({ onBack }) => {
                                             <div>
                                                 <h4 className="font-bold text-xl text-slate-800">{offer.rooms[0].roomName}</h4>
                                                 <p className="text-md text-slate-600 mt-1">{offer.rooms[0].boardName}</p>
-                                                <p className="text-2xl font-bold text-[#2883bb] mt-2">
-                                                    {offer.price.amount.toFixed(2)} {currency}
-                                                </p>
+                                                {minNightlyPrice !== null && (
+                                                    <div className="mt-2 text-xl font-semibold text-[#001624]">
+                                                        {minNightlyPrice.toFixed(2)} {currency}
+                                                    </div>
+                                                )}
                                             </div>
                                             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                                                 <Link
@@ -327,14 +339,14 @@ export const HotelDetail = ({ onBack }) => {
                                                     Detayları Gör
                                                 </Link>
                                                 <button
-                                                  onClick={() => navigate('/booking', {
-  state: {
-    hotel,
-    selectedOffer: offer,
-    numberOfGuests: offer?.rooms?.[0]?.paxInfo?.numberOfGuests || 3,
-    numberOfRooms: offer?.rooms?.[0]?.paxInfo?.numberOfRooms || 2
-  }
-})}
+                                                    onClick={() => navigate('/booking', {
+                                                        state: {
+                                                            hotel,
+                                                            selectedOffer: offer,
+                                                            numberOfGuests: offer?.rooms?.[0]?.paxInfo?.numberOfGuests || 3,
+                                                            numberOfRooms: offer?.rooms?.[0]?.paxInfo?.numberOfRooms || 2
+                                                        }
+                                                    })}
                                                     className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-gradient-to-r from-[#f7a072] to-[#ac440b] text-white shadow-lg transition-all duration-300 transform hover:scale-105 w-full"
                                                 >
                                                     <ShoppingCart className="h-6 w-6 mr-2" />

@@ -86,9 +86,9 @@ export default function App() {
           arrivalLocations: [{ id: searchParams.locationId, type: 2 }]
         };
         response = await api.searchByLocation(requestBody);
-      } else if (SearchParamsWMeta.locationType === 2){
+      } else if (SearchParamsWMeta.locationType === 2) {
         requestBody = {
-          ...baseRequest, 
+          ...baseRequest,
           Products: [searchParams.locationId]
         }
         response = await api.searchByHotel(requestBody);
@@ -189,7 +189,7 @@ export default function App() {
               <select
                 value={nationality}
                 onChange={e => setNationality(e.target.value)}
-                className="w-10 appearance-none bg-transparent focus:outline-none text-[#2883BB] border-none p-0 py-0 cursor-pointer relative z-14"
+                className="min-w-[80px] appearance-none bg-transparent focus:outline-none text-[#2883BB] border-none p-0 py-0 cursor-pointer relative z-14"
               >
                 {nationalities.map(n => (
                   <option key={n.id} value={n.id}>
@@ -203,7 +203,7 @@ export default function App() {
               <select
                 value={currency}
                 onChange={e => setCurrency(e.target.value)}
-                className="w-10 appearance-none bg-transparent focus:outline-none text-[#2883BB] border-none p-0 py-0 cursor-pointer relative z-14"
+                className="min-w-[80px] appearance-none bg-transparent focus:outline-none text-[#2883BB] border-none p-0 py-0 cursor-pointer relative z-14"
               >
                 {currencies.map(c => (
                   <option key={c.code} value={c.code}>

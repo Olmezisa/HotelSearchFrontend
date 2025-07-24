@@ -43,10 +43,15 @@ export const SearchResults = ({ results, onHotelSelect, onOfferFetch, currency, 
         <div className="space-y-6 bg-[#F9F7F3] py-10 px-4">
             <h1 className="text-3xl font-bold text-[#001624] mb-4">Arama Sonuçları</h1>
             {results.map((hotel) => {
-                const minPrice = hotel.offers?.length > 0
-                    ? Math.min(...hotel.offers.map(o => o.price.amount))
-                    : null;
+                const oneNightPrices = hotel.offers?.map(o => {
+                    const nights = o.night || 1;
+                    const totalAmount = o.price?.amount || 0;
+                    return nights > 0 ? totalAmount / nights : totalAmount;
+                });
 
+                const minPrice = oneNightPrices?.length > 0
+                    ? Math.min(...oneNightPrices)
+                    : null;
                 return (
                     <div key={hotel.id} className="flex flex-col bg-white rounded-2xl shadow-xl hover:bg-[#B5E2FA]/20 transition-allduration-300 overflow-hidden border border-gray-200">
                         <div className="flex flex-col md:flex-row">
@@ -54,7 +59,7 @@ export const SearchResults = ({ results, onHotelSelect, onOfferFetch, currency, 
                                 <img
                                     src={hotel.thumbnailFull || 'https://placehold.co/400x300/e2e8f0/94a3b8?text=Resim+Yok'}
                                     alt={hotel.name}
-                                    className="w-full h-48 md:h-full object-cover"
+                                    className="w-full h-48  object-cover"
                                     onError={(e) => { e.target.src = 'https://placehold.co/400x300/e2e8f0/94a3b8?text=Resim+Yok' }}
                                 />
                             </div>
