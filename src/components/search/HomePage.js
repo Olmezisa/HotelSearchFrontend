@@ -83,6 +83,7 @@ export const HomePage = ({ onSearch, nationalities, currencies, nationality, set
       {/*oda seç kısmında sorun çözüldü 'overflow-hidden' divin içindeki classname kısmından çıkarılınca dropdown kısmı dışarı taşıyor.*/}
       {/* === HERO BÖLÜMÜ === */}
       <div
+
         className="relative bg-[#F9F7F3] bg-center min-h-[500px] md:min-h-[600px] flex items-center justify-center p-4"
         style={{
           backgroundImage: "url('https://cdn.pixabay.com/photo/2020/08/31/09/33/beach-5531919_1280.jpg')",
@@ -90,6 +91,7 @@ export const HomePage = ({ onSearch, nationalities, currencies, nationality, set
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
+
       >
         {/* Arka planı karartmak için overlay */}
         <div className="absolute inset-0 bg-black bg-opacity-40"></div>

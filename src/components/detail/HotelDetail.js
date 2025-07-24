@@ -10,19 +10,19 @@ import { useNavigate } from 'react-router-dom';
 
 // --- İkon Kütüphanesi ---
 const ICONS = {
-    'default': <Sparkles className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
-    'wifi': <Wifi className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
-    'internet': <Wifi className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
-    'air conditioning': <Wind className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
-    'klima': <Wind className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
-    'tv': <Tv2 className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
-    'restaurant': <UtensilsCrossed className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
-    'havuz': <Droplets className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
-    'otopark': <ParkingCircle className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
-    'safe': <Lock className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
-    'balcony': <Building2 className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
-    'hair drier': <Scissors className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
-    'handicapped': <Accessibility className="h-5 w-5 mr-2 text-rose-500 flex-shrink-0" />,
+    'default': <Sparkles className="h-5 w-5 mr-2 text-[#88B8D2] flex-shrink-0" />,
+    'wifi': <Wifi className="h-5 w-5 mr-2 text-[#88B8D2] flex-shrink-0" />,
+    'internet': <Wifi className="h-5 w-5 mr-2 text-[#88B8D2] flex-shrink-0" />,
+    'air conditioning': <Wind className="h-5 w-5 mr-2 text-[#88B8D2] flex-shrink-0" />,
+    'klima': <Wind className="h-5 w-5 mr-2 text-[#88B8D2] flex-shrink-0" />,
+    'tv': <Tv2 className="h-5 w-5 mr-2 text-[#88B8D2] flex-shrink-0" />,
+    'restaurant': <UtensilsCrossed className="h-5 w-5 mr-2 text-[#88B8D2] flex-shrink-0" />,
+    'havuz': <Droplets className="h-5 w-5 mr-2 text-[#88B8D2] flex-shrink-0" />,
+    'otopark': <ParkingCircle className="h-5 w-5 mr-2 text-[#88B8D2] flex-shrink-0" />,
+    'safe': <Lock className="h-5 w-5 mr-2 text-[#88B8D2] flex-shrink-0" />,
+    'balcony': <Building2 className="h-5 w-5 mr-2 text-[#88B8D2] flex-shrink-0" />,
+    'hair drier': <Scissors className="h-5 w-5 mr-2 text-[#88B8D2] flex-shrink-0" />,
+    'handicapped': <Accessibility className="h-5 w-5 mr-2 text-[#88B8D2] flex-shrink-0" />,
 };
 
 const FacilityIcon = ({ name }) => {
@@ -277,7 +277,7 @@ export const HotelDetail = ({ onBack }) => {
     // Minimum gecelik fiyatı bul
     const minNightlyPrice = oneNightPrices.length > 0 ? Math.min(...oneNightPrices) : null;
     return (
-        <div className="bg-[#f9f7f3] text-[#093b5a] min-h-screen font-sans overflow-x-hidden"> {/* BURASI DEĞİŞTİ */}
+        <div className="bg-[#F9F7F3] text-[#093B5A] min-h-screen font-sans overflow-x-hidden"> {/* BURASI DEĞİŞTİ */}
             <div className="relative z-10 container mx-auto p-4 sm:p-6 lg:p-8">
                 <button onClick={onBack} className="inline-flex items-center font-semibold mb-8 bg-white/60 backdrop-blur-md pr-5 pl-3 py-2 rounded-full border border-gray-200/80 shadow-sm hover:shadow-lg hover:bg-white transition-all duration-300 group">
                     <ArrowLeft className="h-6 w-6 mr-2 text-gray-500 transition-transform duration-300 group-hover:-translate-x-1" />
@@ -309,7 +309,7 @@ export const HotelDetail = ({ onBack }) => {
                     </div>
 
                     <div className="relative z-20 text-white animate-fade-in-up">
-                        <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-tight" style={{ textShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>{hotel.name}</h1>
+                  <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-tight" style={{ textShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>{hotel.name}</h1>
                         <p className="mt-4 text-xl md:text-2xl text-gray-200 flex items-center">
                             <MapPin className="h-6 w-6 mr-3" /> {hotel.city?.name}, {hotel.country?.name}
                         </p>
@@ -340,26 +340,28 @@ export const HotelDetail = ({ onBack }) => {
                         {/* Mevcut Sezon Bilgisi */}
                         {currentSeason && (
                             <section className="p-6 bg-blue-50/70 backdrop-blur-md rounded-2xl border border-blue-200/80 shadow-md animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-                                <h3 className="text-2xl font-bold mb-4 text-blue-800 flex items-center">
+                                <h3 className="text-2xl font-bold mb-4 text-{#093B5A} flex items-center">
                                     <CalendarDays className="h-7 w-7 mr-3" /> Mevcut Sezon
                                 </h3>
                                 <p className="text-lg text-slate-700">
-                                    **{currentSeason.name}**: {new Date(currentSeason.beginDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })} - {new Date(currentSeason.endDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })} tarihleri arasında geçerlidir.
+                                     {new Date(currentSeason.beginDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })} - {new Date(currentSeason.endDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })} tarihleri arasında geçerlidir.
                                 </p>
                             </section>
                         )}
                         {textCategories.map((cat, idx) => (
                             <section key={cat.name || idx} className="animate-fade-in-up" style={{ animationDelay: `${0.4 + idx * 0.2}s` }}>
-                                <h3 className="text-4xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-[#f7a072] to-[#ac440b]">{cat.name}</h3>
+                                <h3 className="text-4xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-[#2883BB] to-[#B5E2FA]">{cat.name}</h3>
                                 <div className="text-lg text-slate-600 leading-relaxed prose max-w-none" dangerouslySetInnerHTML={{ __html: cat.presentations?.[0]?.text || '' }}></div>
                             </section>
                         ))}
 
                         {offers.length > 0 && (
                             <section className="animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-                                <h3 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#2883bb] to-[#093b5a] flex items-center">
-                                    <Tag className="h-9 w-9 mr-4" /> Fiyat Teklifleri
-                                </h3>
+                                <section className="animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
+                                      <h3 className="text-4xl font-bold mb-6 text-[#2883BB] flex items-center">
+                                           <Tag className="h-9 w-9 mr-4" /> Fiyat Teklifleri
+                                       </h3>
+                             </section>
                                 <div className="space-y-4">
                                     {offers.map(offer => (
                                         <div key={offer.offerId} className="p-6 bg-white/70 backdrop-blur-md rounded-2xl border border-gray-200/80 shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -376,7 +378,7 @@ export const HotelDetail = ({ onBack }) => {
                                                 <Link
 
                                                     to={`/offer-details/${offer.offerId}/${currency}`}
-                                                    className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-white border border-[#2883bb] text-[#2883bb] shadow-sm transition-all duration-300 transform hover:bg-[#b5e2fa] hover:shadow-lg w-full"
+                                                    className="flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-gradient-to-r from-[#2781B9] to-[#88B8D2] text-white shadow-lg transition-all duration-300 transform hover:scale-105 w-full"
                                                 >
                                                     Detayları Gör
                                                 </Link>
@@ -408,16 +410,16 @@ export const HotelDetail = ({ onBack }) => {
                         {/* Ödeme Planı Bilgileri */}
                         {hotel.paymentPlanInfo && hotel.paymentPlanInfo.length > 0 && (
                             <section className="animate-fade-in-up" style={{ animationDelay: '1.0s' }}>
-                                <h3 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-indigo-500 flex items-center">
+                                <h3 className="text-4xl font-bold mb-6 text-[#2883BB] flex items-center">
                                     <CreditCard className="h-9 w-9 mr-4" /> Ödeme Planı Bilgileri
                                 </h3>
                                 <div className="space-y-4">
                                     {hotel.paymentPlanInfo.map((plan, idx) => (
                                         <div key={idx} className="p-6 bg-white/70 backdrop-blur-md rounded-2xl border border-gray-200/80 shadow-md">
-                                            <p className="text-lg text-slate-700">
+                                            <p className="text-lg text-slate-700-{#F7A072}">
                                                 Ödeme Zamanı: {plan.paymentTimeStatus === 1 ? 'Rezervasyon Anında' : `${plan.day} Gün Önce`}
                                             </p>
-                                            <p className="text-lg text-slate-700 mt-2">
+                                            <p className="text-lg text-slate-700-{#F7A072} mt-2">
                                                 Ödenecek Tutar: {plan.price.percent > 0 ? `${plan.price.percent}%` : `${plan.price.amount.toFixed(2)} ${currency}`}
                                             </p>
                                         </div>
@@ -430,7 +432,7 @@ export const HotelDetail = ({ onBack }) => {
                         {rooms.length > 0 && (
                             <section className="animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
 
-                                <h3 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#eddea4] to-[#f2bf8b] flex items-center">
+                                <h3 className="text-4xl font-bold mb-6 text-[#2883BB] flex items-center">
                                     <BedDouble className="h-9 w-9 mr-4" /> Oda Seçenekleri
 
                                 </h3>
@@ -490,38 +492,39 @@ export const HotelDetail = ({ onBack }) => {
                             <div className="p-8 bg-white/70 backdrop-blur-md rounded-2xl border border-gray-200/80 shadow-lg">
                                 <h3 className="text-2xl font-bold mb-6 text-slate-800">İletişim Bilgileri</h3>
                                 <div className="space-y-4">
-                                    {hotel.phoneNumber && (
-                                        <div className="flex items-center text-lg text-slate-700">
-                                            <Phone className="h-5 w-5 mr-3 text-rose-500 flex-shrink-0" />
-                                            <a href={`tel:${hotel.phoneNumber}`} className="hover:text-rose-600 transition-colors">
-                                                {hotel.phoneNumber}
-                                            </a>
-                                        </div>
-                                    )}
+                                  {hotel.phoneNumber && (
+    <div className="flex items-center text-lg text-slate-700">
+        <Phone className="h-5 w-5 mr-3 text-[#88B8D2] flex-shrink-0" />
+        <a href={`tel:${hotel.phoneNumber}`} className="hover:text-rose-600 transition-colors">
+            {hotel.phoneNumber}
+        </a>
+    </div>
+)}
                                     {hotel.faxNumber && (
-                                        <div className="flex items-center text-lg text-slate-700">
-                                            <Printer className="h-5 w-5 mr-3 text-rose-500 flex-shrink-0" />
-                                            <span>{hotel.faxNumber}</span>
-                                        </div>
-                                    )}
-                                    {hotel.homePage && (
-                                        <div className="flex items-center text-lg text-slate-700">
-                                            <LinkIcon className="h-5 w-5 mr-3 text-rose-500 flex-shrink-0" />
-                                            <a href={hotel.homePage} target="_blank" rel="noopener noreferrer" className="hover:text-rose-600 transition-colors">
-                                                Resmi Web Sitesi
-                                            </a>
-                                        </div>
-                                    )}
+    <div className="flex items-center text-lg text-slate-700">
+        <Printer className="h-5 w-5 mr-3 text-[#88B8D2] flex-shrink-0" />
+        <span>{hotel.faxNumber}</span>
+    </div>
+)}
+{hotel.homePage && (
+    <div className="flex items-center text-lg text-slate-700">
+        <LinkIcon className="h-5 w-5 mr-3 text-[#88B8D2] flex-shrink-0" />
+        <a href={hotel.homePage} target="_blank" rel="noopener noreferrer" className="hover:text-rose-600 transition-colors">
+            Resmi Web Sitesi
+        </a>
+    </div>
+)}
+                                    
                                     {hotel.location?.latitude && hotel.location?.longitude && (
                                         <div className="text-center mt-6">
-                                            <a
-                                                href={`https://www.google.com/maps/search/?api=1&query=${hotel.location.latitude},${hotel.location.longitude}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="inline-flex items-center justify-center text-lg font-semibold px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-400 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
-                                            >
-                                                <Globe className="h-6 w-6 mr-2" /> Haritada Gör
-                                            </a>
+                  <a
+  href={`https://www.google.com/maps/search/?api=1&query=${hotel.location.latitude},${hotel.location.longitude}`}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="inline-flex items-center justify-start text-base font-semibold px-4 py-2 rounded-xl bg-gradient-to-r from-[#D48A61] to-[#AC440B] text-white shadow-lg transition-all duration-300 transform hover:scale-105"
+>
+  <Globe className="h-5 w-5 mr-2" /> Haritada Gör
+</a>
                                         </div>
                                     )}
                                 </div>
