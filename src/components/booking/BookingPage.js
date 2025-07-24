@@ -1865,6 +1865,10 @@ const BookingPage = () => {
 
   const [showBookingSuccessModal, setShowBookingSuccessModal] = useState(false);
   const [showBookingErrorModal, setShowBookingErrorModal] = useState(false);
+  const [showReservationDetailsModal, setShowReservationDetailsModal] = useState(false); // Yeni: Detay modalı state'i
+  const [finalReservationNumber, setFinalReservationNumber] = useState('');
+  const [reservationDetailsFromApi, setReservationDetailsFromApi] = useState(null);
+
 
   // Yeni state'ler: Misafir bilgisi kaydetme durumu
   const [isSavingGuestInfo, setIsSavingGuestInfo] = useState(false);
@@ -1930,7 +1934,7 @@ const BookingPage = () => {
           // Telefon numarasını contactPhone'dan veya doğrudan phone'dan al
           phone: traveller.address?.contactPhone?.phoneNumber || traveller.address?.phone || '',
           // Gender'ı API'nin beklediği 0 (Erkek) ve 1 (Kadın) değerlerine göre ayarla
-          gender: traveller.gender === 0 ? 'Erkek' : (traveller.gender === 1 ? 'Kadın' : 'Kadın'), 
+          gender: traveller.gender === 0 ? 'Erkek' : (traveller.gender === 1 ? 'Kadın' : 'Kadın'),
           birthDate: traveller.birthDate ? traveller.birthDate.split('T')[0] : '', // YYYY-MM-DD formatına çevir
           nationality: traveller.nationality?.twoLetterCode || '',
           // Diğer alanlar buraya eklenebilir
@@ -1980,7 +1984,18 @@ const BookingPage = () => {
   const handleInputChange = (index, field, value) => {
     // Payment info için index null ise ayrı işlem yap
     if (index === null) {
-      setPaymentInfo(prev => ({ ...prev, [field]: value }));
+      // Kart numarası için sadece rakamları al ve her 4 hanede bir boşluk ekle
+      if (field === 'cardNumber') {
+        const formattedValue = value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
+        setPaymentInfo(prev => ({ ...prev, [field]: formattedValue }));
+      } else if (field === 'cvv') {
+        // CVV için sadece rakamları al ve max 4 karakter
+        const formattedValue = value.replace(/\D/g, '').slice(0, 4);
+        setPaymentInfo(prev => ({ ...prev, [field]: formattedValue }));
+      } else {
+        // expiryDate ve cardHolder gibi diğer ödeme alanları için doğrudan değeri ata
+        setPaymentInfo(prev => ({ ...prev, [field]: value }));
+      }
     } else {
       setGuestInfo(prev =>
         prev.map((guest, i) =>
@@ -2031,7 +2046,7 @@ const BookingPage = () => {
           addressUpdates.phone = currentGuest.phone || '';
           delete addressUpdates.contactPhone; // Eğer varsa eski contactPhone alanını temizle
         }
-        
+
         // E-posta her zaman address objesi içinde
         addressUpdates.email = currentGuest.email;
 
@@ -2079,18 +2094,65 @@ const BookingPage = () => {
       const setInfoResponse = await api.setReservationInfo(setInfoPayload);
 
       if (setInfoResponse.header.success) {
-        setTransactionData(setInfoResponse.body);
-        setShowBookingSuccessModal(true);
+        // setInfo başarılı olduktan sonra commitTransaction'ı çağır
+        // Sadece setInfoResponse.body.transactionId'yi gönderiyoruz.
+        const commitResponse = await api.commitTransaction({
+          transactionId: setInfoResponse.body.transactionId
+        });
+
+        if (commitResponse.header.success) {
+          const reservationNumber = commitResponse.body.reservationNumber;
+          setFinalReservationNumber(reservationNumber); // Rezervasyon numarasını state'e kaydet
+          setShowBookingSuccessModal(true); // Başarı modalını göster
+
+          // getReservationDetail çağrısı artık butona tıklandığında yapılacak
+          // console.log("Rezervasyon Detayları:", reservationDetailResponse.body); // Bu satır kaldırıldı
+        } else {
+          setSaveGuestInfoError(commitResponse.header.messages[0]?.message || "Rezervasyon kesinleştirilemedi.");
+          setShowBookingErrorModal(true);
+        }
+
       } else {
         setSaveGuestInfoError(setInfoResponse.header.messages[0]?.message || "Misafir bilgileri kaydedilemedi.");
         setShowBookingErrorModal(true);
       }
     } catch (e) {
-      console.error("Misafir bilgisi kaydetme hatası:", e);
-      setSaveGuestInfoError(e.message || "Misafir bilgileri kaydedilirken bir hata oluştu.");
+      console.error("Rezervasyon işlemi hatası:", e);
+      setSaveGuestInfoError(e.message || "Rezervasyon işlemi sırasında bir hata oluştu.");
       setShowBookingErrorModal(true);
     } finally {
       setIsSavingGuestInfo(false);
+    }
+  };
+
+  const handleViewDetails = async () => {
+    if (!finalReservationNumber) {
+      setSaveGuestInfoError("Rezervasyon numarası bulunamadı.");
+      setShowBookingErrorModal(true);
+      return;
+    }
+
+    // Başarı modalını kapat
+    setShowBookingSuccessModal(false);
+    setLoading(true); // Detaylar yüklenirken yükleme göstergesi
+    setSaveGuestInfoError(null);
+
+    try {
+      const reservationDetailResponse = await api.getReservationDetail(finalReservationNumber);
+
+      if (reservationDetailResponse.header.success) {
+        setReservationDetailsFromApi(reservationDetailResponse.body); // Detayları state'e kaydet
+        setShowReservationDetailsModal(true); // Detay modalını aç
+      } else {
+        setSaveGuestInfoError(reservationDetailResponse.header.messages[0]?.message || "Rezervasyon detayları alınamadı.");
+        setShowBookingErrorModal(true);
+      }
+    } catch (e) {
+      console.error("Rezervasyon detayları alma hatası:", e);
+      setSaveGuestInfoError(e.message || "Rezervasyon detayları alınırken bir hata oluştu.");
+      setShowBookingErrorModal(true);
+    } finally {
+      setLoading(false); // Yüklemeyi bitir
     }
   };
 
@@ -2405,57 +2467,57 @@ const BookingPage = () => {
             <div className="bg-white rounded-xl shadow-lg p-7 border border-gray-200">
               <h3 className="text-2xl font-bold text-gray-900 mb-5 border-b pb-3">ÖDEME BİLGİLERİ</h3>
 
-              
+
               <div className="mb-6">
-                
+
                 <h4 className="text-base font-medium text-gray-700 mb-3 text-center">Banka/Kredi Kartı</h4>
                 <div className="flex flex-wrap justify-center items-center gap-4">
                   {/* Visa */}
                   <div className="h-8 w-16 bg-white border rounded flex items-center justify-center">
                     <svg viewBox="0 0 780 500" className="h-6 w-auto">
-                      <rect fill="#0066b2" width="780" height="500" rx="40"/>
-                      <path fill="white" d="M400.5 227.4l-12.9 78.4h-20.6l12.9-78.4h20.6zm66.1 0c-4.1 0-7.5 2.4-9 6.1l-31.7 72.3h21.7l4.3-11.9h26.4l2.5 11.9h19.1l-16.6-78.4h-16.7zm2.9 20.1l6.2 26.6h-17.1l10.9-26.6zM344.7 227.4l-21.4 53.5-2.3-11.5c-3.9-13.3-16.1-27.6-29.8-34.8l18.4 71.2h21.8l32.4-78.4h-19.1zm-57.2 0h-33.4c-3.8 0-7.2 2.5-8.1 6.2l-26.9 72.2h21.8l4.3-11.9h27.1l2.5 11.9h19.1l-16.6-78.4h-10.3z"/>
+                      <rect fill="#0066b2" width="780" height="500" rx="40" />
+                      <path fill="white" d="M400.5 227.4l-12.9 78.4h-20.6l12.9-78.4h20.6zm66.1 0c-4.1 0-7.5 2.4-9 6.1l-31.7 72.3h21.7l4.3-11.9h26.4l2.5 11.9h19.1l-16.6-78.4h-16.7zm2.9 20.1l6.2 26.6h-17.1l10.9-26.6zM344.7 227.4l-21.4 53.5-2.3-11.5c-3.9-13.3-16.1-27.6-29.8-34.8l18.4 71.2h21.8l32.4-78.4h-19.1zm-57.2 0h-33.4c-3.8 0-7.2 2.5-8.1 6.2l-26.9 72.2h21.8l4.3-11.9h27.1l2.5 11.9h19.1l-16.6-78.4h-10.3z" />
                     </svg>
                   </div>
-                  
+
                   {/* Visa Electron */}
                   <div className="h-8 w-16 bg-white border rounded flex items-center justify-center">
                     <svg viewBox="0 0 780 500" className="h-6 w-auto">
-                      <rect fill="#1a1f71" width="780" height="500" rx="40"/>
-                      <path fill="white" d="M278.2 334.1c-31.1 0-52.6-21.4-52.6-52.5s21.5-52.5 52.6-52.5c15.8 0 29.9 6.1 40.1 16.1l-14.3 13.8c-7.1-7.1-16.8-11.2-25.8-11.2-19.3 0-33.8 15.3-33.8 33.8s14.5 33.8 33.8 33.8c9 0 18.7-4.1 25.8-11.2l14.3 13.8c-10.2 10-24.3 16.1-40.1 16.1z"/>
-                      <path fill="#fac43a" d="M340 279.1h18.8v55h-18.8z"/>
-                      <path fill="white" d="M400.5 227.4l-12.9 78.4h-20.6l12.9-78.4h20.6z"/>
+                      <rect fill="#1a1f71" width="780" height="500" rx="40" />
+                      <path fill="white" d="M278.2 334.1c-31.1 0-52.6-21.4-52.6-52.5s21.5-52.5 52.6-52.5c15.8 0 29.9 6.1 40.1 16.1l-14.3 13.8c-7.1-7.1-16.8-11.2-25.8-11.2-19.3 0-33.8 15.3-33.8 33.8s14.5 33.8 33.8 33.8c9 0 18.7-4.1 25.8-11.2l14.3 13.8c-10.2 10-24.3 16.1-40.1 16.1z" />
+                      <path fill="#fac43a" d="M340 279.1h18.8v55h-18.8z" />
+                      <path fill="white" d="M400.5 227.4l-12.9 78.4h-20.6l12.9-78.4h20.6z" />
                     </svg>
                   </div>
-                  
+
                   {/* Mastercard */}
                   <div className="h-8 w-16 bg-white border rounded flex items-center justify-center">
                     <svg viewBox="0 0 160 100" className="h-6 w-auto">
-                      <rect fill="white" width="160" height="100" rx="8"/>
-                      <circle fill="#eb001b" cx="60" cy="50" r="30"/>
-                      <circle fill="#f79e1b" cx="100" cy="50" r="30"/>
-                      <path fill="#ff5f00" d="M80 28c-5.9 4.6-9.7 11.7-9.7 20s3.8 15.4 9.7 20c5.9-4.6 9.7-11.7 9.7-20s-3.8-15.4-9.7-20z"/>
+                      <rect fill="white" width="160" height="100" rx="8" />
+                      <circle fill="#eb001b" cx="60" cy="50" r="30" />
+                      <circle fill="#f79e1b" cx="100" cy="50" r="30" />
+                      <path fill="#ff5f00" d="M80 28c-5.9 4.6-9.7 11.7-9.7 20s3.8 15.4 9.7 20c5.9-4.6 9.7-11.7 9.7-20s-3.8-15.4-9.7-20z" />
                     </svg>
                   </div>
-                  
+
                   {/* Maestro */}
                   <div className="h-8 w-16 bg-white border rounded flex items-center justify-center">
                     <svg viewBox="0 0 160 100" className="h-6 w-auto">
-                      <rect fill="white" width="160" height="100" rx="8"/>
-                      <circle fill="#0066cc" cx="60" cy="50" r="30"/>
-                      <circle fill="#cc0000" cx="100" cy="50" r="30"/>
-                      <path fill="#cc0066" d="M80 28c-5.9 4.6-9.7 11.7-9.7 20s3.8 15.4 9.7 20c5.9-4.6 9.7-11.7 9.7-20s-3.8-15.4-9.7-20z"/>
+                      <rect fill="white" width="160" height="100" rx="8" />
+                      <circle fill="#0066cc" cx="60" cy="50" r="30" />
+                      <circle fill="#cc0000" cx="100" cy="50" r="30" />
+                      <path fill="#cc0066" d="M80 28c-5.9 4.6-9.7 11.7-9.7 20s3.8 15.4 9.7 20c5.9-4.6 9.7-11.7 9.7-20s-3.8-15.4-9.7-20z" />
                     </svg>
                   </div>
-                  
+
                   {/* American Express */}
                   <div className="h-8 w-16 bg-white border rounded flex items-center justify-center">
                     <svg viewBox="0 0 160 100" className="h-6 w-auto">
-                      <rect fill="#006fcf" width="160" height="100" rx="8"/>
-                      <path fill="white" d="M20 25h25l5 15 5-15h25v50H65V45l-7 20h-6l-7-20v30H20V25zm80 0h40v10H110v5h25v10H110v5h30v10h-40V25z"/>
+                      <rect fill="#006fcf" width="160" height="100" rx="8" />
+                      <path fill="white" d="M20 25h25l5 15 5-15h25v50H65V45l-7 20h-6l-7-20v30H20V25zm80 0h40v10H110v5h25v10H110v5h30v10h-40V25z" />
                     </svg>
                   </div>
-                  
+
                   {/* Troy */}
                   <div className="bg-green-600 text-white px-3 py-1 rounded text-sm font-bold h-8 flex items-center">
                     troy
@@ -2587,19 +2649,17 @@ const BookingPage = () => {
               </div>
 
               <button
-                onClick={handleBooking}
-                className="w-full bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-xl font-bold text-xl transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg mb-4"
-                disabled={isSavingGuestInfo}
+                className="w-full bg-blue-600 hover:bg-green-700 text-white py-4 px-6 rounded-xl font-bold text-xl transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg mb-4"
               >
-                {isSavingGuestInfo ? 'Bilgiler Kaydediliyor...' : '📞 Hızlı Rezervasyon'}
+                {'💳 Kartla Rezervasyon Tamamla'}
               </button>
 
               <button
                 onClick={handleBooking}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-xl font-bold text-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg"
+                className="w-full bg-green-600 hover:bg-blue-700 text-white py-3 px-6 rounded-xl font-bold text-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg"
                 disabled={isSavingGuestInfo}
               >
-                {isSavingGuestInfo ? 'Bilgiler Kaydediliyor...' : '💳 Kartla Rezervasyon Tamamla'}
+                {isSavingGuestInfo ? 'Bilgiler Kaydediliyor...' : 'Hızlı Rezervasyon'}
               </button>
 
               {saveGuestInfoError && (
@@ -2620,12 +2680,60 @@ const BookingPage = () => {
           <div className="bg-white rounded-xl shadow-2xl p-8 max-w-sm w-full text-center transform scale-95 animate-fade-in">
             <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-5" />
             <h2 className="text-2xl font-bold text-gray-900 mb-3">Rezervasyon Başarılı!</h2>
-            <p className="text-gray-700 mb-6">Rezervasyonunuz başarıyla tamamlandı. Onay e-postanız gönderildi.</p>
+            <p className="text-gray-700 mb-2">Rezervasyonunuz başarıyla tamamlandı.</p>
+            {finalReservationNumber && (
+              <p className="text-gray-700 font-semibold mb-4">Rezervasyon Numaranız: <span className="text-blue-600">{finalReservationNumber}</span></p>
+            )}
+            <p className="text-gray-700 mb-6">Onay e-postanız gönderildi.</p>
+            <button
+              onClick={handleViewDetails} // Yeni buton: Detayları gör
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 w-full mb-3"
+            >
+              Rezervasyon Detaylarını Gör
+            </button>
             <button
               onClick={() => setShowBookingSuccessModal(false)}
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-colors duration-200 w-full"
+            >
+              Kapat
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* New: Reservation Details Modal */}
+      {showReservationDetailsModal && reservationDetailsFromApi && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full text-center transform scale-95 animate-fade-in">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Rezervasyon Detayları</h2>
+            <div className="text-left space-y-2 mb-6">
+              <p><strong>Rezervasyon No:</strong> {reservationDetailsFromApi.reservationNumber}</p>
+              <p><strong>Otel Adı:</strong> {reservationDetailsFromApi.reservationData.services[0].serviceDetails.hotelDetail.name}</p>
+              <p><strong>Giriş Tarihi:</strong> {formatDate(reservationDetailsFromApi.reservationData.reservationInfo.beginDate)}</p>
+              <p><strong>Çıkış Tarihi:</strong> {formatDate(reservationDetailsFromApi.reservationData.reservationInfo.endDate)}</p>
+              <p>
+                <strong>Toplam Fiyat:</strong> {
+                  reservationDetailsFromApi?.reservationData?.reservationInfo?.totalPrice?.amount
+                    ? `${reservationDetailsFromApi.reservationData.reservationInfo.totalPrice.amount.toFixed(2)} ${reservationDetailsFromApi.reservationData.reservationInfo.totalPrice.currency}`
+                    : 'N/A'
+                }
+              </p>
+              {reservationDetailsFromApi.travellers && reservationDetailsFromApi.travellers.length > 0 && (
+                <div>
+                  <strong>Misafirler:</strong>
+                  <ul className="list-disc list-inside ml-4">
+                    {reservationDetailsFromApi.travellers.map((traveller, idx) => (
+                      <li key={idx}>{traveller.name} {traveller.surname} ({traveller.type})</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+            <button
+              onClick={() => setShowReservationDetailsModal(false)}
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 w-full"
             >
-              Tamam
+              Kapat
             </button>
           </div>
         </div>
