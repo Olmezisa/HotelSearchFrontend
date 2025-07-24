@@ -147,7 +147,7 @@ export const SearchForm = ({ onSearch, nationality, currency }) => {
       checkOut,
       nationality, // App.js'ten gelen nationality
       currency,    // App.js'ten gelen currency
-      roomCriteria: rooms,
+      roomCriteria: JSON.stringify(rooms),
     });
   };
 

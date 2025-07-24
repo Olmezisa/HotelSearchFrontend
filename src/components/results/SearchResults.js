@@ -29,7 +29,7 @@ export const SearchResults = ({ results, onHotelSelect, onOfferFetch, currency, 
     // 👇 Yükleme bitti VE sonuçlar boşsa "Sonuç Bulunamadı" mesajını göster
     // Eğer results hala null ise (yani API'den henüz yanıt gelmediyse veya boşsa)
     // ve loading false ise, bu blok çalışır.
-    if (!results || results.length === 0) {
+    if (results && results.length === 0) {
         return (
             <div className="text-center py-16 px-6 bg-white rounded-xl shadow-md">
                 <h2 className="text-2xl font-bold text-gray-700">Sonuç Bulunamadı</h2>
@@ -39,6 +39,8 @@ export const SearchResults = ({ results, onHotelSelect, onOfferFetch, currency, 
     }
 
     // 👇 Sonuçlar varsa, otelleri listele
+    if(results && results.length>0){
+    
     return (
         <div className="space-y-6 bg-[#F9F7F3] py-10 px-4">
             <h1 className="text-3xl font-bold text-[#001624] mb-4">Arama Sonuçları</h1>
@@ -46,6 +48,7 @@ export const SearchResults = ({ results, onHotelSelect, onOfferFetch, currency, 
                 const minPrice = hotel.offers?.length > 0
                     ? Math.min(...hotel.offers.map(o => o.price.amount))
                     : null;
+                    
 
                 return (
                     <div key={hotel.id} className="flex flex-col bg-white rounded-2xl shadow-xl hover:bg-[#B5E2FA]/20 transition-allduration-300 overflow-hidden border border-gray-200">
@@ -90,3 +93,4 @@ export const SearchResults = ({ results, onHotelSelect, onOfferFetch, currency, 
         </div>
     );
 };
+}
