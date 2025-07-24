@@ -2242,7 +2242,7 @@ const BookingPage = () => {
                       : "Bu rezervasyon belirli koşullar altında iptal edilebilir. Detaylar için iptal politikasını inceleyiniz."}
                   </p>
                 </div>
-              )} */}
+              )}
             </div>
 
             {/* Guest Information - Dinamik olarak oluşturuluyor */}
