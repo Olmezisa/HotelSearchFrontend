@@ -647,7 +647,13 @@ const BookingPage = () => {
     //! checkOutTime: formatDateTime(transactionData?.reservationData?.endDate) || defaultHotelData.checkOutTime,
     // Misafir sayısını transactionData'dan al
     guests: transactionData?.reservationData?.travellers?.length
-      ? `${transactionData.reservationData.travellers.length} Yetişkin` // Çocuk bilgisi traveller objelerinde yoksa sadece yetişkin sayısı
+      ? (() => {
+        const travellers = transactionData.reservationData.travellers;
+        const adultCount = travellers.filter(t => t.passengerType === 1).length;
+        const childCount = travellers.filter(t => t.passengerType === 2).length;
+
+        return `${adultCount} Yetişkin${childCount > 0 ? `, ${childCount} Çocuk` : ''}`;
+      })()
       : defaultHotelData.guests,
     // Konaklama süresini transactionData'dan al
     nights: transactionData?.reservationData?.reservationInfo?.beginDate && transactionData?.reservationData?.reservationInfo?.endDate
@@ -752,7 +758,7 @@ const BookingPage = () => {
 
               <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-6">
                 <div className="w-full md:w-36 h-28 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center text-sm text-white font-semibold shadow-md flex-shrink-0">
-                  <span className="text-center">Otel Görseli <br/> (Placeholder)</span>
+                  <span className="text-center">Otel Görseli <br /> (Placeholder)</span>
                 </div>
                 <div className="flex-1">
                   <h3 className="font-extrabold text-2xl text-gray-900 mb-1">{currentHotelData.name}</h3>
