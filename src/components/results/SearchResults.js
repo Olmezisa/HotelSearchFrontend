@@ -59,7 +59,7 @@ export const SearchResults = ({ results, onHotelSelect, onOfferFetch, currency, 
                                 <img
                                     src={hotel.thumbnailFull || 'https://placehold.co/400x300/e2e8f0/94a3b8?text=Resim+Yok'}
                                     alt={hotel.name}
-                                    className="w-full h-48 md:h-full object-cover"
+                                    className="w-full h-48  object-cover"
                                     onError={(e) => { e.target.src = 'https://placehold.co/400x300/e2e8f0/94a3b8?text=Resim+Yok' }}
                                 />
                             </div>
