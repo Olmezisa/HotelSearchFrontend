@@ -242,6 +242,288 @@
 
 // src/components/detail/OfferDetail.js
 
+// import React, { useState, useEffect } from 'react';
+// import { useParams } from 'react-router-dom';
+// import { ArrowLeft, Calendar, BedDouble, MapPin, Star } from 'lucide-react';
+// import { api } from '../../api/santsgApi'; // Doğru import yolu
+// import { Spinner } from '../common/Spinner';
+// import { useNavigate } from 'react-router-dom';
+
+// // Tarihleri formatlamak için yardımcı fonksiyon
+// const formatDate = (dateString) => {
+//     if (!dateString) return '';
+//     return new Date(dateString).toLocaleDateString('tr-TR', {
+//         day: '2-digit',
+//         month: 'long',
+//         year: 'numeric'
+//     });
+// };
+
+// // Yıldızları göstermek için StarRating bileşeni
+// const StarRating = ({ rating, starCount = 5 }) => (
+//     <div className="flex items-center">
+//         {[...Array(starCount)].map((_, i) => (
+//             <Star
+//                 key={`star-${i}`}
+//                 className={`h-5 w-5 ${i < rating ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`}
+//             />
+//         ))}
+//     </div>
+// );
+
+
+// export const OfferDetail = ({ onBack }) => {
+//     const { offerId, currency } = useParams();
+//     const [offerDetails, setOfferDetails] = useState(null);
+//     const [loading, setLoading] = useState(true);
+//     const [error, setError] = useState(null);
+//     const navigate = useNavigate();
+
+//     // Resim galerisi için state'ler
+//     const [mainImage, setMainImage] = useState('');
+//     const [isImageLoading, setIsImageLoading] = useState(true);
+
+//     // Rezervasyon butonu için yükleme ve hata state'leri
+//     const [isBookingLoading, setIsBookingLoading] = useState(false);
+//     const [bookingError, setBookingError] = useState(null);
+
+//     useEffect(() => {
+//         const fetchOfferDetails = async () => {
+//             if (!offerId || !currency) {
+//                 setError("Teklif ID'si veya para birimi URL'de bulunamadı.");
+//                 setLoading(false);
+//                 return;
+//             }
+
+//             setLoading(true);
+//             setIsImageLoading(true); // Resim yüklenmesini başlat
+//             try {
+//                 const response = await api.getOfferDetails([offerId], currency);
+//                 if (response?.body?.offerDetails?.length > 0) {
+//                     const details = response.body.offerDetails[0];
+//                     setOfferDetails(details);
+
+//                     // Ana resmi ayarla
+//                     const hotelData = details.hotels?.[0];
+//                     if (hotelData) {
+//                         const firstImage = hotelData.seasons?.[0]?.mediaFiles?.[0]?.urlFull || hotelData.thumbnailFull;
+//                         setMainImage(firstImage || null);
+//                     }
+//                 } else {
+//                     throw new Error("Teklif detayları alınamadı veya belirtilen teklif bulunamadı.");
+//                 }
+//             } catch (err) {
+//                 console.error("Teklif detayı API hatası:", err);
+//                 setError(err.message || "Teklif detayları yüklenirken bir sorun oluştu.");
+//             } finally {
+//                 setLoading(false);
+//                 setIsImageLoading(false); // Resim yüklenmesini bitir
+//             }
+//         };
+
+//         fetchOfferDetails();
+//     }, [offerId, currency]);
+
+//     // Resim galerisi için resim seçme fonksiyonu
+//     const handleImageSelect = (url) => {
+//         if (!url || mainImage === url) return;
+//         setIsImageLoading(true);
+//         const img = new Image();
+//         img.src = url;
+//         img.onload = () => { setMainImage(url); setIsImageLoading(false); };
+//         img.onerror = () => setIsImageLoading(false);
+//     };
+
+//     // Rezervasyon butonuna tıklama olayını yöneten fonksiyon
+//     const handleReserveClick = async () => {
+//         setIsBookingLoading(true);
+//         setBookingError(null);
+
+//         try {
+//             // offerDetails'den offerId'yi al
+//             const offerToBookId = offerDetails?.offerId;
+
+//             if (!offerToBookId) {
+//                 throw new Error("Rezervasyon için teklif ID'si bulunamadı.");
+//             }
+
+//             const requestBody = {
+//                 offerIds: [offerToBookId],
+//                 currency: offerDetails.passengerAmountToPay?.currency || "EUR", // Dinamik olarak offerDetails'ten al
+//                 culture: "en-US" // Sabit veya dinamik olabilir
+//             };
+
+//             // api.beginTransaction metodunu çağır
+//             const transactionResponse = await api.beginTransaction(requestBody);
+
+//             if (transactionResponse.header.success) {
+//                 // Başarılı olursa, transactionData'yı BookingPage'e gönder
+//                 navigate('/booking', {
+//                     state: {
+//                         offerDetails: offerDetails, // Otel detaylarını da iletmek isteyebilirsiniz
+//                         transactionData: transactionResponse.body,
+//                         mainHotelImage : mainImage
+//                     }
+//                 });
+//             } else {
+//                 setBookingError(transactionResponse.header.messages[0]?.message || "Rezervasyon başlatılamadı.");
+//             }
+//         } catch (e) {
+//             console.error("Begin Transaction Hatası:", e);
+//             setBookingError(e.message || "Rezervasyon başlatılırken bir hata oluştu. Lütfen tekrar deneyin.");
+//         } finally {
+//             setIsBookingLoading(false);
+//         }
+//     };
+
+//     if (loading) {
+//         return (
+//             <div className="flex flex-col items-center justify-center py-16">
+//                 <Spinner />
+//                 <p className="mt-4 text-xl font-semibold text-gray-700">Teklif Detayları Yükleniyor...</p>
+//             </div>
+//         );
+//     }
+
+//     if (error) {
+//         return <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg" role="alert">{error}</div>;
+//     }
+
+//     if (!offerDetails) {
+//         return <div className="text-center p-10"><p>Teklif detayı bulunamadı.</p></div>;
+//     }
+
+//     const hotel = offerDetails.hotels?.[0];
+//     const roomOffer = hotel?.offers?.[0]?.rooms?.[0];
+//     const allHotelImages = hotel?.seasons?.[0]?.mediaFiles || [];
+
+//     return (
+//         <div className="bg-gray-50 p-4 sm:p-6 lg:p-8 rounded-2xl shadow-lg font-sans">
+//             <button onClick={onBack} className="inline-flex items-center font-semibold mb-8 text-slate-600 hover:text-slate-900 transition-all duration-300 group">
+//                 <ArrowLeft className="h-6 w-6 mr-2 transition-transform duration-300 group-hover:-translate-x-1" />
+//                 Geri Dön
+//             </button>
+
+//             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+//                 <div className="lg:col-span-2 space-y-6">
+//                     {hotel && (
+//                         <div className="p-6 bg-white rounded-xl shadow-md">
+//                             {/* Resim Galerisi */}
+//                             <div className="relative w-full h-80 md:h-96 rounded-xl overflow-hidden mb-4 bg-gray-200">
+//                                 <div className={`absolute inset-0 transition-all duration-500 ${isImageLoading ? 'opacity-0 scale-110' : 'opacity-100 scale-100'}`}>
+//                                     <img
+//                                         src={mainImage || 'https://placehold.co/800x600/e2e8f0/94a3b8?text=Resim+Bulunamadı'}
+//                                         alt="Ana Otel Resmi"
+//                                         className="w-full h-full object-cover"
+//                                     />
+//                                 </div>
+//                             </div>
+//                             {allHotelImages.length > 1 && (
+//                                 <div className="flex space-x-2 overflow-x-auto pb-2">
+//                                     {allHotelImages.map((media, index) => (
+//                                         <img
+//                                             key={index}
+//                                             src={media.urlFull}
+//                                             alt={`Thumbnail ${index + 1}`}
+//                                             className={`flex-shrink-0 w-24 h-16 object-cover rounded-lg cursor-pointer border-2 transition-all ${mainImage === media.urlFull ? 'border-rose-500 scale-105' : 'border-transparent opacity-70 hover:opacity-100'}`}
+//                                             onClick={() => handleImageSelect(media.urlFull)}
+//                                         />
+//                                     ))}
+//                                 </div>
+//                             )}
+//                             {/* Resim Galerisi Bitişi */}
+
+//                             <div className="flex justify-between items-start mt-4">
+//                                 <div>
+//                                     <h1 className="text-3xl font-bold text-slate-800">{hotel.name}</h1>
+//                                     <p className="text-lg text-slate-500 mt-1 flex items-center">
+//                                         <MapPin className="h-5 w-5 mr-2" />
+//                                         {hotel.city?.name}, {hotel.country?.name}
+//                                     </p>
+//                                 </div>
+//                                 <div className="flex-shrink-0">
+//                                     <StarRating rating={hotel.stars} />
+//                                 </div>
+//                             </div>
+//                         </div>
+//                     )}
+
+//                     <div className="p-6 bg-white rounded-xl shadow-md">
+//                         <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center">
+//                             <Calendar className="h-6 w-6 mr-3 text-rose-500" /> Seyahat Tarihleri
+//                         </h2>
+//                         <div className="flex justify-between items-center text-center">
+//                             <div>
+//                                 <p className="font-semibold text-slate-500 text-sm">GİRİŞ TARİHİ</p>
+//                                 <p className="text-lg text-slate-800 font-bold">{formatDate(offerDetails.checkIn)}</p>
+//                             </div>
+//                             <div className="text-2xl text-slate-300">→</div>
+//                             <div>
+//                                 <p className="font-semibold text-slate-500 text-sm">ÇIKIŞ TARİHİ</p>
+//                                 <p className="text-lg text-slate-800 font-bold">{formatDate(offerDetails.checkOut)}</p>
+//                             </div>
+//                         </div>
+//                     </div>
+
+//                     {roomOffer && (
+//                         <div className="p-6 bg-white rounded-xl shadow-md">
+//                             <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center">
+//                                 <BedDouble className="h-6 w-6 mr-3 text-rose-500" /> Konaklama Detayları
+//                             </h2>
+//                             <div>
+//                                 <p className="text-xl font-semibold text-slate-700">{roomOffer.roomName}</p>
+//                                 <p className="text-md text-slate-500">{roomOffer.boardName}</p>
+//                             </div>
+//                         </div>
+//                     )}
+//                 </div>
+
+//                 <aside className="space-y-6 lg:sticky lg:top-8 self-start">
+//                     <div className="p-6 bg-white rounded-xl shadow-lg border-2 border-rose-500">
+//                         <h2 className="text-xl font-bold text-slate-800 mb-4">Ödenecek Tutar</h2>
+//                         <p className="text-4xl font-extrabold text-rose-600">
+//                             {offerDetails.passengerAmountToPay?.amount
+//                                 ? `${offerDetails.passengerAmountToPay.amount.toFixed(2)} ${offerDetails.passengerAmountToPay.currency}`
+//                                 : 'Fiyat Bilgisi Yok'
+//                             }
+//                         </p>
+//                         <p className={`mt-4 font-semibold ${!offerDetails.refundable ? 'text-red-600' : 'text-green-600'}`}>
+//                             {!offerDetails.refundable ? 'İptal Edilemez' : 'İptal Edilebilir'}
+//                         </p>
+//                         <button
+//                             onClick={handleReserveClick} // Yeni eklenen fonksiyon
+//                             className="w-full mt-6 py-3 px-4 bg-rose-500 text-white font-bold rounded-lg shadow-md hover:bg-rose-600 transition-all duration-300 disabled:opacity-50"
+//                             disabled={isBookingLoading} // Yükleme durumunda butonu devre dışı bırak
+//                         >
+//                             {isBookingLoading ? 'Rezervasyon Başlatılıyor...' : 'Hemen Rezervasyon Yap'}
+//                         </button>
+//                         {bookingError && ( // Hata mesajını göster
+//                             <p className="text-red-500 text-sm mt-2 text-center">{bookingError}</p>
+//                         )}
+//                     </div>
+
+//                     {offerDetails.cancellationPolicies?.length > 0 && (
+//                         <div className="p-6 bg-white rounded-xl shadow-md">
+//                             <h3 className="text-xl font-bold text-slate-800 mb-3">İptal Politikası</h3>
+//                             <ul className="list-disc list-inside text-slate-600 space-y-1">
+//                                 {offerDetails.cancellationPolicies.map((policy, index) => (
+//                                     <li key={index}>
+//                                         <strong>{formatDate(policy.dueDate)}</strong> tarihine kadar
+//                                         {policy.price?.amount
+//                                             ? ` ${policy.price.amount} ${policy.price.currency} ceza uygulanır.`
+//                                             : ` ceza uygulanır.`
+//                                         }
+//                                     </li>
+//                                 ))}
+//                             </ul>
+//                         </div>
+//                     )}
+//                 </aside>
+//             </div>
+//         </div>
+//     );
+// };
+
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, BedDouble, MapPin, Star } from 'lucide-react';
@@ -279,9 +561,10 @@ export const OfferDetail = ({ onBack }) => {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
-    // Resim galerisi için state'ler
+    // Resim galerisi için state'ler - GÜNCELLENDİ
     const [mainImage, setMainImage] = useState('');
     const [isImageLoading, setIsImageLoading] = useState(true);
+    const [imageError, setImageError] = useState(false);
 
     // Rezervasyon butonu için yükleme ve hata state'leri
     const [isBookingLoading, setIsBookingLoading] = useState(false);
@@ -296,18 +579,45 @@ export const OfferDetail = ({ onBack }) => {
             }
 
             setLoading(true);
-            setIsImageLoading(true); // Resim yüklenmesini başlat
+            setIsImageLoading(true);
+            setImageError(false);
+            
             try {
                 const response = await api.getOfferDetails([offerId], currency);
                 if (response?.body?.offerDetails?.length > 0) {
                     const details = response.body.offerDetails[0];
                     setOfferDetails(details);
 
-                    // Ana resmi ayarla
+                    // Ana resmi ayarla - GÜNCELLENDİ
                     const hotelData = details.hotels?.[0];
                     if (hotelData) {
-                        const firstImage = hotelData.seasons?.[0]?.mediaFiles?.[0]?.urlFull || hotelData.thumbnailFull;
-                        setMainImage(firstImage || null);
+                        // Öncelik sırası: mediaFiles -> thumbnailFull -> varsayılan
+                        let imageUrl = null;
+                        
+                        // İlk olarak seasons içindeki mediaFiles'ı kontrol et
+                        if (hotelData.seasons?.[0]?.mediaFiles?.length > 0) {
+                            imageUrl = hotelData.seasons[0].mediaFiles[0].urlFull;
+                        }
+                        // Eğer mediaFiles yoksa thumbnailFull'u kullan
+                        else if (hotelData.thumbnailFull) {
+                            imageUrl = hotelData.thumbnailFull;
+                        }
+                        // Son çare olarak thumbnail kullan
+                        else if (hotelData.thumbnail) {
+                            imageUrl = hotelData.thumbnail;
+                        }
+
+                        console.log('Setting main image:', imageUrl); // Debug için
+                        
+                        if (imageUrl) {
+                            setMainImage(imageUrl);
+                        } else {
+                            setMainImage('https://placehold.co/800x600/e2e8f0/94a3b8?text=Resim+Bulunamadı');
+                            setImageError(true);
+                        }
+                    } else {
+                        setMainImage('https://placehold.co/800x600/e2e8f0/94a3b8?text=Otel+Bilgisi+Yok');
+                        setImageError(true);
                     }
                 } else {
                     throw new Error("Teklif detayları alınamadı veya belirtilen teklif bulunamadı.");
@@ -315,32 +625,45 @@ export const OfferDetail = ({ onBack }) => {
             } catch (err) {
                 console.error("Teklif detayı API hatası:", err);
                 setError(err.message || "Teklif detayları yüklenirken bir sorun oluştu.");
+                setMainImage('https://placehold.co/800x600/e2e8f0/94a3b8?text=Hata+Oluştu');
+                setImageError(true);
             } finally {
                 setLoading(false);
-                setIsImageLoading(false); // Resim yüklenmesini bitir
             }
         };
 
         fetchOfferDetails();
     }, [offerId, currency]);
 
-    // Resim galerisi için resim seçme fonksiyonu
+    // Resim galerisi için resim seçme fonksiyonu - GÜNCELLENDİ
     const handleImageSelect = (url) => {
         if (!url || mainImage === url) return;
+        
+        console.log('Selecting new image:', url); // Debug için
         setIsImageLoading(true);
+        setImageError(false);
+        
+        // Resmi önceden yükle
         const img = new Image();
+        img.onload = () => {
+            console.log('New image loaded successfully:', url);
+            setMainImage(url);
+            setIsImageLoading(false);
+        };
+        img.onerror = () => {
+            console.error('Failed to load selected image:', url);
+            setIsImageLoading(false);
+            setImageError(true);
+        };
         img.src = url;
-        img.onload = () => { setMainImage(url); setIsImageLoading(false); };
-        img.onerror = () => setIsImageLoading(false);
     };
 
-    // Rezervasyon butonuna tıklama olayını yöneten fonksiyon
+    // Rezervasyon butonuna tıklama olayını yöneten fonksiyon - GÜNCELLENDİ
     const handleReserveClick = async () => {
         setIsBookingLoading(true);
         setBookingError(null);
 
         try {
-            // offerDetails'den offerId'yi al
             const offerToBookId = offerDetails?.offerId;
 
             if (!offerToBookId) {
@@ -349,20 +672,20 @@ export const OfferDetail = ({ onBack }) => {
 
             const requestBody = {
                 offerIds: [offerToBookId],
-                currency: offerDetails.passengerAmountToPay?.currency || "EUR", // Dinamik olarak offerDetails'ten al
-                culture: "en-US" // Sabit veya dinamik olabilir
+                currency: offerDetails.passengerAmountToPay?.currency || "EUR",
+                culture: "en-US"
             };
 
-            // api.beginTransaction metodunu çağır
             const transactionResponse = await api.beginTransaction(requestBody);
 
             if (transactionResponse.header.success) {
-                // Başarılı olursa, transactionData'yı BookingPage'e gönder
+                console.log('Sending main image to booking page:', mainImage); // Debug için
+                
                 navigate('/booking', {
                     state: {
-                        offerDetails: offerDetails, // Otel detaylarını da iletmek isteyebilirsiniz
+                        offerDetails: offerDetails,
                         transactionData: transactionResponse.body,
-                        mainHotelImage : mainImage
+                        mainHotelImage: mainImage // Ana resmi gönder
                     }
                 });
             } else {
@@ -408,25 +731,58 @@ export const OfferDetail = ({ onBack }) => {
                 <div className="lg:col-span-2 space-y-6">
                     {hotel && (
                         <div className="p-6 bg-white rounded-xl shadow-md">
-                            {/* Resim Galerisi */}
+                            {/* Resim Galerisi - GÜNCELLENDİ */}
                             <div className="relative w-full h-80 md:h-96 rounded-xl overflow-hidden mb-4 bg-gray-200">
-                                <div className={`absolute inset-0 transition-all duration-500 ${isImageLoading ? 'opacity-0 scale-110' : 'opacity-100 scale-100'}`}>
-                                    <img
-                                        src={mainImage || 'https://placehold.co/800x600/e2e8f0/94a3b8?text=Resim+Bulunamadı'}
-                                        alt="Ana Otel Resmi"
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
+                                {/* Yükleme göstergesi */}
+                                {isImageLoading && (
+                                    <div className="absolute inset-0 flex items-center justify-center bg-gray-300 z-10">
+                                        <div className="text-center">
+                                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-2"></div>
+                                            <p className="text-gray-600 text-sm font-semibold">Görsel Yükleniyor...</p>
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                {/* Ana görsel */}
+                                <img
+                                    key={mainImage} // React'in elementi yeniden oluşturması için
+                                    src={mainImage || 'https://placehold.co/800x600/e2e8f0/94a3b8?text=Resim+Bulunamadı'}
+                                    alt="Ana Otel Resmi"
+                                    className={`w-full h-full object-cover transition-opacity duration-300 ${isImageLoading ? 'opacity-0' : 'opacity-100'}`}
+                                    onLoad={() => {
+                                        console.log('Main image loaded successfully:', mainImage);
+                                        setIsImageLoading(false);
+                                        setImageError(false);
+                                    }}
+                                    onError={(e) => {
+                                        console.error('Main image failed to load:', mainImage);
+                                        if (!imageError) {
+                                            e.target.src = 'https://placehold.co/800x600/e2e8f0/94a3b8?text=Resim+Yüklenemedi';
+                                            setImageError(true);
+                                        }
+                                        setIsImageLoading(false);
+                                    }}
+                                />
                             </div>
+                            
+                            {/* Küçük resim galerisi */}
                             {allHotelImages.length > 1 && (
                                 <div className="flex space-x-2 overflow-x-auto pb-2">
                                     {allHotelImages.map((media, index) => (
                                         <img
-                                            key={index}
+                                            key={`thumb-${index}`}
                                             src={media.urlFull}
                                             alt={`Thumbnail ${index + 1}`}
-                                            className={`flex-shrink-0 w-24 h-16 object-cover rounded-lg cursor-pointer border-2 transition-all ${mainImage === media.urlFull ? 'border-rose-500 scale-105' : 'border-transparent opacity-70 hover:opacity-100'}`}
+                                            className={`flex-shrink-0 w-24 h-16 object-cover rounded-lg cursor-pointer border-2 transition-all duration-200 ${
+                                                mainImage === media.urlFull 
+                                                    ? 'border-rose-500 scale-105 opacity-100' 
+                                                    : 'border-transparent opacity-70 hover:opacity-100 hover:scale-105'
+                                            }`}
                                             onClick={() => handleImageSelect(media.urlFull)}
+                                            onError={(e) => {
+                                                console.warn('Thumbnail failed to load:', media.urlFull);
+                                                e.target.style.display = 'none'; // Hatalı thumbnail'i gizle
+                                            }}
                                         />
                                     ))}
                                 </div>
@@ -491,13 +847,13 @@ export const OfferDetail = ({ onBack }) => {
                             {!offerDetails.refundable ? 'İptal Edilemez' : 'İptal Edilebilir'}
                         </p>
                         <button
-                            onClick={handleReserveClick} // Yeni eklenen fonksiyon
+                            onClick={handleReserveClick}
                             className="w-full mt-6 py-3 px-4 bg-rose-500 text-white font-bold rounded-lg shadow-md hover:bg-rose-600 transition-all duration-300 disabled:opacity-50"
-                            disabled={isBookingLoading} // Yükleme durumunda butonu devre dışı bırak
+                            disabled={isBookingLoading}
                         >
                             {isBookingLoading ? 'Rezervasyon Başlatılıyor...' : 'Hemen Rezervasyon Yap'}
                         </button>
-                        {bookingError && ( // Hata mesajını göster
+                        {bookingError && (
                             <p className="text-red-500 text-sm mt-2 text-center">{bookingError}</p>
                         )}
                     </div>
