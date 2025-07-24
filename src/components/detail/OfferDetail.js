@@ -362,7 +362,7 @@ export const OfferDetail = ({ onBack }) => {
                     state: {
                         offerDetails: offerDetails, // Otel detaylarını da iletmek isteyebilirsiniz
                         transactionData: transactionResponse.body,
-                        mainHotelImage : mainImage
+                        mainHotelImage: mainImage
                     }
                 });
             } else {
@@ -396,7 +396,8 @@ export const OfferDetail = ({ onBack }) => {
     const hotel = offerDetails.hotels?.[0];
     const roomOffer = hotel?.offers?.[0]?.rooms?.[0];
     const allHotelImages = hotel?.seasons?.[0]?.mediaFiles || [];
-
+    const totalAmount = offerDetails?.priceBreakdowns?.reduce((sum, item) => sum + (item.price?.amount || 0), 0);
+    const displayCurrency = offerDetails?.priceBreakdowns?.[0]?.price?.currency || 'EUR';
     return (
         <div className="bg-gray-50 p-4 sm:p-6 lg:p-8 rounded-2xl shadow-lg font-sans">
             <button onClick={onBack} className="inline-flex items-center font-semibold mb-8 text-slate-600 hover:text-slate-900 transition-all duration-300 group">
@@ -481,12 +482,26 @@ export const OfferDetail = ({ onBack }) => {
                 <aside className="space-y-6 lg:sticky lg:top-8 self-start">
                     <div className="p-6 bg-white rounded-xl shadow-lg border-2 border-rose-500">
                         <h2 className="text-xl font-bold text-slate-800 mb-4">Ödenecek Tutar</h2>
+                        {/* offerDetails dan  passengerAmountToPay null olarak dönüyor dolayısıyla gelmemesinin sebebi bu. Bakmamız  gereken yer ise priceBreakdowns tarafından gelen amount kısmıymış.*/}
                         <p className="text-4xl font-extrabold text-rose-600">
-                            {offerDetails.passengerAmountToPay?.amount
-                                ? `${offerDetails.passengerAmountToPay.amount.toFixed(2)} ${offerDetails.passengerAmountToPay.currency}`
-                                : 'Fiyat Bilgisi Yok'
-                            }
+                            {totalAmount
+                                ? `${totalAmount.toFixed(2)} ${displayCurrency}`
+                                : 'Fiyat Bilgisi Yok'}
                         </p>
+                        {offerDetails?.checkIn && offerDetails?.checkOut && totalAmount && (
+                            <p className="text-sm text-gray-500 mt-1">
+                                {(() => {
+                                    const checkIn = new Date(offerDetails.checkIn);
+                                    const checkOut = new Date(offerDetails.checkOut);
+                                    const nights = Math.max(
+                                        Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24)),
+                                        1
+                                    );
+                                    const perNight = totalAmount / nights;
+                                    return `(${nights} gece x ${perNight.toFixed(2)} ${displayCurrency})`;
+                                })()}
+                            </p>
+                        )}
                         <p className={`mt-4 font-semibold ${!offerDetails.refundable ? 'text-red-600' : 'text-green-600'}`}>
                             {!offerDetails.refundable ? 'İptal Edilemez' : 'İptal Edilebilir'}
                         </p>
