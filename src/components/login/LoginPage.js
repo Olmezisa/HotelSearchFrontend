@@ -31,20 +31,20 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen p-4" style={{ backgroundColor: '#B5E2FA' , borderRadius: '10px'}}>
-            <div className="w-full max-w-md rounded-xl shadow-lg p-8 space-y-6" style={{ backgroundColor: '#F9F7F3' }}>
-                <h2 className="text-3xl font-bold text-center" style={{ color: '#cf680eff' }}>Giriş Yap</h2>
+        <div className="flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-gray-50 to-gray-100">
+            <div className="w-full max-w-md rounded-2xl shadow-2xl p-8 space-y-6 backdrop-blur-sm border border-white/20" style={{ backgroundColor: '#F9F7F3' }}>
+                <h2 className="text-3xl font-bold text-center mb-8" style={{ color: '#093B5A' }}>Giriş Yap</h2>
 
                 {/* Hata Mesajı */}
                 {error && (
-                    <div className="border px-4 py-3 rounded relative" role="alert" style={{ backgroundColor: '#e68a59ff', borderColor: '#F7A072', color: '#001624' }}>
+                    <div className="border px-4 py-3 rounded relative" role="alert" style={{ backgroundColor: '#FBCFB7', borderColor: '#D48A61', color: '#093B5A' }}>
                         <span className="block sm:inline">{error}</span>
                     </div>
                 )}
 
                 <div className="space-y-6">
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium mb-1" style={{ color: '#cf680eff' }}>
+                        <label htmlFor="email" className="block text-sm font-medium mb-1" style={{ color: '#093B5A' }}>
                             E-posta Adresi
                         </label>
                         <input
@@ -52,11 +52,11 @@ export default function LoginPage() {
                             id="email"
                             name="email"
                             placeholder="eposta@example.com"
-                            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2"
+                            className="w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-0 focus:border-blue-500 transition-all duration-200 hover:border-gray-300"
                             style={{ 
                                 borderColor: '#EDDEA4',
                                 backgroundColor: '#F9F7F3',
-                                color: '#001624'
+                                color: '#093B5A'
                             }}
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -65,7 +65,7 @@ export default function LoginPage() {
                     </div>
 
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium mb-1" style={{ color: '#cf680eff' }}>
+                        <label htmlFor="password" className="block text-sm font-medium mb-1" style={{ color: '#093B5A' }}>
                             Şifre
                         </label>
                         <input
@@ -73,11 +73,11 @@ export default function LoginPage() {
                             id="password"
                             name="password"
                             placeholder="Şifrenizi girin"
-                            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2"
+                            className="w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-0 focus:border-blue-500 transition-all duration-200 hover:border-gray-300"
                             style={{ 
                                 borderColor: '#EDDEA4',
                                 backgroundColor: '#F9F7F3',
-                                color: '#001624'
+                                color: '#093B5A'
                             }}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -93,17 +93,17 @@ export default function LoginPage() {
                                 name="rememberMe"
                                 className="h-4 w-4 rounded focus:ring-2"
                                 style={{ 
-                                    accentColor: '#2883BB',
+                                    accentColor: '#2781B9',
                                     borderColor: '#EDDEA4'
                                 }}
                                 checked={rememberMe}
                                 onChange={(e) => setRememberMe(e.target.checked)}
                             />
-                            <label htmlFor="rememberMe" className="ml-2 block text-sm" style={{ color: '#001624' }}>
+                            <label htmlFor="rememberMe" className="ml-2 block text-sm" style={{ color: '#093B5A' }}>
                                 Beni Hatırla
                             </label>
                         </div>
-                        <a href="#" className="text-sm font-medium hover:opacity-80" style={{ color: '#2883BB' }}>
+                        <a href="#" className="text-sm font-medium hover:opacity-80 transition-opacity" style={{ color: '#2781B9' }}>
                             Şifremi Unuttum?
                         </a>
                     </div>
@@ -112,11 +112,13 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             onClick={handleSubmit}
-                            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                            className="w-full flex justify-center py-4 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 transform hover:scale-[1.02]"
                             style={{ 
-                                backgroundColor: '#2883BB',
-                                color: '#b8c4eeff'
+                                backgroundColor: '#2781B9',
+                                color: '#F9F7F3'
                             }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = '#093B5A'}
+                            onMouseOut={(e) => e.target.style.backgroundColor = '#2781B9'}
                         >
                             Giriş Yap
                         </button>
@@ -124,11 +126,18 @@ export default function LoginPage() {
                 </div>
 
                 {/* İsteğe bağlı: Kayıt ol veya diğer seçenekler */}
-                <div className="text-center text-sm" style={{ color: '#001624' }}>
+                <div className="text-center text-sm" style={{ color: '#093B5A' }}>
                     Hesabınız yok mu?{' '}
-                    <a href="#" className="font-medium hover:opacity-80" style={{ color: '#2883BB' }}>
+                    <a href="#" className="font-medium hover:opacity-80 transition-opacity" style={{ color: '#AC440B' }}>
                         Şimdi Kayıt Ol
                     </a>
+                </div>
+
+                {/* Dekoratif accent */}
+                <div className="flex justify-center space-x-2 mt-6">
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#D48A61' }}></div>
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#F9B18B' }}></div>
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#EDDEA4' }}></div>
                 </div>
             </div>
         </div>

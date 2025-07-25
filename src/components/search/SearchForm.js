@@ -256,3 +256,4 @@ export const SearchForm = ({ onSearch, nationality, currency }) => {
     </div>
   );
 };
+

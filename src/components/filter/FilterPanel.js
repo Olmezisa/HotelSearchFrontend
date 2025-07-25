@@ -55,9 +55,9 @@ export const FilterSection = () => {
   ];
 
   const discounts = [
-    { label: 'Son Dakika', count: 503, icon: '⚡' },
-    { label: 'Erken Rezervasyon', count: 26, icon: '🎯' },
-    { label: 'Özel Kampanya', count: 141, icon: '⭐' },
+    { label: 'Son Dakika', count: 503 },
+    { label: 'Erken Rezervasyon', count: 26 },
+    { label: 'Özel Kampanya', count: 141  },
   ];
 
   const filteredFacilities = facilities.filter(item =>
@@ -161,7 +161,7 @@ export const FilterSection = () => {
                   ))
                 ) : (
                   <div className="text-center py-6 text-[#093B5A]/60">
-                    <span className="text-2xl block mb-2">🔍</span>
+                    
                     Arama kriterinize uygun sonuç bulunamadı
                   </div>
                 )}
