@@ -64,15 +64,46 @@ export const api = {
     });
   },
 
-  setReservationInfo: (setInfoPayload) => {
-    return fetch(`${API_ROOT_BASE_URL}/api/booking/set-info`, {
+  setReservationInfo: async (setInfoPayload) => {
+    const res = await fetch(`${API_ROOT_BASE_URL}/api/booking/set-info`, {
       method: 'POST',
-      headers: {'Content-Type' : 'application/json' },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(setInfoPayload),
-    }).then(res => {
-      if(!res.ok) throw new Error('Set Reservation Info API error');
-      return res.json();
     });
+    if (!res.ok) throw new Error('Set Reservation Info API error');
+    return await res.json();
+  },
+
+  commitTransaction : async (transactionId) => {
+    const res = await fetch(`${API_ROOT_BASE_URL}/api/booking/commit-transaction`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(transactionId),
+    });
+    if (!res.ok) throw new Error('Commit Transaction API error');
+    return await res.json();
+  },
+
+  getReservationDetail : async (reservationNumber) => {
+    try {
+      const response = await fetch(`${API_ROOT_BASE_URL}/api/booking/get-detail`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ReservationNumber: reservationNumber }), 
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Bilinmeyen API hatası' }));
+        throw new Error(errorData.message || `API Hatası: ${response.status} ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Get Reservation Detail API çağrısı hatası:", error);
+      throw error;
+    }
   }
 };
 
