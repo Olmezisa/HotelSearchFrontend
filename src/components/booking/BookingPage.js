@@ -83,13 +83,10 @@ const BookingPage = () => {
           firstName: traveller.name || '',
           lastName: traveller.surname || '',
           email: traveller.address?.email || '',
-          // Telefon numarasını contactPhone'dan veya doğrudan phone'dan al
           phone: traveller.address?.contactPhone?.phoneNumber || traveller.address?.phone || '',
-          // Gender'ı API'nin beklediği 0 (Erkek) ve 1 (Kadın) değerlerine göre ayarla
           gender: traveller.gender === 0 ? 'Erkek' : (traveller.gender === 1 ? 'Kadın' : 'Kadın'),
-          birthDate: traveller.birthDate ? traveller.birthDate.split('T')[0] : '', // YYYY-MM-DD formatına çevir
+          birthDate: (traveller.birthDate && traveller.birthDate !== '0001-01-01T00:00:00') ? traveller.birthDate.split('T')[0] : '2000-01-01',
           nationality: traveller.nationality?.twoLetterCode || '',
-          // Diğer alanlar buraya eklenebilir
         }));
         setGuestInfo(initialGuestData);
       }
@@ -132,18 +129,15 @@ const BookingPage = () => {
   const currency = transactionData?.reservationData?.reservationInfo?.passengerAmountToPay?.currency || 'EUR';
 
   const handleInputChange = (index, field, value) => {
-    // Payment info için index null ise ayrı işlem yap
+    // index nullsa payment
     if (index === null) {
-      // Kart numarası için sadece rakamları al ve her 4 hanede bir boşluk ekle
       if (field === 'cardNumber') {
         const formattedValue = value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
         setPaymentInfo(prev => ({ ...prev, [field]: formattedValue }));
       } else if (field === 'cvv') {
-        // CVV için sadece rakamları al ve max 4 karakter
         const formattedValue = value.replace(/\D/g, '').slice(0, 4);
         setPaymentInfo(prev => ({ ...prev, [field]: formattedValue }));
       } else {
-        // expiryDate ve cardHolder gibi diğer ödeme alanları için doğrudan değeri ata
         setPaymentInfo(prev => ({ ...prev, [field]: value }));
       }
     } else {
@@ -168,23 +162,20 @@ const BookingPage = () => {
           return traveller;
         }
 
-        // Telefon numarasını API'nin beklediği formata dönüştür
-        // Ana misafir için contactPhone objesi, diğerleri için doğrudan phone string
         let addressUpdates = { ...traveller.address };
-
         if (index === 0) { // Ana misafir için contactPhone objesi
           let contactPhone = {
             countryCode: '',
             areaCode: '',
             phoneNumber: currentGuest.phone || ''
           };
-          // Telefon numarasını ayrıştırma (örnek: +90 555 123 45 67)
+          // Telefon numarasını ayrıştırma
           if (currentGuest.phone) {
             const phoneParts = currentGuest.phone.match(/^\+(\d+)\s(\d{3})\s(.+)$/);
             if (phoneParts) {
               contactPhone.countryCode = phoneParts[1];
               contactPhone.areaCode = phoneParts[2];
-              contactPhone.phoneNumber = phoneParts[3].replace(/\s/g, ''); // Sayı kısmındaki boşlukları kaldır
+              contactPhone.phoneNumber = phoneParts[3].replace(/\s/g, '');
             } else {
               // Eğer format eşleşmezse, tüm numarayı phoneNumber'a ata
               contactPhone.phoneNumber = currentGuest.phone;
@@ -192,35 +183,32 @@ const BookingPage = () => {
           }
           addressUpdates.contactPhone = contactPhone;
           delete addressUpdates.phone; // Eğer varsa eski phone alanını temizle
-        } else { // Diğer misafirler için doğrudan phone string
+        } else {
           addressUpdates.phone = currentGuest.phone || '';
-          delete addressUpdates.contactPhone; // Eğer varsa eski contactPhone alanını temizle
+          delete addressUpdates.contactPhone;
         }
-
-        // E-posta her zaman address objesi içinde
         addressUpdates.email = currentGuest.email;
 
         return {
           ...traveller,
           name: currentGuest.firstName,
           surname: currentGuest.lastName,
-          title: currentGuest.gender === 'Erkek' ? 1 : (currentGuest.gender === 'Kadın' ? 3 : traveller.title), // API'nin beklediği title değerine göre ayarla (1: Erkek, 3: Kadın)
+          title: currentGuest.gender === 'Erkek' ? 1 : (currentGuest.gender === 'Kadın' ? 3 : traveller.title),
           // isLeader alanını doğrudan index'e göre ayarla
           isLeader: index === 0, // Sadece ilk misafiri lider olarak işaretle
-          birthDate: currentGuest.birthDate ? `${currentGuest.birthDate}T00:00:00` : (traveller.birthDate || ''), // API'nin beklediği format
+          birthDate: currentGuest.birthDate ? `${currentGuest.birthDate}T00:00:00` : (traveller.birthDate || '2000-01-01T00:00:00'),
           nationality: {
-            twoLetterCode: currentGuest.nationality || (traveller.nationality?.twoLetterCode || 'TR') // Varsayılan TR
+            twoLetterCode: currentGuest.nationality || (traveller.nationality?.twoLetterCode || 'TR')
           },
-          address: addressUpdates, // Güncellenmiş adres objesini kullan
-          // Postman örneğinde boş olan veya varsayılan değerleri olan diğer alanlar
+          address: addressUpdates,
           academicTitle: traveller.academicTitle || { id: 1 },
           passengerType: traveller.passengerType || 1,
           identityNumber: traveller.identityNumber || '',
           passportInfo: traveller.passportInfo || {
             serial: "",
             number: "",
-            expireDate: "2030-01-01T00:00:00", // Varsayılan
-            issueDate: "2020-01-01T00:00:00", // Varsayılan
+            expireDate: "2030-01-01T00:00:00",
+            issueDate: "2020-01-01T00:00:00",
             citizenshipCountryCode: ""
           },
           destinationAddress: traveller.destinationAddress || {},
@@ -228,15 +216,15 @@ const BookingPage = () => {
           documents: traveller.documents || [],
           insertFields: traveller.insertFields || [],
           status: traveller.status || 0,
-          gender: currentGuest.gender === 'Erkek' ? 0 : (currentGuest.gender === 'Kadın' ? 1 : traveller.gender) // API örneğine göre gender alanı (0: Erkek, 1: Kadın)
+          gender: currentGuest.gender === 'Erkek' ? 0 : (currentGuest.gender === 'Kadın' ? 1 : traveller.gender)
         };
       });
 
       const setInfoPayload = {
         transactionId: transactionData.transactionId,
-        travellers: updatedTravellers, // reservationData'nın altında değil, doğrudan transactionId'nin altında
-        reservationNote: guestInfo[0]?.specialRequests || '', // specialRequests'i reservationNote olarak gönderiyoruz
-        agencyReservationNumber: "Agency reservation number text" // Postman örneğindeki değer
+        travellers: updatedTravellers,
+        reservationNote: guestInfo[0]?.specialRequests || '',
+        agencyReservationNumber: "Agency reservation number text"
       };
 
       console.log("Gönderilen setInfoPayload:", setInfoPayload); // Payload'ı konsola yazdır
@@ -244,8 +232,6 @@ const BookingPage = () => {
       const setInfoResponse = await api.setReservationInfo(setInfoPayload);
 
       if (setInfoResponse.header.success) {
-        // setInfo başarılı olduktan sonra commitTransaction'ı çağır
-        // Sadece setInfoResponse.body.transactionId'yi gönderiyoruz.
         const commitResponse = await api.commitTransaction({
           transactionId: setInfoResponse.body.transactionId
         });
@@ -253,9 +239,8 @@ const BookingPage = () => {
         if (commitResponse.header.success) {
           const reservationNumber = commitResponse.body.reservationNumber;
           setFinalReservationNumber(reservationNumber); // Rezervasyon numarasını state'e kaydet
-          setShowBookingSuccessModal(true); // Başarı modalını göster
+          setShowBookingSuccessModal(true);
 
-          // getReservationDetail çağrısı artık butona tıklandığında yapılacak
         } else {
           setSaveGuestInfoError(commitResponse.header.messages[0]?.message || "Rezervasyon kesinleştirilemedi.");
           setShowBookingErrorModal(true);
@@ -281,9 +266,8 @@ const BookingPage = () => {
       return;
     }
 
-    // Başarı modalını kapat
     setShowBookingSuccessModal(false);
-    setLoading(true); // Detaylar yüklenirken yükleme göstergesi
+    setLoading(true);
     setSaveGuestInfoError(null);
 
     try {
@@ -291,7 +275,7 @@ const BookingPage = () => {
 
       if (reservationDetailResponse.header.success) {
         setReservationDetailsFromApi(reservationDetailResponse.body); // Detayları state'e kaydet
-        setShowReservationDetailsModal(true); // Detay modalını aç
+        setShowReservationDetailsModal(true);
       } else {
         setSaveGuestInfoError(reservationDetailResponse.header.messages[0]?.message || "Rezervasyon detayları alınamadı.");
         setShowBookingErrorModal(true);
@@ -301,7 +285,7 @@ const BookingPage = () => {
       setSaveGuestInfoError(e.message || "Rezervasyon detayları alınırken bir hata oluştu.");
       setShowBookingErrorModal(true);
     } finally {
-      setLoading(false); // Yüklemeyi bitir
+      setLoading(false);
     }
   };
 
