@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Star, Users, MapPin, Calendar, CreditCard, CheckCircle, XCircle } from 'lucide-react';
 import { api } from '../../api/santsgApi';
+import { VisaIcon, VisaElectronIcon, MastercardIcon, MaestroIcon, AmericanExpressIcon } from '../../assets/icons'
 
 const BookingPage = () => {
   const location = useLocation();
@@ -602,48 +602,27 @@ const BookingPage = () => {
                 <div className="flex flex-wrap justify-center items-center gap-4">
                   {/* Visa */}
                   <div className="h-8 w-16 bg-white border border-[#88B8D2]/30 rounded flex items-center justify-center">
-                    <svg viewBox="0 0 780 500" className="h-6 w-auto">
-                      <rect fill="#0066b2" width="780" height="500" rx="40" />
-                      <path fill="white" d="M400.5 227.4l-12.9 78.4h-20.6l12.9-78.4h20.6zm66.1 0c-4.1 0-7.5 2.4-9 6.1l-31.7 72.3h21.7l4.3-11.9h26.4l2.5 11.9h19.1l-16.6-78.4h-16.7zm2.9 20.1l6.2 26.6h-17.1l10.9-26.6zM344.7 227.4l-21.4 53.5-2.3-11.5c-3.9-13.3-16.1-27.6-29.8-34.8l18.4 71.2h21.8l32.4-78.4h-19.1zm-57.2 0h-33.4c-3.8 0-7.2 2.5-8.1 6.2l-26.9 72.2h21.8l4.3-11.9h27.1l2.5 11.9h19.1l-16.6-78.4h-10.3z" />
-                    </svg>
+                    <VisaIcon />
                   </div>
 
                   {/* Visa Electron */}
                   <div className="h-8 w-16 bg-white border border-[#88B8D2]/30 rounded flex items-center justify-center">
-                    <svg viewBox="0 0 780 500" className="h-6 w-auto">
-                      <rect fill="#1a1f71" width="780" height="500" rx="40" />
-                      <path fill="white" d="M278.2 334.1c-31.1 0-52.6-21.4-52.6-52.5s21.5-52.5 52.6-52.5c15.8 0 29.9 6.1 40.1 16.1l-14.3 13.8c-7.1-7.1-16.8-11.2-25.8-11.2-19.3 0-33.8 15.3-33.8 33.8s14.5 33.8 33.8 33.8c9 0 18.7-4.1 25.8-11.2l14.3 13.8c-10.2 10-24.3 16.1-40.1 16.1z" />
-                      <path fill="#fac43a" d="M340 279.1h18.8v55h-18.8z" />
-                      <path fill="white" d="M400.5 227.4l-12.9 78.4h-20.6l12.9-78.4h20.6z" />
-                    </svg>
+                    <VisaElectronIcon />
                   </div>
 
                   {/* Mastercard */}
                   <div className="h-8 w-16 bg-white border border-[#88B8D2]/30 rounded flex items-center justify-center">
-                    <svg viewBox="0 0 160 100" className="h-6 w-auto">
-                      <rect fill="white" width="160" height="100" rx="8" />
-                      <circle fill="#eb001b" cx="60" cy="50" r="30" />
-                      <circle fill="#f79e1b" cx="100" cy="50" r="30" />
-                      <path fill="#ff5f00" d="M80 28c-5.9 4.6-9.7 11.7-9.7 20s3.8 15.4 9.7 20c5.9-4.6 9.7-11.7 9.7-20s-3.8-15.4-9.7-20z" />
-                    </svg>
+                    <MastercardIcon />
                   </div>
 
                   {/* Maestro */}
                   <div className="h-8 w-16 bg-white border border-[#88B8D2]/30 rounded flex items-center justify-center">
-                    <svg viewBox="0 0 160 100" className="h-6 w-auto">
-                      <rect fill="white" width="160" height="100" rx="8" />
-                      <circle fill="#0066cc" cx="60" cy="50" r="30" />
-                      <circle fill="#cc0000" cx="100" cy="50" r="30" />
-                      <path fill="#cc0066" d="M80 28c-5.9 4.6-9.7 11.7-9.7 20s3.8 15.4 9.7 20c5.9-4.6 9.7-11.7 9.7-20s-3.8-15.4-9.7-20z" />
-                    </svg>
+                    <MaestroIcon />
                   </div>
 
                   {/* American Express */}
                   <div className="h-8 w-16 bg-white border border-[#88B8D2]/30 rounded flex items-center justify-center">
-                    <svg viewBox="0 0 160 100" className="h-6 w-auto">
-                      <rect fill="#006fcf" width="160" height="100" rx="8" />
-                      <path fill="white" d="M20 25h25l5 15 5-15h25v50H65V45l-7 20h-6l-7-20v30H20V25zm80 0h40v10H110v5h25v10H110v5h30v10h-40V25z" />
-                    </svg>
+                    <AmericanExpressIcon />
                   </div>
 
                   {/* Troy */}
