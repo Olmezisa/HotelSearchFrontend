@@ -1,10 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { ArrowLeft, Calendar, BedDouble, MapPin, Star } from 'lucide-react';
+import { ArrowLeft, Calendar, BedDouble, MapPin, Star, AirVent, Box, Zap, Accessibility, Lock } from 'lucide-react';
 import { api } from '../../api/santsgApi';
 import { Spinner } from '../common/Spinner';
 import { useNavigate } from 'react-router-dom';
 
+// --- İkon Kütüphanesi ---
+const FacilityIcon = ({ name }) => {
+    switch (name.toLowerCase()) {
+        case 'air conditioner':
+            return <AirVent className="w-4 h-4 mr-1 text-[#2781B9]" />;
+        case 'balcony':
+            return <Box className="w-4 h-4 mr-1 text-[#2781B9]" />;
+        case 'hair drier':
+            return <Zap className="w-4 h-4 mr-1 text-[#2781B9]" />;
+        case 'handicapped':
+            return <Accessibility className="w-4 h-4 mr-1 text-[#2781B9]" />;
+        case 'safe':
+            return <Lock className="w-4 h-4 mr-1 text-[#2781B9]" />;
+        default:
+            return null;
+    }
+};
 // Tarihleri formatlamak için yardımcı fonksiyon
 const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -54,7 +71,7 @@ export const OfferDetail = ({ onBack }) => {
             setLoading(true);
             setIsImageLoading(true);
             setImageError(false);
-            
+
             try {
                 const response = await api.getOfferDetails([offerId], currency);
                 if (response?.body?.offerDetails?.length > 0) {
@@ -65,7 +82,7 @@ export const OfferDetail = ({ onBack }) => {
                     const hotelData = details.hotels?.[0];
                     if (hotelData) {
                         let imageUrl = null;
-                        
+
                         if (hotelData.seasons?.[0]?.mediaFiles?.length > 0) {
                             imageUrl = hotelData.seasons[0].mediaFiles[0].urlFull;
                         }
@@ -77,7 +94,7 @@ export const OfferDetail = ({ onBack }) => {
                         }
 
                         console.log('Setting main image:', imageUrl);
-                        
+
                         if (imageUrl) {
                             setMainImage(imageUrl);
                         } else {
@@ -107,11 +124,11 @@ export const OfferDetail = ({ onBack }) => {
     // Resim galerisi için resim seçme fonksiyonu
     const handleImageSelect = (url) => {
         if (!url || mainImage === url) return;
-        
+
         console.log('Selecting new image:', url);
         setIsImageLoading(true);
         setImageError(false);
-        
+
         const img = new Image();
         img.onload = () => {
             console.log('New image loaded successfully:', url);
@@ -148,7 +165,7 @@ export const OfferDetail = ({ onBack }) => {
 
             if (transactionResponse.header.success) {
                 console.log('Sending main image to booking page:', mainImage);
-                
+
                 navigate('/booking', {
                     state: {
                         offerDetails: offerDetails,
@@ -200,8 +217,8 @@ export const OfferDetail = ({ onBack }) => {
 
     return (
         <div className="bg-[#F9F7F3] p-4 sm:p-6 lg:p-8 rounded-2xl shadow-lg font-sans min-h-screen">
-            <button 
-                onClick={onBack} 
+            <button
+                onClick={onBack}
                 className="inline-flex items-center font-semibold mb-8 text-[#093B5A] hover:text-[#2781B9] transition-all duration-300 group"
             >
                 <ArrowLeft className="h-6 w-6 mr-2 transition-transform duration-300 group-hover:-translate-x-1" />
@@ -223,7 +240,7 @@ export const OfferDetail = ({ onBack }) => {
                                         </div>
                                     </div>
                                 )}
-                                
+
                                 {/* Ana görsel */}
                                 <img
                                     key={mainImage}
@@ -245,7 +262,7 @@ export const OfferDetail = ({ onBack }) => {
                                     }}
                                 />
                             </div>
-                            
+
                             {/* Küçük resim galerisi */}
                             {allHotelImages.length > 1 && (
                                 <div className="flex space-x-2 overflow-x-auto pb-2">
@@ -254,11 +271,10 @@ export const OfferDetail = ({ onBack }) => {
                                             key={`thumb-${index}`}
                                             src={media.urlFull}
                                             alt={`Thumbnail ${index + 1}`}
-                                            className={`flex-shrink-0 w-24 h-16 object-cover rounded-lg cursor-pointer border-2 transition-all duration-200 ${
-                                                mainImage === media.urlFull 
-                                                    ? 'border-[#D48A61] scale-105 opacity-100 shadow-md' 
-                                                    : 'border-transparent opacity-70 hover:opacity-100 hover:scale-105 hover:border-[#2781B9]'
-                                            }`}
+                                            className={`flex-shrink-0 w-24 h-16 object-cover rounded-lg cursor-pointer border-2 transition-all duration-200 ${mainImage === media.urlFull
+                                                ? 'border-[#D48A61] scale-105 opacity-100 shadow-md'
+                                                : 'border-transparent opacity-70 hover:opacity-100 hover:scale-105 hover:border-[#2781B9]'
+                                                }`}
                                             onClick={() => handleImageSelect(media.urlFull)}
                                             onError={(e) => {
                                                 console.warn('Thumbnail failed to load:', media.urlFull);
@@ -270,10 +286,12 @@ export const OfferDetail = ({ onBack }) => {
                             )}
 
                             <div className="flex justify-between items-start mt-4">
+                                {/*location eklendi , description eklenmedi çünkü null dönüyor*/}
                                 <div>
                                     <h1 className="text-3xl font-bold text-[#093B5A]">{hotel.name}</h1>
                                     <p className="text-lg text-[#2781B9] mt-1 flex items-center">
                                         <MapPin className="h-5 w-5 mr-2" />
+                                        {hotel.location?.name && `${hotel.location.name}, `}
                                         {hotel.city?.name}, {hotel.country?.name}
                                     </p>
                                 </div>
@@ -300,15 +318,60 @@ export const OfferDetail = ({ onBack }) => {
                             </div>
                         </div>
                     </div>
-
+                    {/* konaklama detayınında misafir sayısı , fiyat bilgisi ve bölge eklendi.*/}
                     {roomOffer && (
                         <div className="p-6 bg-white rounded-xl shadow-md border border-[#88B8D2]/20">
                             <h2 className="text-2xl font-bold text-[#093B5A] mb-4 flex items-center">
                                 <BedDouble className="h-6 w-6 mr-3 text-[#D48A61]" /> Konaklama Detayları
                             </h2>
-                            <div className="bg-[#F9B18B]/10 p-4 rounded-lg">
+                            <div className="bg-[#F9B18B]/10 p-4 rounded-lg space-y-2">
                                 <p className="text-xl font-semibold text-[#093B5A]">{roomOffer.roomName}</p>
                                 <p className="text-md text-[#2781B9]">{roomOffer.boardName}</p>
+                                {roomOffer.travellers?.length && (
+                                    <p className="text-sm text-[#093B5A]">
+                                        Misafir Sayısı: <span className="font-semibold">{roomOffer.travellers.length}</span>
+                                    </p>
+                                )}
+                                {hotel.location?.name && (
+                                    <p className="text-sm text-[#093B5A]">
+                                        Bölge: <span className="font-semibold">{hotel.location.name}</span>
+                                    </p>
+                                )}
+                                {/* Yeni eklenen: Oda özellikleri */}
+                                {hotel.rooms?.[0]?.facilities?.length > 0 && (
+                                    <div className="mt-4">
+                                        <h4 className="font-bold text-[#093B5A] mb-2">Oda Özellikleri:</h4>
+                                        <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-[#2781B9]">
+                                            {hotel.rooms[0].facilities.map((facility, index) => (
+                                                <div key={index} className="flex items-center">
+                                                    <FacilityIcon name={facility.name} />
+                                                    <span>{facility.name}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="mt-4">
+                                    <h4 className="text-md font-bold text-[#093B5A] mb-2">Gecelik Fiyatlar:</h4>
+                                    <ul className="text-sm text-[#2781B9] space-y-1">
+                                        {offerDetails.priceBreakdowns?.map((item, i) => (
+                                            <li key={i} className="flex justify-between">
+                                                <span>{formatDate(item.date)}</span>
+                                                <span className="text-[#093B5A] font-medium">
+                                                    {item.price?.amount} {item.price?.currency}
+                                                </span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                <div className="mt-4 text-sm">
+                                    <p className={`font-bold ${offerDetails.available ? 'text-green-600' : 'text-red-500'}`}>
+                                        Rezervasyon Durumu: {offerDetails.available ? 'Müsait' : 'Müsait Değil'}
+                                    </p>
+                                    <p className={`font-bold ${offerDetails.refundable ? 'text-green-600' : 'text-red-500'}`}>
+                                        İade: {offerDetails.refundable ? 'Mümkün' : 'Değil'}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -338,7 +401,7 @@ export const OfferDetail = ({ onBack }) => {
                                 </p>
                             )}
                         </div>
-                        
+
                         <button
                             onClick={handleReserveClick}
                             className="w-full mt-6 py-3 px-4 bg-gradient-to-r from-[#D48A61] to-[#AC440B] text-white font-bold rounded-lg shadow-md hover:from-[#AC440B] hover:to-[#D48A61] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105"
