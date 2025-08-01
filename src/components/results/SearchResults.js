@@ -1,7 +1,7 @@
 import React from 'react';
 import { MapPin, Star, ChevronRight } from 'lucide-react';
 import { Spinner } from '../common/Spinner';
-import MapComponent from '../common/MapComponent';
+// import MapComponent from '../common/MapComponent';
 
 const StarRating = ({ rating }) => {
   const totalStars = 5;
@@ -47,14 +47,14 @@ export const SearchResults = ({ results, onHotelSelect, onOfferFetch, currency, 
       <div className="flex justify-between items-start mb-6 flex-wrap gap-4">
         <h1 className="text-3xl font-bold text-[#001624]">Arama Sonuçları</h1>
 
-        {results[0]?.geolocation && (
+        {/* {results[0]?.geolocation && (
           <div className="w-96 h-60 rounded-xl overflow-hidden shadow-lg border-2 border-[#D46A00]/30 bg-gradient-to-br from-[#F7A072]/10 to-[#D46A00]/10">
             <MapComponent
               latitude={results[0].geolocation.latitude}
               longitude={results[0].geolocation.longitude}
             />
           </div>
-        )}
+        )} */}
       </div>
 
       {/* Otel Listesi */}
