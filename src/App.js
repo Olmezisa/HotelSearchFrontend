@@ -307,7 +307,7 @@ import { Hotel, ArrowLeft, Globe, DollarSign } from 'lucide-react';
 import { api } from './api/santsgApi';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { FilterSection } from './components/filter/FilterPanel';
-import { HomePage } from './components/search/HomePage';
+import HomePage from './pages/HomePage';
 import { SearchResults } from './components/results/SearchResults';
 import { HotelDetail } from './components/detail/HotelDetail';
 import { OfferDetail } from './components/detail/OfferDetail';

@@ -1,4 +1,3 @@
-// components/WhyChoose.js
 import React from 'react';
 import { DollarSign, ShieldCheck, Hotel, Globe } from 'lucide-react'; // Yeni ikonlar eklendi (Users yerine Globe)
 
@@ -7,7 +6,7 @@ const WhyChoose = () => {
     { title: "En Düşük Fiyat Garantisi!", icon: <DollarSign size={40} className="text-[#2781B9]" /> },
     { title: "Güvenli Rezervasyon", icon: <ShieldCheck size={40} className="text-[#2781B9]" /> },
     { title: "1M+ Otel Seçeneği", icon: <Hotel size={40} className="text-[#2781B9]" /> },
-    { title: "Geniş Destinasyon Ağı", icon: <Globe size={40} className="text-[#2781B9]" /> }, // "Mutlu Müşteriler" yerine "Geniş Destinasyon Ağı" eklendi
+    { title: "Geniş Destinasyon Ağı", icon: <Globe size={40} className="text-[#2781B9]" /> },
   ];
 
   return (
