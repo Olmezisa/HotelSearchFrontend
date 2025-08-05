@@ -5,7 +5,7 @@ import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import SearchResults from './pages/SearchResults';
 import { HotelDetail } from '../src/pages/HotelDetail';
-import { OfferDetail } from './components/detail/OfferDetail';
+import { OfferDetail } from '../src/pages/OfferDetail';
 import LoginPage from './components/login/LoginPage';
 import voyagoLogo from './voyago2.png';
 import BookingPage from './components/booking/BookingPage';

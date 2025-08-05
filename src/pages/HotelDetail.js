@@ -822,12 +822,12 @@ import { Spinner } from '../components/common/Spinner';
 import { HotelHeader } from '../components/HotelHero/HotelHeader';
 import { ImageThumbnails } from '../components/HotelHero/ImageThumbnails';
 import { ImageGalleryModal } from '../components/HotelHero/ImageGalleryModal';
-import { OfferList } from '../components/detail/OfferList';
-import { RoomList } from '../components/detail/RoomList';
-import { HotelSidebar } from '../components/detail/HotelSidebar';
-import { TextCategoriesSection } from '../components/detail/TextCategoriesSection';
-import { PaymentPlanSection } from '../components/detail/PaymentPlanSection';
-import { SeasonInfoSection } from '../components/detail/SeasonInfoSection';
+import { OfferList } from '../components/HotelDetail/OfferList';
+import { RoomList } from '../components/HotelDetail/RoomList';
+import { HotelSidebar } from '../components/HotelDetail/HotelSidebar';
+import { TextCategoriesSection } from '../components/HotelDetail/TextCategoriesSection';
+import { PaymentPlanSection } from '../components/HotelDetail/PaymentPlanSection';
+import { SeasonInfoSection } from '../components/HotelDetail/SeasonInfoSection';
 
 
 // --- Main Component ---
