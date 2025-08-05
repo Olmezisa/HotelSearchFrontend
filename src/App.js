@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Hotel, ArrowLeft, Globe, DollarSign } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Globe, DollarSign } from 'lucide-react';
 import { api } from './api/santsgApi';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
-import { FilterPanel } from './components/filter/FilterPanel';
 import HomePage from './pages/HomePage';
 import SearchResults from './pages/SearchResults';
-import { HotelDetail } from './components/detail/HotelDetail';
+import { HotelDetail } from '../src/pages/HotelDetail';
 import { OfferDetail } from './components/detail/OfferDetail';
-import { Spinner } from './components/common/Spinner';
 import LoginPage from './components/login/LoginPage';
 import voyagoLogo from './voyago2.png';
 import BookingPage from './components/booking/BookingPage';
