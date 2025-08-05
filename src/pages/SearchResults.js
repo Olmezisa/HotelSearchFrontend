@@ -18,7 +18,7 @@ import { FilterPanel } from '../components/filter/FilterPanel';
  * @param {string} currency - Otel fiyatlarının para birimi.
  * @param {boolean} loading - Yükleme durumunu belirten boolean.
  */
-const SearchResults = ({ results, onHotelSelect, onOfferFetch, currency, loading }) => {
+const SearchResults = ({ results, onHotelSelect, currency, loading }) => {
   console.log('SearchResults: Prop results:', results, 'Prop loading:', loading);
 
   if (loading) {

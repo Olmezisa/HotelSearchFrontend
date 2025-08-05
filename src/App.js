@@ -131,47 +131,6 @@ export default function App() {
     }
   };
 
-  const handleOfferFetch = async (productId, offerId, passedSearchId, passedCurrency) => {
-    const currentSearchId = passedSearchId;
-    const currentCurrency = passedCurrency;
-
-    if (!currentSearchId || !offerId) {
-      setError("Arama ID'si veya Teklif ID'si bulunamadı. Lütfen yeni bir arama yapın.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      setError(null);
-      const requestParams = {
-        searchId: currentSearchId,
-        offerId: offerId,
-        productType: 2,
-        productId: productId,
-        currency: currentCurrency,
-        culture: "en-US",
-        getRoomInfo: true,
-      };
-
-      const offersResponse = await api.getOffers(requestParams);
-
-      setSearchResults(prevResults =>
-        prevResults.map(hotel => {
-          if (hotel.id === productId) {
-            return { ...hotel, ...offersResponse.body, isOfferDetailVisible: true };
-          }
-          return { ...hotel, isOfferDetailVisible: false };
-        })
-      );
-
-    } catch (err) {
-      setError("Teklif detayları alınamadı.");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="bg-gray-100 min-h-screen font-sans text-gray-900">
       <header className="bg-white shadow-md sticky top-0 z-50">
@@ -240,7 +199,6 @@ export default function App() {
     <SearchResults
       results={searchResults}
       onHotelSelect={handleHotelSelect}
-      onOfferFetch={handleOfferFetch}
       currency={lastSearchParams?.currency || 'EUR'}
       loading={loading}
     />
