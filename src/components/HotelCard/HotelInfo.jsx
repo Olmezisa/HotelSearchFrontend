@@ -14,7 +14,7 @@ const HotelInfo = ({ name, stars, city }) => {
     <div>
       <div className="flex justify-between items-start">
         <h2 className="text-2xl font-bold text-[#D46A00]">{name}</h2>
-        {stars > 0 && <StarRating stars={stars} />}
+        {stars > 0 && <StarRating rating ={stars} />}
       </div>
       <div className="flex items-center text-[#2883BB] mt-2">
         <MapPin className="h-5 w-5 mr-2" />
