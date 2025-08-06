@@ -22,9 +22,21 @@ const PopularHotelsSlider = ({ navigate }) => {
   useEffect(() => {
     const fetchHotels = async () => {
       try {
+
+        const getFormattedDate = () => {
+          const today = new Date();
+          const year = today.getFullYear();
+          // getMonth() 0'dan başladığı için 1 ekliyoruz.
+          const month = String(today.getMonth() + 1).padStart(2, '0');
+          const day = String(today.getDate()).padStart(2, '0');
+          return `${year}-${month}-${day}`;
+        };
+
+        const todayDate = getFormattedDate();
+
         const response = await api.searchByLocation({
           arrivalLocations: [{ id: "23494", type: 2 }],
-          checkIn: "2026-08-01",
+          checkIn: todayDate,
           night: 2,
           roomCriteria: [{ adult: 2, childAges: [] }],
           nationality: "DE",
@@ -47,10 +59,9 @@ const PopularHotelsSlider = ({ navigate }) => {
             currency: offer?.price?.currency,
             name: hotel?.name ?? "Otel",
             location: hotel?.city?.name ?? "Bilinmeyen",
-            price: offer?.price?.amount && offer?.night
-              ? `${(offer.price.amount / offer.night).toFixed(2)} ${offer.price.currency} / gece`
-              : "Fiyat yok",
-            image: hotel?.thumbnailFull || hotel?.thumbnail || "https://via.placeholder.com/400x300?text=Hotel"
+            offers: hotel?.offers ?? [],
+            stars: hotel?.stars ?? 0,
+            thumbnailFull: hotel?.thumbnailFull || hotel?.thumbnail || "https://via.placeholder.com/400x300?text=Hotel"
           };
         });
 
@@ -116,8 +127,9 @@ const PopularHotelsSlider = ({ navigate }) => {
           <HotelCard
             key={hotel.id}
             hotel={hotel}
+            currency={hotel.currency}
             searchId={searchId}
-            onHotelSelect={() => navigate(`/hotel/${hotel.id}/${hotel.provider}/${searchId}/${hotel.offers?.[0]?.price?.currency}/${hotel.offers?.[0]?.offerId}`)}
+            onHotelSelect={() => navigate(`/hotel/${hotel.id}/${hotel.provider}/${searchId}/${hotel.currency}/${hotel.offerId}`)}
             variant="popular"
           />
         ))}

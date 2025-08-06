@@ -44,7 +44,7 @@ const HotelCard = ({ hotel, currency, onHotelSelect, variant = 'search-result' }
         <HotelInfo
           name={hotel.name}
           stars={hotel.stars}
-          city={hotel.city?.name}
+          city={hotel.location}
         />
         <HotelPriceAndAction
           offers={hotel.offers}
