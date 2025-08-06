@@ -8,7 +8,7 @@ import { HotelDetail } from '../src/pages/HotelDetail';
 import { OfferDetail } from '../src/pages/OfferDetail';
 import LoginPage from './components/login/LoginPage';
 import voyagoLogo from './voyago2.png';
-import BookingPage from './components/booking/BookingPage';
+import BookingPage from './pages/BookingPage';
 import PropertyRegistrationForm from './components/PropertyRegistrationForm';
 
 
