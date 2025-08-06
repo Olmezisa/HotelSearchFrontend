@@ -7,7 +7,7 @@ import StarRating from '../common/StarRating';
  * Otel kartı için otelin temel bilgilerini gösteren bileşen.
  * @param {string} name - Otelin adı.
  * @param {number} stars - Otelin yıldız derecesi.
- * @param {string} location - Otelin bulunduğu şehir.
+ * @param {string} city - Otelin bulunduğu şehir.
  */
 const HotelInfo = ({ name, stars, city }) => {
   return (

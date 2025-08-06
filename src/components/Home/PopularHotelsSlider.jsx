@@ -58,7 +58,7 @@ const PopularHotelsSlider = ({ navigate }) => {
             offerId: offer?.offerId,
             currency: offer?.price?.currency,
             name: hotel?.name ?? "Otel",
-            location: hotel?.city?.name ?? "Bilinmeyen",
+            city: hotel?.city?.name ?? "Bilinmeyen",
             offers: hotel?.offers ?? [],
             stars: hotel?.stars ?? 0,
             thumbnailFull: hotel?.thumbnailFull || hotel?.thumbnail || "https://via.placeholder.com/400x300?text=Hotel"
