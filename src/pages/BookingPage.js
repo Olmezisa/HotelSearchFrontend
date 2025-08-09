@@ -100,6 +100,28 @@ const BookingPage = () => {
     const hotel = initialHotel || offerDetails?.hotels?.[0];
     const roomOffer = hotel?.offers?.[0]?.rooms?.[0];
 
+    const getGuestCounts = (travellers) => {
+        if (!travellers || travellers.length === 0) {
+            return { adults: 0, children: 0 };
+        }
+
+        const adults = travellers.filter(t => t.passengerType === 1).length;
+        const children = travellers.filter(t => t.passengerType === 3).length;
+
+        return { adults, children };
+    };
+
+    const guestCounts = getGuestCounts(transactionData?.reservationData?.travellers);
+    const guestCountText = [];
+    if (guestCounts.adults > 0) {
+        guestCountText.push(`${guestCounts.adults} Yetişkin`);
+    }
+    if (guestCounts.children > 0) {
+        guestCountText.push(`${guestCounts.children} Çocuk`);
+    }
+
+    const totalGuests = (guestCounts.adults || 0) + (guestCounts.children || 0)
+
     const currentHotelData = hotel ? {
         name: hotel.name || defaultHotelData.name,
         rating: hotel.stars || 4,
@@ -112,15 +134,19 @@ const BookingPage = () => {
         checkInTime: formatDateTime(transactionData?.reservationData?.reservationInfo?.beginDate) || defaultHotelData.checkInTime,
         checkOut: formatDate(transactionData?.reservationData?.reservationInfo?.endDate) || defaultHotelData.checkOut,
         checkOutTime: formatDateTime(transactionData?.reservationData?.reservationInfo?.endDate) || defaultHotelData.checkOutTime,
-        guests: transactionData?.reservationData?.travellers?.length
-            ? `${transactionData.reservationData.travellers.length} Yetişkin`
-            : defaultHotelData.guests,
+        guests: guestCountText.length > 0 ? guestCountText.join(', ') : defaultHotelData.guests,
         nights: transactionData?.reservationData?.reservationInfo?.beginDate && transactionData?.reservationData?.reservationInfo?.endDate
             ? `${Math.ceil((new Date(transactionData.reservationData.reservationInfo.endDate) - new Date(transactionData.reservationData.reservationInfo.beginDate)) / (1000 * 60 * 60 * 24))} gece`
             : defaultHotelData.nights,
+        totalGuests: totalGuests,
+        guestDetails: {
+            adults: guestCounts.adults,
+            children: guestCounts.children
+        },
         roomType: roomOffer?.roomName || defaultHotelData.roomType,
         features: [
-            `${transactionData?.reservationData?.travellers?.length || 0} Yetişkin`,
+            `${guestCounts.adults || 0} Yetişkin`,
+            ...(guestCounts.children > 0 ? [`${guestCounts.children} Çocuk`] : []),
             roomOffer?.boardName || "Oda + Kahvaltı",
             "Sigara İçilmeyen"
         ]
