@@ -2,10 +2,51 @@ import React from 'react';
 import { Star, MapPin, Calendar, Users } from 'lucide-react';
 
 export const BookingHotelInfo = ({ hotelData, mainHotelImage, offerDetails }) => {
+
+    // Yatak düzeni metnini oluşturma
+    let bedLayoutText = '';
+    const adults = hotelData.guestDetails?.adults || 0;
+    const children = hotelData.guestDetails?.children || 0;
+
+    if (adults === 1 && children === 0) {
+        bedLayoutText = '1 Tek Kişilik Yatak';
+    } else if (adults > 1 && children === 0) {
+        const doubleBeds = Math.floor(adults / 2);
+        const singleBeds = adults % 2;
+
+        let beds = [];
+        if (doubleBeds > 0) {
+            beds.push(`${doubleBeds} Çift Kişilik Yatak`);
+        }
+        if (singleBeds > 0) {
+            beds.push(`${singleBeds} Tek Kişilik Yatak`);
+        }
+        bedLayoutText = beds.join(' + ');
+    } else if (adults > 0 && children > 0) {
+        const doubleBeds = Math.floor(adults / 2);
+        const singleBeds = adults % 2;
+        const childBeds = children;
+
+        let beds = [];
+        if (doubleBeds > 0) {
+            beds.push(`${doubleBeds} Çift Kişilik Yatak`);
+        }
+        if (singleBeds > 0) {
+            beds.push(`${singleBeds} Tek Kişilik Yatak`);
+        }
+        if (childBeds > 0) {
+            beds.push(`${childBeds} Tek kişilik Yatak`);
+        }
+        bedLayoutText = beds.join(' + ');
+    }
+
+    // `hotelData.guests` string'inden misafirleri ayıralım
+    const guestsText = hotelData.guests || 'N/A';
+
     return (
         <div className="bg-white rounded-xl shadow-lg p-7 border border-[#88B8D2]/20">
             <h2 className="text-2xl font-bold text-[#093B5A] mb-5 border-b border-[#88B8D2]/30 pb-3">KONAKLAMA BİLGİLERİ</h2>
-            
+
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-6">
                 <div className="w-full md:w-36 h-28 rounded-xl overflow-hidden flex-shrink-0 border border-[#88B8D2]/20">
                     <img
@@ -39,17 +80,34 @@ export const BookingHotelInfo = ({ hotelData, mainHotelImage, offerDetails }) =>
                 </div>
                 <div>
                     <span className="text-[#2781B9] font-medium">Misafir Sayısı:</span>
-                    <div className="font-semibold text-[#093B5A] flex items-center mt-1"><Users className="w-5 h-5 mr-2 text-[#D48A61]" />{hotelData.guests}</div>
+                    <div className="font-semibold text-[#093B5A] flex items-center mt-1"><Users className="w-5 h-5 mr-2 text-[#D48A61]" />{guestsText}</div>
                 </div>
                 <div>
                     <span className="text-[#2781B9] font-medium">Konaklama Süresi:</span>
                     <div className="font-semibold text-[#093B5A] flex items-center mt-1"><Calendar className="w-5 h-5 mr-2 text-[#D48A61]" />{hotelData.nights}</div>
                 </div>
             </div>
-            
+
             <div className="mb-6 border-t border-[#EDDEA4]/30 pt-5">
-                <span className="text-[#2781B9] text-base font-medium">Oda Tipi:</span>
-                <div className="font-bold text-[#093B5A] text-lg mt-1">{hotelData.roomType}</div>
+                <div className="text-[#2781B9] text-lg font-medium">Oda Tipi:<span className="font-bold text-[#093B5A] text-base mt-1 ml-2">{hotelData.roomType}</span></div>
+
+                {/* Yatak sayısını dinamik olarak gösteren kısım */}
+                <div className="mt-2 text-[#093B5A] text-sm">
+                    {hotelData.totalGuests > 0 && (
+                        <span className="text-[#2781B9] text-lg font-medium">
+                            Oda Kapasitesi: <span className="font-bold text-[#093B5A] text-base mt-1 ml-2">{hotelData.totalGuests} Kişilik Oda</span>
+                        </span>
+                    )}
+                </div>
+
+                {/* Dinamik yatak düzeni gösterimi */}
+                <div className="mt-2 text-[#093B5A] text-sm">
+                    {bedLayoutText && (
+                        <div className="text-[#2781B9] text-lg font-medium">
+                            Yatak Düzeni:<span className="font-bold text-[#093B5A] text-base mt-1 ml-2">{bedLayoutText}</span>
+                        </div>
+                    )}
+                </div>
             </div>
 
             <div className="flex flex-wrap gap-3 border-t border-[#EDDEA4]/30 pt-5">
